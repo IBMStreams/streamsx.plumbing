@@ -1,0 +1,23 @@
+uint64 burnCycles(uint64 x)
+{
+    mutable uint64 i = x;
+    mutable float64 r = 1.0;
+    while(--i > 0ul) {
+        r *= 3.14;
+    }
+    return (uint64)r;
+}
+
+type Data = uint64 cost;
+composite Work(input In; output Out) {
+graph
+    stream<In> Out = Custom(In) {
+        logic onTuple In: {
+            // "zero cost" is a special case where we really do nothing - expect, that is,
+            // have an untaken branch (no free lunch)
+            if (In.cost > 0ul) {
+                submit({cost = burnCycles(In.cost)}, Out);
+            }
+        }
+    }
+}

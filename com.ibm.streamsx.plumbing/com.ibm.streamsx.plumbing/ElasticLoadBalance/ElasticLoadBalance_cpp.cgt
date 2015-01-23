@@ -1,0 +1,784 @@
+<% 
+# begin_generated_IBM_copyright_prolog                             
+#                                                                  
+# This is an automatically generated copyright prolog.             
+# After initializing,  DO NOT MODIFY OR MOVE                       
+# **************************************************************** 
+# Licensed Materials - Property of IBM                             
+# 5724-Y95                                                         
+# (C) Copyright IBM Corp.  2010, 2012    All Rights Reserved.      
+# US Government Users Restricted Rights - Use, duplication or      
+# disclosure restricted by GSA ADP Schedule Contract with          
+# IBM Corp.                                                        
+#                                                                  
+# end_generated_IBM_copyright_prolog                               
+%>
+<%
+    use ElasticLoadBalanceCommon;
+    ElasticLoadBalanceCommon::verify($model);
+
+    # params that require no compile-time checks
+    my $bufferSize = $model->getParameterByName("bufferSize");
+    my $elastic = $model->getParameterByName("elastic");
+    my $rapidScaling = $model->getParameterByName("rapidScaling");
+
+    $bufferSize = $bufferSize->getValueAt(0)->getCppExpression();
+    $elastic = $elastic ? $elastic->getValueAt(0)->getCppExpression(): "true";
+    $rapidScaling = $rapidScaling ? $rapidScaling->getValueAt(0)->getCppExpression(): "false";
+
+    # params that require compile-time checks
+    my $congestionToleranceParam = $model->getParameterByName("congestionTolerance");
+    my $throughputToleranceParam = $model->getParameterByName("throughputTolerance");
+    my $measurePeriodParam = $model->getParameterByName("measurePeriod");
+    my $initialActivePortsParam = $model->getParameterByName("initialActivePorts");
+
+    my $congestionTolerance = $congestionToleranceParam ? $congestionToleranceParam->getValueAt(0)->getCppExpression(): "0.5";
+    my $throughputTolerance = $throughputToleranceParam ? $throughputToleranceParam->getValueAt(0)->getCppExpression(): "0.05";
+    my $measurePeriod = $measurePeriodParam ? $measurePeriodParam->getValueAt(0)->getCppExpression(): "5";
+
+    # we need to remember if the user specified initial threads because if they did, we always use that; 
+    # if not, then we have different behavior depending on if elastic was specified or not
+    my $initialActivePortsSpecified = 0;
+    if ($initialActivePortsParam) {
+        $initialActivePortsSpecified = 1;
+    }
+    my $initialActivePorts = $initialActivePortsParam ? $initialActivePortsParam->getValueAt(0)->getCppExpression(): "1";
+
+    if ($congestionToleranceParam) {
+        my $congestion = SPL::CodeGen::extractPerlValue($congestionToleranceParam->getValueAt(0)->getCppExpression(),
+                                                           $congestionToleranceParam->getValueAt(0)->getSPLType());
+        if ($congestion < 0.0 || $congestion > 1.0) {
+            SPL::CodeGen::exitln("The congestionTolerance param must be a value between 0.0 and 1.0.", 
+                                 $congestionToleranceParam->getSourceLocation()) 
+        }
+    }
+
+    if ($throughputToleranceParam) {
+        my $throughput = SPL::CodeGen::extractPerlValue($throughputToleranceParam->getValueAt(0)->getCppExpression(),
+                                                           $throughputToleranceParam->getValueAt(0)->getSPLType());
+        if ($throughput < 0.0 || $throughput > 1.0) {
+            SPL::CodeGen::exitln("The throughputTolerance param must be a value between 0.0 and 1.0.", 
+                                 $throughputToleranceParam->getSourceLocation()) 
+        }
+    }
+
+    if ($measurePeriodParam) {
+        my $measure = SPL::CodeGen::extractPerlValue($measurePeriodParam->getValueAt(0)->getCppExpression(),
+                                                        $measurePeriodParam->getValueAt(0)->getSPLType());
+        if ($measure <= 0) {
+            SPL::CodeGen::exitln("The measurePeriod param must be greater than 0.", 
+                                 $measurePeriodParam->getSourceLocation()) 
+        }
+    }
+
+    if ($initialActivePortsParam) {
+        my $initial = SPL::CodeGen::extractPerlValue($initialActivePortsParam->getValueAt(0)->getCppExpression(), 
+                                                     $initialActivePortsParam->getValueAt(0)->getSPLType());
+        if ($initial == 0) {
+            SPL::CodeGen::exitln("The initialActivePorts param must be greater than 0." . " ",
+                                 $initialActivePortsParam->getSourceLocation()) 
+        }
+        if ($initial > $model->getNumberOfOutputPorts()) {
+            SPL::CodeGen::exitln("The initialActivePorts param must not be greater than the number of output ports.", 
+                                 $initialActivePortsParam->getSourceLocation()) 
+        }
+    }
+%>
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+#include <SPL/Runtime/Utility/BackoffSpinner.h>
+#include <SPL/Runtime/Utility/LogTraceMessage.h>
+#include <SPL/Runtime/Operator/OperatorMetrics.h>
+
+#include <limits>
+#include <cassert>
+#include <cmath>
+#include <iostream>
+#include <memory.h>
+
+using namespace std;
+
+const double CONGESTION_TOLERANCE = <%=$congestionTolerance%>;
+const double THROUGHPUT_TOLERANCE = <%=$throughputTolerance%>;
+const int64_t MEASURE_PERIOD = <%=$measurePeriod%>;
+const bool RAPID_SCALING = <%=$rapidScaling%>;
+const uint32_t INITIAL_THREADS = <%=$initialActivePorts%>;
+const bool INITIAL_THREADS_SPECIFIED = <%=$initialActivePortsSpecified%>;
+const bool ELASTIC = <%=$elastic%>;
+const int32_t NOISE_LIMIT = 1;
+
+class AdaptCallback {
+public:
+    AdaptCallback(MY_OPERATOR& op): _operator(op) {}
+    void operator()() { _operator.adapt(); }
+private:
+    MY_OPERATOR& _operator;
+};
+
+template <class Callback>
+class AlarmThread: public Thread {
+public:
+    AlarmThread(volatile bool& s, time_t p, Callback c):
+        _stop(s), _period(p), _callback(c)
+    {}
+
+    void* run(void*)
+    {
+        while (!_stop) {
+            timespec request, remain;
+            request.tv_sec = _period;
+            request.tv_nsec =  0;
+
+            int ret = -1;
+            while (ret == -1) {
+                ret = nanosleep(&request, &remain);
+                if (ret == -1 && errno != EINTR) {
+                    SPCDBG(L_ERROR, "nanosleep had a non-EINTR error: " << strerror(errno), SPL_PE_DBG);
+                }
+                request = remain;
+            }
+
+            _callback();
+        }
+
+        return NULL;
+    }
+
+private:
+    volatile bool& _stop;
+    time_t _period;
+    Callback _callback;
+};
+
+class ElasticAdaptation {
+public:
+    ElasticAdaptation(bool scaling, double sensitivity, int32_t max);
+    ~ElasticAdaptation();
+    void init(uint32_t numChannels);       
+    int32_t getNumberOfChannels(bool congested, double throughput);     
+
+private:
+    struct ChannelInfo {
+        double lastThroughput;
+        double firstThroughput;
+        bool lastCongested;
+        int64_t lastTime;
+        bool trusted;
+    };
+
+    enum LoadChange {LessLoad, MoreLoad, PotentialNoise, UnknownLoadChange};
+
+    int64_t _time; // logical adaptation time
+    int32_t _currentLevel;   
+    int32_t _noiseDetector;
+    int32_t _maxLevel;
+    ChannelInfo* _channelInfos;
+    bool _rapidScaling; 
+    double _changeSensitivity;
+
+    int32_t mapNumChannelsToChannelLevel(int32_t numChannelsPhysical);
+    int32_t mapChannelLevelToNumChannels(int32_t channelLevel);
+    LoadChange checkForChangeInLoadBasedOnCongestion(bool congested);
+    LoadChange checkForChangeInLoadBasedOnThroughput(double throughput);
+    LoadChange pingNoiseDetector(LoadChange direction);
+    bool improvementTrendBelow(double throughput);
+    bool improvementTrendAbove(double throughput);
+    bool trustBelow();
+    bool trustAbove();
+    void untrustOtherData(double throughput);
+};
+
+ElasticAdaptation::ElasticAdaptation(bool scaling, double sensitivity, int32_t max): 
+    _maxLevel(max),
+    _channelInfos(new ChannelInfo[_maxLevel]), _rapidScaling(scaling), 
+    _changeSensitivity(sensitivity)
+{
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: max level: " << _maxLevel, SPL_OPER_DBG);
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: rapid scaling: " << (_rapidScaling ? "on": "off"), SPL_OPER_DBG);
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: throughput change tolerance: " << _changeSensitivity, SPL_OPER_DBG);
+}
+
+ElasticAdaptation::~ElasticAdaptation()
+{
+    delete _channelInfos;
+}
+
+static double inf() 
+{ 
+    return std::numeric_limits<double>::infinity(); 
+}
+
+static double nan() 
+{ 
+    return std::numeric_limits<double>::quiet_NaN();
+}
+
+void ElasticAdaptation::init(uint32_t numChannels)
+{
+    _currentLevel = mapNumChannelsToChannelLevel(numChannels);
+    _noiseDetector = NOISE_LIMIT;
+    for(int32_t i=0; i<_maxLevel; ++i) {
+        ChannelInfo & info = _channelInfos[i];
+        info.firstThroughput = nan();
+        info.lastThroughput = inf();
+        info.lastCongested = true;
+        info.lastTime = -1; 
+        info.trusted = false;
+    }		 	
+    _time = 0;
+}
+
+int32_t ElasticAdaptation::mapNumChannelsToChannelLevel(int32_t numChannels) 
+{
+    if (_rapidScaling) {
+        for (int32_t i=0; true; ++i) {
+            if (mapChannelLevelToNumChannels(i)==numChannels)
+                return i;
+        }
+        assert(!"cannot happen");
+        return 0;
+    } else {
+        return numChannels - 1;
+    }
+}
+
+int32_t ElasticAdaptation::mapChannelLevelToNumChannels(int32_t channelLevel) 
+{
+    if (_rapidScaling) {
+        int32_t i = channelLevel + 1;
+        return (int) (0.5 + ::pow(2.0, (0.5 * i)));
+    } else {
+        return channelLevel + 1;
+    }
+}
+
+ElasticAdaptation::LoadChange ElasticAdaptation::checkForChangeInLoadBasedOnCongestion(bool congested)
+{
+    ChannelInfo * cci = &_channelInfos[_currentLevel];
+    ChannelInfo * nci = (_currentLevel<_maxLevel-1) ? (&_channelInfos[_currentLevel+1]) : NULL;
+    ChannelInfo * pci = (_currentLevel>0) ? (&_channelInfos[_currentLevel-1]) : NULL;
+    if (_time==0)
+        return UnknownLoadChange;
+    // we were on this same channel and observed a different congestion 
+    if (cci->lastTime==_time-1 && cci->lastCongested != congested)
+        return congested ? MoreLoad : LessLoad;
+    // we moved here from up where there was congestion, yet the congestion disappeared here
+    else if (nci!=NULL && nci->lastTime==_time-1 && nci->lastCongested && !congested)
+        return LessLoad;
+    // we moved here from bottom where there was no congestion, yet the congestion appeared here
+    else if (pci!=NULL && pci->lastTime==_time-1 && !pci->lastCongested && congested)
+        return MoreLoad;
+    return UnknownLoadChange;
+}
+
+ElasticAdaptation::LoadChange ElasticAdaptation::pingNoiseDetector(ElasticAdaptation::LoadChange direction)
+{
+    if (_noiseDetector > 0) {
+        _noiseDetector--;
+        SPLAPPTRC(L_INFO, "ElasticAdaptation: set off noise detector, " << _noiseDetector << " remaining.", SPL_OPER_DBG);
+        return PotentialNoise;
+    }
+    else {
+        return direction;
+    }
+}
+
+ElasticAdaptation::LoadChange ElasticAdaptation::checkForChangeInLoadBasedOnThroughput(double throughput)
+{
+    if (_time==0)
+        return UnknownLoadChange;
+    
+    ChannelInfo * cci = &_channelInfos[_currentLevel];
+    int nCurrent = mapChannelLevelToNumChannels(_currentLevel);
+		
+    int nUp = 0;
+    ChannelInfo * nci = NULL;
+    if (_currentLevel<_maxLevel-1) {
+        nci = &_channelInfos[_currentLevel+1];
+        nUp = mapChannelLevelToNumChannels(_currentLevel+1);
+    }
+		
+    int nDown = 0;
+    ChannelInfo * pci = NULL;
+    if (_currentLevel>0) {
+        pci = & _channelInfos[_currentLevel-1];
+        nDown = mapChannelLevelToNumChannels(_currentLevel-1);
+    }
+
+    double oldThroughput = 0.0;
+    // we were were here the last time, but throughput changed
+    if (cci->lastTime==_time-1) {
+        oldThroughput = cci->firstThroughput;
+        double throughputDiff = throughput - oldThroughput;
+        if (throughputDiff < 0.0) {
+            if (-throughputDiff > _changeSensitivity * throughput) {
+                return pingNoiseDetector(LessLoad);
+            }
+        } else {
+            if (throughputDiff > _changeSensitivity * oldThroughput) {
+                return pingNoiseDetector(MoreLoad);
+            }
+        }
+    }
+    // we moved here from up, yet the throughput increased
+    else if (nci!=NULL && nci->lastTime==_time-1) {
+        oldThroughput = nci->lastThroughput;
+        if ((throughput - oldThroughput) > _changeSensitivity * oldThroughput) {
+            return pingNoiseDetector(MoreLoad);
+        }
+    } 
+    // we moved here from below, yet the throughput decreased
+    else if (pci!=NULL && pci->lastTime==_time-1) {
+        oldThroughput = pci->lastThroughput;
+        if ((oldThroughput - throughput) > _changeSensitivity * throughput) {
+            return pingNoiseDetector(LessLoad);
+        }
+    }
+    _noiseDetector = NOISE_LIMIT;
+    return UnknownLoadChange;
+}
+
+void ElasticAdaptation::untrustOtherData(double throughput)
+{
+    for (int32_t i = 0; i < _maxLevel; ++i) {
+        if (i != _currentLevel) {
+            _channelInfos[i].trusted = false;
+        }
+        else {
+            _channelInfos[i].firstThroughput = throughput;
+        }
+    }
+}
+
+bool ElasticAdaptation::trustBelow()
+{
+    if (_currentLevel == 0) {
+        return false;
+    }
+    return _channelInfos[_currentLevel - 1].trusted;
+}
+
+bool ElasticAdaptation::trustAbove()
+{
+    if (_currentLevel == _maxLevel - 1) {
+        return false;
+    }
+    return _channelInfos[_currentLevel + 1].trusted;
+}
+
+bool ElasticAdaptation::improvementTrendBelow(double throughput)
+{
+    if (_currentLevel == 0) {
+        return false;
+    }
+
+    ChannelInfo & pci = _channelInfos[_currentLevel-1];				
+    if (!pci.trusted) {
+        return false;
+    }
+    
+    if ((throughput > pci.lastThroughput) && (throughput - pci.lastThroughput) > _changeSensitivity * pci.lastThroughput) {
+        SPLAPPTRC(L_INFO, "ElasticAdaptation: improvement trend down: " << throughput << ", " << pci.lastThroughput, SPL_OPER_DBG);
+        return true;
+    }   
+    return false;
+}
+
+bool ElasticAdaptation::improvementTrendAbove(double throughput)
+{
+    if (_currentLevel == _maxLevel - 1) {
+        return false;
+    }
+
+    ChannelInfo & nci = _channelInfos[_currentLevel+1];				
+    if (!nci.trusted) {
+        return false;
+    }
+    
+    if ((nci.lastThroughput > throughput) && (nci.lastThroughput - throughput) > _changeSensitivity * throughput) {
+        SPLAPPTRC(L_INFO, "ElasticAdaptation: improvement trend down: " << throughput << ", " << nci.lastThroughput, SPL_OPER_DBG);
+        return true;
+    }   
+    return false;
+}
+
+int32_t ElasticAdaptation::getNumberOfChannels(bool congested, double throughput) 
+{			
+    switch (checkForChangeInLoadBasedOnCongestion(congested)) {				
+        case PotentialNoise:
+            return mapChannelLevelToNumChannels(_currentLevel);
+        case LessLoad:
+        case MoreLoad:
+            SPLAPPTRC(L_INFO, "ElasticAdaptation: change in congestion, untrusting other data", SPL_OPER_DBG);
+            untrustOtherData(throughput);
+            break;
+        default: ;
+    }
+		
+    switch (checkForChangeInLoadBasedOnThroughput(throughput)) {
+        case PotentialNoise:
+            return mapChannelLevelToNumChannels(_currentLevel);
+        case LessLoad:
+        case MoreLoad:
+            SPLAPPTRC(L_INFO, "ElasticAdaptation: change in throughput, untrusting other data", SPL_OPER_DBG);
+            untrustOtherData(throughput);
+            break;
+        default: ;
+    }
+	
+    // update info for the current channel
+    ChannelInfo & cci = _channelInfos[_currentLevel];
+    cci.lastTime = _time++;
+    cci.lastThroughput = throughput;
+    cci.lastCongested = congested;
+    if (!cci.trusted) {
+        cci.firstThroughput = throughput;
+    }
+    cci.trusted = true;
+
+    if (congested) {
+        if ((improvementTrendBelow(throughput) && !trustAbove()) || 
+             improvementTrendAbove(throughput) ||
+            (_currentLevel == 0 && !trustAbove())) {
+            if (_currentLevel < _maxLevel - 1) {
+                SPLAPPTRC(L_INFO, "ElasticAdaptation: updward trend, exploring up", SPL_OPER_DBG);
+                _currentLevel++;
+            }
+        }
+        else if (!trustBelow()) {
+            if (_currentLevel > 0) {
+                SPLAPPTRC(L_INFO, "ElasticAdaptation: don't trust data below, exploring down", SPL_OPER_DBG);
+                _currentLevel--;
+            }
+        }
+    }
+    else {
+        if (_currentLevel > 0) {
+            SPLAPPTRC(L_INFO, "ElasticAdaptation: no congestion, level down", SPL_OPER_DBG);
+            _currentLevel--; 
+        }
+    }
+    
+    return mapChannelLevelToNumChannels(_currentLevel);
+}
+
+MY_OPERATOR::MY_OPERATOR()
+    : MY_BASE_OPERATOR(), 
+      _done(false), _currentBuf(0), _bufferSize(<%=$bufferSize%>),
+      _numOutputPorts(getNumberOfOutputPorts()),
+      _numActivePorts(0),
+
+      _sleep(getNumberOfOutputPorts()),
+      _stop(false), _measurePeriod(MEASURE_PERIOD), 
+      _alarm(new AlarmThread<AdaptCallback>(_stop, _measurePeriod, AdaptCallback(*this))),
+
+      _prevTime(0.0), _prevTuples(0), _prevOutTuples(0),
+      _adaptAlg(new ElasticAdaptation(RAPID_SCALING, THROUGHPUT_TOLERANCE, _numOutputPorts))
+{
+    if(!_bufferSize)
+        _bufferSize = 1;
+    for(uint32_t i=0; i<_numOutputPorts; ++i) {
+        _buffers.push_back(new CircularQueue<ItemType>(_bufferSize));
+        _sleepMutexes.push_back(new Mutex);
+        _sleepCVs.push_back(new CV);
+        _sleep[i] = false;
+    }
+
+    if (INITIAL_THREADS_SPECIFIED) {
+        _numActivePorts = INITIAL_THREADS;
+    }
+    else {
+        if (ELASTIC) {
+            _numActivePorts = 1;
+        }
+        else {
+            _numActivePorts = _numOutputPorts;
+        }
+    }
+
+    _adaptAlg->init(_numActivePorts);
+    for (uint32_t i = _numActivePorts; i < _numOutputPorts; ++i) {
+        _sleep[i] = true;
+    }
+
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: elasticity: " << (ELASTIC ? "on": "off"), SPL_OPER_DBG);
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: initial thread level: " << _numActivePorts, SPL_OPER_DBG);
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: congestion tolerance: " << CONGESTION_TOLERANCE, SPL_OPER_DBG);
+    SPLAPPTRC(L_INFO, "ElasticAdaptation: measure period: " << MEASURE_PERIOD, SPL_OPER_DBG);
+}
+
+MY_OPERATOR::~MY_OPERATOR() 
+{
+    {
+        // We need to protect the destruction of objects from the adapt thread, 
+        // but make sure that we don't have the mutex when we join
+        AutoMutex am(_adaptMutex);
+
+        for(uint32_t i=0; i<_numOutputPorts; ++i) {
+            CircularQueue<ItemType> & buffer = *_buffers[i]; 
+            for(size_t j=0, ju=buffer.getCapacity(); j<ju; ++j) {
+                ItemType & item = buffer.getRawData(j);
+                delete item.tuple;
+            }
+            delete &buffer;
+
+            delete _sleepMutexes[i];
+            delete _sleepCVs[i];
+        }
+    }
+
+    _stop = true;
+    if (ELASTIC) {
+        _alarm->join();
+    }
+    delete _alarm;
+    delete _adaptAlg;
+}
+
+void MY_OPERATOR::pause() {
+#if AVOID_SCHED_YIELD
+        for (uint32_t i=0; i< 30; i++) {
+#    if defined(__powerpc__)
+            __asm__ __volatile__("or 30,30,30");
+#    elif !(defined (__i386__) ||  defined (__x86_64__))
+            pthread_yield();
+#    else
+            __asm__ __volatile__("pause;");
+#    endif
+        }
+#else
+    pthread_yield();
+#endif
+}
+
+void MY_OPERATOR::process(Punctuation const & punct, uint32_t port)
+{
+    if(punct == Punctuation::WindowMarker) 
+    {
+        ItemType item(NULL, punct);
+        process(item);
+    } else { // final punctuation
+        // wake up sleeping threads
+        for (uint32_t i = _numActivePorts; i < _numOutputPorts; ++i) {
+            AutoMutex am(*_sleepMutexes[i]);
+            _sleep[i] = false;
+            _sleepCVs[i]->broadcast();
+        }
+
+        // need to wait until all buffers flush
+        ProcessingElement& pe = getPE();
+        while(!pe.getShutdownRequested()) {
+            uint32_t done = 0;
+            for(size_t i=0; i<_numOutputPorts; ++i) 
+                if(_buffers[i]->empty())
+                    ++done;
+            if(done==_numOutputPorts) 
+                break;
+            pause();
+        }
+        _done = true;
+    }
+}
+
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+    ItemType item(const_cast<Tuple *>(&tuple), Punctuation::Invalid);
+    process(item);
+}
+
+void MY_OPERATOR::process(ItemType const & item)
+{
+    AutoPortMutex apm(_bufferMutex, *this); // in case there are multiple threads calling us
+    // this will reduce to an untaken branch in case there is only a single thread
+    int cnt = 0;
+    if(item.isTuple()) {
+	    while(!getPE().getShutdownRequested()) {
+	        CircularQueue<ItemType> & buffer = *_buffers[_currentBuf];
+	        if(!buffer.full()) {
+	            ItemType & citem = buffer.rear();
+                if(citem.tuple)
+                    citem.tuple->assign(*item.tuple);
+                else
+                    citem.tuple = item.tuple->clone();
+                citem.punct = Punctuation::Invalid;
+	            buffer.push_back();
+	            _currentBuf = (_currentBuf+1) % _numActivePorts;
+	            return;
+	        } else {
+	            _currentBuf = (_currentBuf+1) % _numActivePorts;
+	        }
+	        ++cnt;
+	        if(cnt==_numActivePorts) {
+	            pause();
+	            cnt = 0;
+	        }
+	    }
+    }
+    else {
+    	//for puncts, add the punct to each buffer
+    	//if the buffer is full, then wait and try to add again till there
+    	//is space available.
+    	bool buffersToTry[_numOutputPorts];
+    	bool stillBuffersRemaining = false;
+    	for(uint32_t i=0; i<_numOutputPorts; ++i) {
+    		if(getPE().getShutdownRequested()) return;
+       	 	CircularQueue<ItemType> & buffer = *_buffers[i]; 
+       	 	if(!buffer.full()) {
+	            ItemType & citem = buffer.rear();
+                citem.punct = item.punct;
+	            buffer.push_back();
+	            buffersToTry[i] = false;
+	        } else {
+	            buffersToTry[i] = true;
+	            stillBuffersRemaining = true;
+	        }
+        }
+    	while(stillBuffersRemaining) {
+    		if(getPE().getShutdownRequested()) break;
+    		pause();
+    		stillBuffersRemaining = false;
+    		for (uint32_t i = 0; i < _numOutputPorts; i++) {
+    			if(buffersToTry[i]) {
+    				CircularQueue<ItemType> & buffer = *_buffers[i];
+					if(!buffer.full()) {
+						ItemType & citem = buffer.rear();
+						citem.punct = item.punct;
+						buffer.push_back();
+
+						buffersToTry[i] = false;
+					}
+					else {
+						stillBuffersRemaining = true;
+					}
+    			}
+    		}
+    	}
+    }
+}
+
+void MY_OPERATOR::process(uint32_t index) 
+{
+    CircularQueue<ItemType> & buffer = *_buffers[index];
+    while(!getPE().getShutdownRequested()) {
+
+        // only go to sleep AFTER buffer is flushed
+        if (_sleep[index] && buffer.empty()) {
+            AutoMutex am(*_sleepMutexes[index]);
+            while (_sleep[index]) {
+                _sleepCVs[index]->wait(*_sleepMutexes[index]);
+            }
+        }
+
+        BackoffSpinner spinner;
+        while(buffer.empty()) {
+            if(getPE().getShutdownRequested() || _done)
+                return;
+            spinner.wait();
+        }
+        ItemType & item = buffer.front();
+        if(item.isTuple()) {
+            submit(*item.tuple, index);
+            item.tuple->clear();
+        }
+        else 
+            submit(item.punct, index);
+        buffer.pop_front();
+    }
+}
+
+void MY_OPERATOR::allPortsReady()
+{
+    createThreads(_numOutputPorts);
+    if (ELASTIC) {
+        _alarm->create();
+    }
+    _prevTime = SPL::Functions::Time::getTimestampInSecs();
+}
+
+double MY_OPERATOR::getThroughput()
+{
+    double currTime = SPL::Functions::Time::getTimestampInSecs();
+    double timeDiff = currTime - _prevTime;
+    _prevTime = currTime;
+
+    // Two pitfalls we have to avoid:
+    //
+    // 1) If we only look at the current number of active ports (_numActivePorts), then we 
+    // may undercount the number of tuples processed, which would cause our difference to 
+    // be wrong.
+    //
+    // 2) If we instead count the tuples processed by the input port, we will overcount. Yes,
+    // in a steady-state situation, tuples processed and submitted will be rougly equal. But, 
+    // note that the amount we overcount by will increase as we increase the number of 
+    // threads. This is bad, as it gives an artificial "reward" to the elastic algorithm for 
+    // increasing the number of threads, and the reward is proportionally higher when absolute 
+    // throughput is low - which is precisely when we will have a large number of threads.
+    uint64_t currNTuples = 0;
+    for (uint32_t i = 0; i < _numOutputPorts; ++i) {
+        currNTuples += getContext().getMetrics().getOutputPortMetric(i, OperatorMetrics::nTuplesSubmitted).getValue();
+    }
+
+    double nTuplesDiff = currNTuples - _prevTuples;
+    _prevTuples = currNTuples;
+
+    return nTuplesDiff / timeDiff;
+}
+
+bool MY_OPERATOR::isCongested()
+{
+    double sum = 0.0;
+    for (uint32_t i = 0; i < _numActivePorts; ++i) {
+        size_t size = _buffers[i]->getSize();
+        size_t capacity = _buffers[i]->getCapacity();
+        sum += (double)size / capacity;
+    }
+
+    return (sum / _numActivePorts) > CONGESTION_TOLERANCE;
+}
+
+void MY_OPERATOR::adapt()
+{
+    AutoMutex am(_adaptMutex); // make sure these objects aren't destroyed while we're using them
+
+    if (!_done) {
+        double throughput = getThroughput();
+        bool congested = isCongested();
+        uint32_t oldPorts = _numActivePorts;
+        uint32_t newPorts = _adaptAlg->getNumberOfChannels(congested, throughput);
+        if (newPorts != oldPorts && newPorts <= _numOutputPorts) {
+            {
+                // we grab the lock because if these values changed in the middle of the ingestion
+                // thread going over the queues, Very Bad Things could happen
+                AutoPortMutex apm(_bufferMutex, *this);
+                _numActivePorts = newPorts;
+                if (_currentBuf >= _numActivePorts) {
+                    _currentBuf = _currentBuf % _numActivePorts;
+                }
+            }
+
+            if (oldPorts > newPorts) {
+                // thread level down, put threads to sleep
+                for (uint32_t i = newPorts; i < oldPorts; ++i) {
+                    _sleep[i] = true;
+                }
+            }
+            else {
+                // thread level up, wake threads up
+                for (uint32_t i = oldPorts; i < newPorts; ++i) {
+                    AutoMutex am(*_sleepMutexes[i]);
+                    _sleep[i] = false;
+                    _sleepCVs[i]->broadcast();
+                }
+            }
+        }
+
+        SPLAPPTRC(L_INFO, "ElasticAdaptation: throughput: " << throughput << 
+                          ", congestion: " << congested << 
+                          ", suggestion: " << newPorts << 
+                          ", active: " << _numActivePorts, SPL_OPER_DBG);
+    }
+}
+
+<%SPL::CodeGen::implementationEpilogue($model);%>
+

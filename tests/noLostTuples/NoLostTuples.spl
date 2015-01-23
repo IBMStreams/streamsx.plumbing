@@ -1,0 +1,46 @@
+composite NoLostTuples {
+param expression<uint32> $tuples: (uint32)getSubmissionTimeValue("tuples", "10000000");
+      expression<rstring> $init: "5";
+type Data = float64 data, uint64 seqno;
+graph
+    stream<Data> Src = Beacon() {
+        param iterations: $tuples;
+        output Src: seqno=IterationCount();
+    }
+
+    (stream<Data> Src0;
+     stream<Data> Src1;
+     stream<Data> Src2;
+     stream<Data> Src3;
+     stream<Data> Src4;
+     stream<Data> Src5;
+     stream<Data> Src6;
+     stream<Data> Src7
+    ) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+        param bufferSize: 100u;     
+              elastic: (boolean)getCompileTimeValue("elastic");
+              initialActivePorts: (uint32)getCompileTimeValue("initialActivePorts");
+    }
+
+    () as Snk = Custom(Src0, Src1, Src2, Src3, Src4, Src5, Src6, Src7 as Sources) {
+        logic state: {
+            mutable uint32 _count = 0u;
+        }
+
+        onTuple Sources: {
+            ++_count;
+        }
+
+        onPunct Sources: {
+            if (currentPunct() == Sys.FinalMarker) {
+                if (_count == $tuples) {
+                    printStringLn("pass");
+                }
+                else {
+                    printStringLn("fail");
+                }
+            }
+        }
+    }
+}
+

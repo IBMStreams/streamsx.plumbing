@@ -1,0 +1,13 @@
+composite BadThreadsHigh {
+graph
+    stream<int32 i> Src = Beacon() {}
+
+    (stream<int32 i> Res0;
+     stream<int32 i> Res1;
+     stream<int32 i> Res2;
+     stream<int32 i> Res3;
+     stream<int32 i> Res4) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+        param bufferSize: 100u;
+              initialActivePorts: 6u;
+    }
+}

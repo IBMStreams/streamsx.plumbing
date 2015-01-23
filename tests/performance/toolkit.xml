@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<toolkitModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/toolkit" productVersion="3.2.1.1" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <toolkit name="performance" requiredProductVersion="2.0" version="1.0.0">
+    <description>Toolkit Description</description>
+    <uriTable>
+      <uri index="3" value="Simple.spl"/>
+      <uri index="2" value="BurstyCost.spl"/>
+      <uri index="4" value="Work.spl"/>
+      <uri index="1" value="BurstyRate.spl"/>
+      <uri index="5" value="Bursty.spl"/>
+    </uriTable>
+    <namespace name="">
+      <compositeOp column="10" line="1" name="BurstyRate" potentialMain="true" uriIndex="1">
+        <parameter defaultValue="(uint32)getSubmissionTimeValue(&quot;tuples&quot;, &quot;100000000&quot;)" metaType="Expression" name="tuples" optional="true" type="&lt;uint32>"/>
+      </compositeOp>
+      <compositeOp column="10" line="1" name="BurstyCost" potentialMain="true" uriIndex="2">
+        <parameter defaultValue="(uint32)getSubmissionTimeValue(&quot;tuples&quot;, &quot;100000000&quot;)" metaType="Expression" name="tuples" optional="true" type="&lt;uint32>"/>
+      </compositeOp>
+      <compositeOp column="10" line="1" name="Simple" potentialMain="true" uriIndex="3">
+        <parameter defaultValue="(uint32)getSubmissionTimeValue(&quot;tuples&quot;, &quot;100000000&quot;)" metaType="Expression" name="tuples" optional="true" type="&lt;uint32>"/>
+      </compositeOp>
+      <compositeOp column="11" line="12" name="Work" potentialMain="false" uriIndex="4">
+        <inputPort name="In" portIndex="0"/>
+        <outputPort name="Out" portIndex="0"/>
+      </compositeOp>
+      <compositeOp column="10" line="1" name="Bursty" potentialMain="true" uriIndex="5">
+        <parameter defaultValue="(uint32)getSubmissionTimeValue(&quot;tuples&quot;, &quot;100000000&quot;)" metaType="Expression" name="tuples" optional="true" type="&lt;uint32>"/>
+      </compositeOp>
+      <function column="1" line="1" name="burnCycles" native="false" returnType="uint64" uriIndex="4">
+        <prototype>uint64 burnCycles(uint64 x)</prototype>
+        <parameter name="x" type="uint64"/>
+      </function>
+      <type column="6" line="11" name="Data" static="true" type="uint64 cost" uriIndex="4"/>
+    </namespace>
+  </toolkit>
+
+</toolkitModel>

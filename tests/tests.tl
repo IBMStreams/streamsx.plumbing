@@ -1,0 +1,6 @@
+badCongestion
+badMeasure
+badThroughput
+badThreadsLow
+badThreadsHigh
+noLostTuples

@@ -1,0 +1,100 @@
+composite Simple {
+param expression<uint32> $tuples: (uint32)getSubmissionTimeValue("tuples", "100000000");
+graph
+    stream<Data> Src = Beacon() {
+        logic state: {
+            uint64 _cost = (uint64)getSubmissionTimeValue("cost", "1");
+        }
+        param iterations: $tuples;
+        output Src: cost = _cost;
+    }
+
+    (stream<Data> Src0;
+     stream<Data> Src1;
+     stream<Data> Src2;
+     stream<Data> Src3;
+     stream<Data> Src4;
+     stream<Data> Src5;
+     stream<Data> Src6;
+     stream<Data> Src7;
+     stream<Data> Src8;
+     stream<Data> Src9;
+     stream<Data> Src10;
+     stream<Data> Src11;
+     stream<Data> Src12;
+     stream<Data> Src13;
+     stream<Data> Src14;
+     stream<Data> Src15;
+     stream<Data> Src16;
+     stream<Data> Src17;
+     stream<Data> Src18;
+     stream<Data> Src19;
+     stream<Data> Src20;
+     stream<Data> Src21;
+     stream<Data> Src22;
+     stream<Data> Src23;
+     stream<Data> Src24;
+     stream<Data> Src25;
+     stream<Data> Src26;
+     stream<Data> Src27;
+     stream<Data> Src28;
+     stream<Data> Src29;
+     stream<Data> Src30;
+     stream<Data> Src31
+    ) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+        param bufferSize: 100u;     
+        config logLevel: info;
+    }
+
+    stream<Data> Res0 = Work(Src0) {}
+    stream<Data> Res1 = Work(Src1) {}
+    stream<Data> Res2 = Work(Src2) {}
+    stream<Data> Res3 = Work(Src3) {}
+    stream<Data> Res4 = Work(Src4) {}
+    stream<Data> Res5 = Work(Src5) {}
+    stream<Data> Res6 = Work(Src6) {}
+    stream<Data> Res7 = Work(Src7) {}
+    stream<Data> Res8 = Work(Src8) {}
+    stream<Data> Res9 = Work(Src9) {}
+    stream<Data> Res10 = Work(Src10) {}
+    stream<Data> Res11 = Work(Src11) {}
+    stream<Data> Res12 = Work(Src12) {}
+    stream<Data> Res13 = Work(Src13) {}
+    stream<Data> Res14 = Work(Src14) {}
+    stream<Data> Res15 = Work(Src15) {}
+    stream<Data> Res16 = Work(Src16) {}
+    stream<Data> Res17 = Work(Src17) {}
+    stream<Data> Res18 = Work(Src18) {}
+    stream<Data> Res19 = Work(Src19) {}
+    stream<Data> Res20 = Work(Src20) {}
+    stream<Data> Res21 = Work(Src21) {}
+    stream<Data> Res22 = Work(Src22) {}
+    stream<Data> Res23 = Work(Src23) {}
+    stream<Data> Res24 = Work(Src24) {}
+    stream<Data> Res25 = Work(Src25) {}
+    stream<Data> Res26 = Work(Src26) {}
+    stream<Data> Res27 = Work(Src27) {}
+    stream<Data> Res28 = Work(Src28) {}
+    stream<Data> Res29 = Work(Src29) {}
+    stream<Data> Res30 = Work(Src30) {}
+    stream<Data> Res31 = Work(Src31) {}
+
+    () as Snk = Custom(Res0, Res1, Res2, Res3, 
+                       Res4, Res5, Res6, Res7, 
+                       Res8, Res9, Res10, Res11,
+                       Res12, Res13, Res14, Res15,
+                       Res16, Res17, Res18, Res19,
+                       Res20, Res21, Res22, Res23,
+                       Res24, Res25, Res26, Res27,
+                       Res28, Res29, Res30, Res31
+                       as Res) {
+        logic state: {
+            mutable uint64 _count = 0;
+        }
+
+        onTuple Res: {
+            ++_count;
+        }
+    }
+}
+
