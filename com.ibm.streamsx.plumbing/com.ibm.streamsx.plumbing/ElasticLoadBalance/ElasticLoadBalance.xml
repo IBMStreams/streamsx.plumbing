@@ -1,0 +1,150 @@
+<?xml version="1.0" ?>
+<!-- begin_generated_IBM_copyright_prolog                             -->
+<!--                                                                  -->
+<!-- This is an automatically generated copyright prolog.             -->
+<!-- After initializing,  DO NOT MODIFY OR MOVE                       -->
+<!-- **************************************************************** -->
+<!-- Licensed Materials - Property of IBM                             -->
+<!-- 5724-Y95                                                         -->
+<!-- (C) Copyright IBM Corp.  2010, 2012    All Rights Reserved.      -->
+<!-- US Government Users Restricted Rights - Use, duplication or      -->
+<!-- disclosure restricted by GSA ADP Schedule Contract with          -->
+<!-- IBM Corp.                                                        -->
+<!--                                                                  -->
+<!-- end_generated_IBM_copyright_prolog                               -->
+<operatorModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common"
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+    <context> 
+      <description docHref="doc/${nl}/doc/threadedsplit.html">This operator distributes tuples to the output ports that have the capacity to receive them. In addition, it will dynamically determine the number of output ports that should be active in order to maximize throughput.</description>
+      <libraryDependencies>
+        <library>
+          <cmn:description>spl-std-tk-lib</cmn:description>
+          <cmn:managedLibrary>
+            <cmn:lib>streams-stdtk-runtime</cmn:lib>
+            <cmn:includePath>../../impl/include</cmn:includePath>
+          </cmn:managedLibrary>
+        </library>
+      </libraryDependencies>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <codeTemplates>
+        <codeTemplate name="ElasticLoadBalance">
+          <description>Basic ElasticLoadBalance template</description>
+          <template>(stream&lt;${inputStream}&gt; ${outputStream1};stream&lt;${inputStream}&gt; ${outputStream2}) = ElasticLoadBalance(${inputStream}) {
+            param
+                bufferSize: ${bufferSize};
+        }</template>
+        </codeTemplate>
+      </codeTemplates>      
+    </context>  
+    <parameters>
+      <allowAny>false</allowAny>
+
+      <parameter>
+        <name>bufferSize</name>
+        <description>Size of each buffer used to store the input tuples for each output port</description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>uint32</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>congestionTolerance</name>
+        <description>Value between 0 and 1 which determines which level of congestion to consider "high congestion." The default is 0.5. Values near 0 tolerate less congestion; values near 1 tolerate more congestion.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>float64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>throughputTolerance</name>
+        <description>Value between 0 and 1 which determines when we consider throughput to have improved. The default is 0.05. Values near 0 will respond to smaller changes in throughput more; values near 1 will require larger changes in throughput to respond.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>float64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>measurePeriod</name>
+        <description>Period of time, in seconds, for how often to measure and adapt. The default is 5 seconds.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>int64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>rapidScaling</name>
+        <description>When turned on, rapid scaling will change many levels at once, rather than just one. The default is false, wich turns rapid scaling off.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>boolean</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>elastic</name>
+        <description>Controls whether or not elasticity is enabled. The default is true, which turns elasticity on. If set to false, elasticity is turned off, and all output ports will be active, unless an initial thread level was provided.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>boolean</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>initialActivePorts</name>
+        <description>Number of active ports (which is the same as number of threads) to start with. The default is 1 with elasticity turned on; the default is the number of output ports if elasticity is turned off. If elasticity is turned off, this parameter's value will control the thread level for the lifetime of the operator.</description>
+        <optional>true</optional>
+        <rewriteAllowed>false</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>uint32</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+    </parameters>
+    <inputPorts>
+      <inputPortSet>
+        <description>Port that ingests tuples to be split amongst multiple threads</description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet>
+    </inputPorts>
+    <outputPorts>
+      <outputPortSet>
+        <description>Port (the first one) that produces split tuples</description>
+        <expressionMode>Nonexistent</expressionMode> 
+        <autoAssignment>true</autoAssignment>
+        <completeAssignment>true</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </outputPortSet>    
+      <outputPortOpenSet>
+        <description>Additional ports that produce the split tuples</description>
+        <expressionMode>Nonexistent</expressionMode> 
+        <autoAssignment>true</autoAssignment>
+        <completeAssignment>true</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+      </outputPortOpenSet>    
+    </outputPorts>
+  </cppOperatorModel>
+</operatorModel>

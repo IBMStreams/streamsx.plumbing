@@ -1,0 +1,86 @@
+<% 
+# begin_generated_IBM_copyright_prolog                             
+#                                                                  
+# This is an automatically generated copyright prolog.             
+# After initializing,  DO NOT MODIFY OR MOVE                       
+# **************************************************************** 
+# Licensed Materials - Property of IBM                             
+# 5724-Y95                                                         
+# (C) Copyright IBM Corp.  2010, 2012    All Rights Reserved.      
+# US Government Users Restricted Rights - Use, duplication or      
+# disclosure restricted by GSA ADP Schedule Contract with          
+# IBM Corp.                                                        
+#                                                                  
+# end_generated_IBM_copyright_prolog                               
+%>
+<%
+    use ElasticLoadBalanceCommon;
+    ElasticLoadBalanceCommon::verify($model);
+%>
+
+#include <SPL/Runtime/Operator/Port/Punctuation.h>
+#include <SPL/Runtime/Utility/Thread.h>
+#include <SPL/Runtime/Utility/CV.h>
+#include <CircularQueue.h>
+#include <vector>
+#include <time.h>
+
+template <class Callback>
+class AlarmThread;
+class AdaptCallback;
+class ElasticAdaptation;
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+    MY_OPERATOR();
+    ~MY_OPERATOR();
+
+    virtual void process(uint32_t index); 
+    virtual void process(Tuple const & tuple, uint32_t port);
+    virtual void process(Punctuation const & punct, uint32_t port);
+    virtual void allPortsReady();
+    void adapt();
+
+private:
+    volatile bool _done;
+    uint32_t _currentBuf;
+    uint32_t _bufferSize;
+    uint32_t _numOutputPorts;
+    uint32_t _numActivePorts;
+    struct ItemType {
+        Tuple* tuple;
+        Punctuation punct;
+        ItemType() {tuple = NULL; punct = Punctuation::Invalid;}
+        ItemType(Tuple *t, Punctuation p) {tuple = t; punct = p;}
+        bool isTuple() const {return punct == Punctuation::Invalid;}
+    };
+    std::vector<CircularQueue<ItemType> *> _buffers;
+    Mutex _bufferMutex;
+    Mutex _adaptMutex;
+
+    std::vector<bool> _sleep;
+    std::vector<Mutex*> _sleepMutexes;
+    std::vector<CV*> _sleepCVs;
+
+    volatile bool _stop;
+    volatile bool _adapt;
+    const int64_t _measurePeriod;
+    AlarmThread<AdaptCallback>* _alarm;
+
+    time_t _prevTime;
+    uint64_t _prevTuples;
+    uint64_t _prevOutTuples;
+    ElasticAdaptation* _adaptAlg;
+
+    void process(ItemType const & item);
+    inline void pause();
+
+    double getThroughput();
+    bool isCongested();
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+
