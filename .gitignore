@@ -1,2 +1,4 @@
+com.ibm.streamsx.plumbing/com.ibm.streamsx.plumbing/ElasticLoadBalance/ElasticLoadBalance_cpp.pm
+com.ibm.streamsx.plumbing/com.ibm.streamsx.plumbing/ElasticLoadBalance/ElasticLoadBalance_h.pm
 com.ibm.streamsx.plumbing/toolkit.xml
 tests/testharness.pyc
