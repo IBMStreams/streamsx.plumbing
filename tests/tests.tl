@@ -1,6 +1,6 @@
-badCongestion
-badMeasure
-badThroughput
-badThreadsLow
-badThreadsHigh
-noLostTuples
+ElasticLoadBalance/badCongestion
+ElasticLoadBalance/badMeasure
+ElasticLoadBalance/badThroughput
+ElasticLoadBalance/badThreadsLow
+ElasticLoadBalance/badThreadsHigh
+ElasticLoadBalance/noLostTuples

@@ -3,8 +3,8 @@
 SPLC_FLAGS = -a
 SPLC = $(STREAMS_INSTALL)/bin/sc
 
-SPL_CMD_ARGS ?= -t ../../com.ibm.streamsx.plumbing
-SPL_MAIN_COMPOSITE = BadThreadsLow
+SPL_CMD_ARGS ?= -t ../../../com.ibm.streamsx.plumbing
+SPL_MAIN_COMPOSITE = BadThreadsHigh
 
 all: standalone
 
