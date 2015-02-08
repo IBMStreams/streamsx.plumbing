@@ -3,8 +3,8 @@
 SPLC_FLAGS = -a
 SPLC = $(STREAMS_INSTALL)/bin/sc
 
-SPL_CMD_ARGS ?= -t ../../com.ibm.streamsx.plumbing
-SPL_MAIN_COMPOSITE = BadThroughput
+SPL_CMD_ARGS ?= -t ../../../com.ibm.streamsx.plumbing --output-directory $(main)Output
+SPL_MAIN_COMPOSITE = $(main)
 
 all: standalone
 

@@ -3,7 +3,7 @@
 SPLC_FLAGS = -a
 SPLC = $(STREAMS_INSTALL)/bin/sc
 
-SPL_CMD_ARGS ?= -t ../../com.ibm.streamsx.plumbing elastic=$(elastic) initialActivePorts=$(initialActivePorts)
+SPL_CMD_ARGS ?= -t ../../../com.ibm.streamsx.plumbing elastic=$(elastic) initialActivePorts=$(initialActivePorts)
 SPL_MAIN_COMPOSITE = NoLostTuples
 
 all: standalone
