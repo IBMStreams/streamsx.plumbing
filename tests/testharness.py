@@ -1,3 +1,6 @@
+# Copyright (C) 2015 International Business Machines Corporation. 
+# All Rights Reserved.
+
 import sys, os
 from subprocess import call, Popen, PIPE
 

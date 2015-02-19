@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2015 International Business Machines Corporation. 
+ * All Rights Reserved.
+ */
+
 composite NoLostTuples {
 param expression<uint32> $tuples: (uint32)getSubmissionTimeValue("tuples", "10000000");
       expression<rstring> $init: "5";

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# Copyright (C) 2015 International Business Machines Corporation. 
+# All Rights Reserved.
+
 import sys
 import testharness as th
 from optparse import OptionParser

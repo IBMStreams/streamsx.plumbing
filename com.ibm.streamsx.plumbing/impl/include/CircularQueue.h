@@ -1,16 +1,8 @@
-/* begin_generated_IBM_copyright_prolog                             */
-/*                                                                  */
-/* This is an automatically generated copyright prolog.             */
-/* After initializing,  DO NOT MODIFY OR MOVE                       */
-/* **************************************************************** */
-/* Licensed Materials - Property of IBM                             */
-/* 5724-Y95                                                         */
-/* (C) Copyright IBM Corp.  2010, 2012    All Rights Reserved.      */
-/* US Government Users Restricted Rights - Use, duplication or      */
-/* disclosure restricted by GSA ADP Schedule Contract with          */
-/* IBM Corp.                                                        */
-/*                                                                  */
-/* end_generated_IBM_copyright_prolog                               */
+/*
+ * Copyright (C) 2015 International Business Machines Corporation. 
+ * All Rights Reserved.
+ */
+
 /*! This is a lock-free circular queue for single consumer thread and single
 producer thread setups.
 
@@ -44,7 +36,7 @@ Consumer:
   #define write_memory_barrier()      asm volatile("sfence" ::: "memory")
   #define full_memory_barrier()       __sync_synchronize();
 #elif defined(__PPC__) || defined(__PPC64__)
-  #define read_memory_barrier()       asm volatile("isync" ::: "memory")
+  #define read_memory_barrier()       asm volatile("lwsync" ::: "memory")
   #define write_memory_barrier()      asm volatile("lwsync" ::: "memory")
   #define full_memory_barrier()       __sync_synchronize();
 #else
