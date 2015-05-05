@@ -2,10 +2,10 @@
 <info:toolkitInfoModel xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common"
  xmlns:info="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo">
  <info:identity>
-   <info:name>com.ibm.streamsx.plumbing</info:name>
-   <info:description>Plumbing operators manipulate the flow of tuples in a Streams application, but are not part of the logic of the application.
+   <info:name>shedders</info:name>
+   <info:description>Sample applications that use load shedding operators
    </info:description>
-   <info:version>0.1.0.__dev__</info:version>
+   <info:version>1.0.0</info:version>
    <info:requiredProductVersion>4.0.0.0</info:requiredProductVersion>
  </info:identity>
  <info:dependencies>

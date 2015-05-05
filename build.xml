@@ -10,7 +10,7 @@
   <property name="toolkit.test" location="tests" />
 
 	
-  <target name="all" depends="toolkit,samples, spldoc_work, toolkitIndexOnly"/>
+  <target name="all" depends="toolkit,samples, spldoctoolkits, toolkitIndexOnly"/>
 
   <target name="setcommitversion">
     <!-- Create the time stamp -->
@@ -60,22 +60,6 @@
         <ant dir="${toolkit}" target="indextoolkit" /> 
   </target> 	
 
-  <target name="spldoc" depends="setcommitversion, spldoc_work, revertversion"
-    description="Create SPLDOC with git commit hash included in the version"
-  />
-
-  <target name="spldoc_work" depends="samples,setcommitversion"
-    description="Create SPLDOC"
-  >
-    <antcall target="spldoctoolkit">
-       <param name="tkdir" value="${toolkit}"/>
-       <param name="tktitle" value="IBMStreams ${tkinfo.info:identity.info:name} Toolkit"/>
-    </antcall>
-    <subant target="spldoctoolkit" genericantfile="${basedir}/build.xml">
-       <dirset dir="samples" includes="*"/>
-    </subant>
-  </target>
-
   <target name="samples" depends="toolkit">
     <subant target="indextoolkit" genericantfile="${basedir}/build.xml">
        <dirset dir="samples" includes="*"/>
@@ -112,17 +96,17 @@
      </exec>
      <delete dir="${basedir}/output" quiet="true"/>
   </target>
-  <target name="spldoctoolkit">
-     <property name="tkdir" value="${basedir}"/>
-     <echo message="Tookit to SPLDOC: ${tkdir}"/>
+  <target name="spldoctoolkits">
      <exec executable="${streams.install}/bin/spl-make-doc">
         <arg value="--include-composite-operator-diagram"/>
         <arg value="--author"/>
         <arg value="IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/${ant.project.name}"/>
         <arg value="--doc-title"/>
-        <arg value="${tktitle}"/>
-        <arg value="--directory"/>
-        <arg value="${tkdir}"/>
+        <arg value="streamsx.plumbing"/>
+        <arg value="--toolkit-path"/>
+        <arg value="${toolkit}:samples"/>
+        <arg value="--output-directory"/>
+        <arg value="${toolkit}/doc/spldoc"/>
      </exec>
   </target>
 
