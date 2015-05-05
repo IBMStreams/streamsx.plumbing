@@ -1,0 +1,100 @@
+namespace com.ibm.streamsx.plumbing.sample.shedding ;
+
+use com.ibm.streamsx.plumbing.shedders::* ;
+
+public composite ExpressionShedderSample
+{
+	graph
+		() as JCP = JobControlPlane()
+		{
+		}
+
+		// DataFlow with controlled load shedding
+		@spl_category(name = "data")
+		() as DF = EDataFlow()
+		{
+		}
+
+		// Flow that controls DataFlow
+		// Note they are not connected using streams,
+		// only indirectly through the control mechanisms
+		// provided by JobControlPlane
+		@spl_note(id = "0", text =
+			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+		@spl_category(name = "control")
+		() as CF = EControlFlow()
+		{
+		}
+
+}
+
+/**
+* The data flow that will demonstrate load
+* shedding using `RandomLoadShedder`. A Beacon
+* operator submits tuples around 100 per second
+* through a [RandomLoadShedder] and out to a sink operator.
+* Using Streams Studio or the Streams Console you can
+* watch the rate of tuples into the sink operator change
+* based upon the control signals from the separate
+* [ControlFlow] composite.
+*/
+composite EDataFlow
+{
+	graph
+		stream<float64 a> Data = Beacon()
+		{
+			param
+				period : 0.01 ;
+                        output Data: a = random();
+		    config placement: partitionColocation(getThisCompositeInstanceName());
+		}
+
+		stream<Data> ManagedData = ExpressionLoadShedder(Data)
+		{
+			param
+				name : "sampleShedder" ;
+				expr : a < 0.7;
+		    config placement: partitionColocation(getThisCompositeInstanceName());
+		}
+
+		() as Sink = Custom(ManagedData)
+		{
+		}
+
+}
+
+/**
+* The flow that controls [DataFlow] in [RandomShedderSample]. Every thirty seconds
+the fraction of tuples to shed increases by 0.25, cycling
+back to 0.0 (no drops) after reaching 1.0 (everything dropped).
+*/
+composite EControlFlow()
+{
+	graph
+		stream<boolean cd> Control = Beacon()
+		{
+			param
+				initDelay : 30.0 ;
+				period : 30.0 ;
+		}
+
+		() as ChangeShedding = Custom(Control)
+		{
+			logic
+				state :
+				{
+					boolean __unused = registerExpressionShedder("sampleShedder") ;
+					mutable boolean _shed = false ;
+				}
+
+				onTuple Control :
+				{
+					_shed = !_shed ;
+					setExpressionShedderMode("sampleShedder", _shed) ;
+				}
+
+				config
+					tracing : debug ;
+			}
+
+}
