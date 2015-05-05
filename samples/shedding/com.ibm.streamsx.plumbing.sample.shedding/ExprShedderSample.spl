@@ -70,7 +70,7 @@ composite EDataFlow
 }
 
 /**
-* The flow that controls [DataFlow] in [RandomShedderSample]. Every thirty seconds
+* The flow that controls [DataFlow] in [ExpressionShedderSample]. Every thirty seconds
 the fraction of tuples to shed increases by 0.25, cycling
 back to 0.0 (no drops) after reaching 1.0 (everything dropped).
 */

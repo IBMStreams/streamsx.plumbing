@@ -38,7 +38,7 @@ public composite RandomShedderSample
 * The data flow that will demonstrate load
 * shedding using `RandomLoadShedder`. A Beacon
 * operator submits tuples around 100 per second
-* through a [RandomLoadShedder] and out to a sink operator.
+* through a [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] and out to a sink operator.
 * Using Streams Studio or the Streams Console you can
 * watch the rate of tuples into the sink operator change
 * based upon the control signals from the separate
@@ -108,19 +108,19 @@ composite ControlFlow()
 
 /**
  * Sample application that can be used to demonstrate
- * recovery from failure for [RandomShedder].
+ * recovery from failure for [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
  * 
  * A single change is made to shed tuples in the
  * data flow after 30 seconds to some random fraction >= 0.2.
  * 
  * The failure modes that can be manually tested are:
  * 
- * * Killing or restarting the PE containing [RandomShedder].
- * * Killing or restarting the PE containing `JobControlPlane` and [RandomShedder].
- * * Stopping the PE containing [RandomShedder] before the shedding fraction is changed
+ * * Killing or restarting the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+ * * Killing or restarting the PE containing `JobControlPlane` and [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+ * * Stopping the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] before the shedding fraction is changed
  * and then restarting it.
  * 
- * In each case [RandomShedder] reverts to the shedding fraction set by the control flow,
+ * In each case [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] reverts to the shedding fraction set by the control flow,
  * and the current fraction can be seen through the `sheddingFraction` metric, in tuples
  * per million shed.
  */
