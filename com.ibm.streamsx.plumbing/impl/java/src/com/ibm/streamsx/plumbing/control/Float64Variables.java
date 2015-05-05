@@ -8,6 +8,12 @@ import com.ibm.streams.function.model.Function;
 import com.ibm.streams.operator.control.variable.ControlVariableAccessor;
 
 
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
 public class Float64Variables {
 	
 	private static final Map<String,ControlVariableAccessor<Double>> doubleVariables

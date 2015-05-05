@@ -1,3 +1,10 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
 namespace com.ibm.streamsx.plumbing.shedders ;
 
 use com.ibm.streamsx.plumbing.control::* ;

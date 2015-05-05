@@ -1,3 +1,10 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
 /**
  * Load shedding operators provide the ability for
  * SPL applications to temporarily discard tuples to reduce

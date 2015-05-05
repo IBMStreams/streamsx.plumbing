@@ -1,3 +1,10 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
 /**
  * Functionality that utilizes the
  * `JobControlPlane` operator to provide

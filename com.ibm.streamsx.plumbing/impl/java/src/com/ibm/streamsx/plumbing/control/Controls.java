@@ -1,3 +1,9 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
 package com.ibm.streamsx.plumbing.control;
 
 import com.ibm.streams.operator.PERuntime;
