@@ -1,0 +1,16 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Functionality that utilizes the
+ * `JobControlPlane` operator to provide
+ * intra-job control mechanisms.
+ */
+
+namespace com.ibm.streamsx.plumbing.control;
+
+

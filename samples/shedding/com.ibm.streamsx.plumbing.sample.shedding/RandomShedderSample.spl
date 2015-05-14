@@ -1,0 +1,160 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+namespace com.ibm.streamsx.plumbing.sample.shedding ;
+
+use com.ibm.streamsx.plumbing.shedders::* ;
+
+public composite RandomShedderSample
+{
+	graph
+		() as JCP = JobControlPlane()
+		{
+		}
+
+		// DataFlow with controlled load shedding
+		@spl_category(name = "data")
+		() as DF = DataFlow()
+		{
+		}
+
+		// Flow that controls DataFlow
+		// Note they are not connected using streams,
+		// only indirectly through the control mechanisms
+		// provided by JobControlPlane
+		@spl_note(id = "0", text =
+			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+		@spl_category(name = "control")
+		() as CF = ControlFlow()
+		{
+		}
+
+}
+
+/**
+* The data flow that will demonstrate load
+* shedding using `RandomLoadShedder`. A Beacon
+* operator submits tuples around 100 per second
+* through a [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] and out to a sink operator.
+* Using Streams Studio or the Streams Console you can
+* watch the rate of tuples into the sink operator change
+* based upon the control signals from the separate
+* [ControlFlow] composite.
+*/
+composite DataFlow
+{
+	graph
+		stream<int64 a> Data = Beacon()
+		{
+			param
+				period : 0.01 ;
+		    config placement: partitionColocation(getThisCompositeInstanceName());
+		}
+
+		stream<Data> ManagedData = RandomLoadShedder(Data)
+		{
+			param
+				name : "sampleShedder" ;
+		    config placement: partitionColocation(getThisCompositeInstanceName());
+		}
+
+		() as Sink = Custom(ManagedData)
+		{
+		}
+
+}
+
+/**
+* The flow that controls [DataFlow] in [RandomShedderSample]. Every thirty seconds
+the fraction of tuples to shed increases by 0.25, cycling
+back to 0.0 (no drops) after reaching 1.0 (everything dropped).
+*/
+composite ControlFlow()
+{
+	graph
+		stream<float64 fractionDelta> Control = Beacon()
+		{
+			param
+				initDelay : 30.0 ;
+				period : 30.0 ;
+			output
+				Control : fractionDelta = 0.25 ;
+		}
+
+		() as ChangeShedding = Custom(Control)
+		{
+			logic
+				state :
+				{
+					boolean __unused = registerRandomShedder("sampleShedder") ;
+					mutable float64 _fraction = 0.0 ;
+				}
+
+				onTuple Control :
+				{
+					_fraction += fractionDelta ;
+					if(_fraction > 1.0) _fraction = 0.0 ;
+					setRandomShedderFraction("sampleShedder", _fraction) ;
+				}
+
+				config
+					tracing : debug ;
+			}
+
+}
+
+/**
+ * Sample application that can be used to demonstrate
+ * recovery from failure for [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+ * 
+ * A single change is made to shed tuples in the
+ * data flow after 30 seconds to some random fraction >= 0.2.
+ * 
+ * The failure modes that can be manually tested are:
+ * 
+ * * Killing or restarting the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+ * * Killing or restarting the PE containing `JobControlPlane` and [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+ * * Stopping the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] before the shedding fraction is changed
+ * and then restarting it.
+ * 
+ * In each case [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] reverts to the shedding fraction set by the control flow,
+ * and the current fraction can be seen through the `sheddingFraction` metric, in tuples
+ * per million shed.
+ */
+public composite RandomShedderFailureSample {
+   graph
+   		() as JCP = JobControlPlane() {}
+   		
+   				// DataFlow with controlled load shedding
+		@spl_category(name = "data")
+		() as DF = DataFlow()
+		{
+		}
+		
+		stream<float64 fraction> Control = Beacon()
+		{
+			param
+			    initDelay: 30.0;
+				iterations: 1u;
+			output
+				Control : fraction = random() + 0.2;
+		}
+
+		() as ChangeShedding = Custom(Control)
+		{
+			logic
+				state :
+				{
+					boolean __unused = registerRandomShedder("sampleShedder") ;
+				}
+
+				onTuple Control :
+				{
+					setRandomShedderFraction("sampleShedder", fraction) ;
+				}
+			}
+}
+

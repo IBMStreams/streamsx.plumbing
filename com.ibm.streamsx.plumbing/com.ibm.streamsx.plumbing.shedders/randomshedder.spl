@@ -1,0 +1,156 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+namespace com.ibm.streamsx.plumbing.shedders ;
+
+use com.ibm.streamsx.plumbing.control::* ;
+stateful boolean __initRandomShedder(rstring name)
+{
+	registerRandomShedder(name) ;
+	createCustomMetric("sheddingFraction",
+		"Fraction of tuples shed (tuples per million), controlled by variable: " +
+		name, Sys.Gauge, 0l) ;
+	return false ;
+}
+
+/**
+ * Register that an operator invocation will call
+ * [setRandomShedderFraction(rstring, float64)] or
+ * [getRandomShedderFraction(rstring)]. A  shared`float64` control
+ * variable is created with name `name`.
+ * 
+ * This function must be called in the `logic state` section
+ * of any operator invocation that calls `setRandomShedderFraction`
+ * or `getRandomShedderFraction`.
+ * 
+ * @return `true`
+ */
+public stateful boolean registerRandomShedder(rstring name)
+{
+	createFloat64ControlVariable(name, true, - 1.0) ;
+	return true ;
+}
+
+/**
+ * Set the fraction of tuples to be shed for [RandomLoadShedder] operator
+ * invocations  using control variable `name`.
+ * If `fraction` is less than or equal to 0.0, then no tuples
+ * will be shed. If `fraction` is greater than or equal to 1.0 then all tuples
+ * will be shed. Otherwise `fraction` represents the approximate fraction
+ * of tuples that will be shed by invocations of [RandomLoadShedder] using
+ * control variable `name`.
+ * 
+ * Any operator that invokes this must call [registerRandomShedder(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ * Any operator may invoke this method to control [RandomLoadShedder] operator
+ * invocations within the same job, that were invoked with their parameter `name`
+ * set to `name`.
+ * 
+ * @param name Name of the variable for the `RandomLoadShedder` operator invocation(s).
+ * @param fraction Fraction of tuples to shed.
+ */
+public stateful void setRandomShedderFraction(rstring name, float64 fraction)
+{
+	setFloat64ControlVariable(name, fraction) ;
+}
+
+/**
+ * Get the fraction of tuples being shed for [RandomLoadShedder] operator
+ * invocations using control variable `name`.
+ * 
+ * Any operator that invokes this must call [registerRandomShedder(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ * 
+ * @param name Name of the variable for the `RandomLoadShedder` operator invocation(s).
+ */
+public float64 getRandomShedderFraction(rstring name)
+{
+	float64 value = getFloat64ControlVariable(name) ;
+	if(value > 1.0) return 1.0 ;
+	if(value <= 0.0) return 0.0 ;
+	return value ;
+}
+
+/**
+ * Controllable load shedder that sheds (drops) tuples randomly.
+ * Tuple that are not shed are copied from the input port to the output
+ * port without modification. Punctuation marks
+ * are always forwarded from `In` to `Out`.
+ * 
+ * This operator creates a `float64` control variable named
+ * `name`. Initially the variable is set to 0.0 which means
+ * no tuples will be shed. If the variable is changed to
+ * a non-zero value between 0.0 and 1.0 then approximately
+ * that fraction of tuples will be shed. The selection
+ * of tuples to drop is random. If the variable is changed to
+ * 1.0 (or higher) than no tuples will be delivered to `Out`.
+ * 
+ * The control variable may be shared across multiple invocations
+ * of `RandomLoadShedder`, by invoking them with the same value for `name`.
+ * `name` is scoped to the job.
+ * 
+ * The shedding fraction is changed by calling the function [setRandomShedderFraction(rstring, float64)]
+ * from any operator in same job. Thus the logic that determines the fraction
+ * to shed does not define a stream connection to this operator, instead the
+ * Job Control Plane, through the the control variable, provides the control mechanism.
+ * When the job is first submitted the fraction of tuples to shed is set to 0.0,
+ * so no tuples will be shed. Upon any failure, the fraction of tuples to shed
+ * is maintained by the control variable.
+ * 
+ * Java primitive operators may also change the shedding fraction
+ * by modifying the control variable using functionality in the
+ * `com.ibm.streams.operator.control.variable` package.
+ * 
+ * Multiple `RandomLoadShedder` operator may share the same control variable,
+ * by being invoked with the same value for the `name` parameter.
+ * 
+ * The application that invokes this operator must include a single invocation
+ * of the `JobControlPlane` operator.
+ * 
+ * @param name Name of the control variable for this operator invocation.
+ * 
+ * @input In Port containing tuples that will be copied to the output if they not shed.
+ * @output Out Port containing tuples from `In` that were not shed.
+*/
+public composite RandomLoadShedder(input In ; output Out)
+{
+	param
+		expression<rstring> $name ;
+	graph
+
+		(stream<In> Out) as LoadShedder = Custom(In)
+		{
+			logic
+				state :
+				{
+				    rstring _name = $name;
+					boolean __unused = __initRandomShedder(_name) ;
+					mutable float64 currentShedFraction = -1.0;
+				}
+
+				onTuple In :
+				{
+				    float64 shedFraction = getRandomShedderFraction(_name);
+					if(shedFraction == 0.0)
+					{
+						submit(In, Out) ;
+					}
+
+					else if(shedFraction != 1.0)
+					{
+						if(random() >= shedFraction) submit(In, Out) ;
+					}
+					
+					if (shedFraction != currentShedFraction) {
+					    setCustomMetricValue("sheddingFraction",(int64)(shedFraction * 1000000.0)) ;
+					    currentShedFraction = shedFraction;
+					}
+
+				}
+			}
+}
+

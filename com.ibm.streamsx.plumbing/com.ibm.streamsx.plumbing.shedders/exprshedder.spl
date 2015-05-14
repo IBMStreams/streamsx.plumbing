@@ -1,0 +1,151 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+namespace com.ibm.streamsx.plumbing.shedders ;
+
+use com.ibm.streamsx.plumbing.control::* ;
+stateful boolean __initExpressionShedder(rstring name)
+{
+	registerExpressionShedder(name) ;
+	createCustomMetric("shedding",
+		"Expression shedding mode (0:not shedding, 1:shedding), controlled by variable: " +
+		name, Sys.Gauge, 0l) ;
+	return false ;
+}
+
+/**
+ * Register that an operator invocation will call
+ * [setExpressionShedderMode(rstring, boolean)] or
+ * [getExpressionShedderMode(rstring)]. A  shared`boolean` control
+ * variable is created with name `name`.
+ * 
+ * This function must be called in the `logic state` section
+ * of any operator invocation that calls `setExpressionShedderMode`
+ * or `getExpressionShedderMode`.
+ * 
+ * @return `true`
+ */
+public stateful boolean registerExpressionShedder(rstring name)
+{
+	createBooleanControlVariable(name, true, false) ;
+	return true ;
+}
+
+/**
+ * Set the shedding mode for [ExpressionLoadShedder] operator
+ * invocations  using control variable `name`.
+ * If `shed` is `false`, then no tuples
+ * will be shed. If `shed` is `true` then any tuple that
+ * evaluates the operator invocation's expression to `true`
+ * will be shed
+ * 
+ * Any operator that invokes this must call [registerExpressionShedder(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ * Any operator may invoke this method to control [ExpressionLoadShedder] operator
+ * invocations within the same job, that were invoked with their parameter `name`
+ * set to `name`.
+ * 
+ * @param name Name of the variable for the `ExpressionLoadShedder` operator invocation(s).
+ * @param shed `true` to set [ExpressionLoadShedder] invocations to shed tuples, `false` to stop shedding.
+ */
+public stateful void setExpressionShedderMode(rstring name, boolean shed)
+{
+	setBooleanControlVariable(name, shed) ;
+}
+
+/**
+ * Get the shedding mode for [ExpressionLoadShedder] operator
+ * invocations using control variable `name`.
+ * 
+ * Any operator that invokes this must call [registerExpressionShedder(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ * 
+ * @param name Name of the variable for the `ExpressionLoadShedder` operator invocation(s).
+ */
+public boolean getExpressionShedderMode(rstring name)
+{
+	return getBooleanControlVariable(name) ;
+}
+
+/**
+ * Controllable load shedder that sheds (drops) tuples based upon evaluating an expression.
+ * Tuple that are not shed are copied from the input port to the output
+ * port without modification. Punctuation marks
+ * are always forwarded from `In` to `Out`.
+ * 
+ * This operator creates a `boolean` control variable named
+ * `name`. Initially the variable is set to `false` which means
+ * no tuples will be shed. If the variable is changed to
+ * `true` then tuples will be shed. The selection
+ * of tuples to shed is defined by `expr`. If 
+ * 
+ * The control variable may be shared across multiple invocations
+ * of `ExpreessionLoadShedder`, by invoking them with the same value for `name`.
+ * `name` is scoped to the job.
+ * 
+ * The shedding mode is changed by calling the function [setExpressionShedderMode(rstring, boolean)]
+ * from any operator in same job. Thus the logic that determines the shedding
+ * mode does not define a stream connection to this operator, instead the
+ * Job Control Plane, through the the control variable, provides the control mechanism.
+ * When the job is first submitted the shedding mode is set to `false`,
+ * so no tuples will be shed. Upon any failure, the shedding
+ * is maintained by the control variable.
+ * 
+ * Java primitive operators may also change the shedding mode
+ * by modifying the control variable using functionality in the
+ * `com.ibm.streams.operator.control.variable` package.
+ * 
+ * Multiple `ExpressionLoadShedder` operator may share the same control variable,
+ * by being invoked with the same value for the `name` parameter.
+ * 
+ * The application that invokes this operator must include a single invocation
+ * of the `JobControlPlane` operator.
+ * 
+ * @param name Name of the control variable for this operator invocation.
+ * @param expr Expression evaluated against each tuple when in shedding mode.
+ * 
+ * @input In Port containing tuples that will be copied to the output if they not shed.
+ * @output Out Port containing tuples from `In` that were not shed.
+*/
+public composite ExpressionLoadShedder(input In ; output Out)
+{
+	param
+		expression<rstring> $name ;
+		expression<boolean> $expr ;
+	graph
+
+		(stream<In> Out) as LoadShedder = Custom(In)
+		{
+			logic
+				state :
+				{
+				    rstring _name = $name;
+					boolean __unused = __initExpressionShedder(_name) ;
+					mutable boolean currentShed = false;
+				}
+
+				onTuple In :
+				{
+				    boolean shed = getExpressionShedderMode(_name);
+					if(!shed)
+					{
+						submit(In, Out) ;
+					}
+					else if (!($expr))
+					{
+					   submit(In, Out) ;
+					}
+					
+					if (shed != currentShed) {
+					    setCustomMetricValue("shedding", shed ? 1l : 0l) ;
+					    currentShed = shed;
+					}
+
+				}
+			}
+}
+
