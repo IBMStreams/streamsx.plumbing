@@ -1,0 +1,38 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+namespace com.ibm.streamsx.plumbing.sampling;
+
+/**
+ * Convert a percent to a fraction by dividing by 100.0.
+*/
+public float64 percent(float64 percent) {
+    return percent / 100.0fl;
+}
+
+/**
+ * Randomly sample a stream. Fraction of tuples to
+ * pass through is specified by parameter `fraction`, defaults to 0.01 (1%) .
+ * I.e. random selection of 1% of tuples are passed through.
+ * 
+ * The output stream's schema must be the same as the input schema.
+ * 
+ * @input IN Stream to be sampled
+ * @param fraction Fraction of the stream to pass through
+ * @output OUT Sampled stream with the tuples randomly selected
+ */
+public composite RandomSample(input IN; output OUT)
+{
+	param
+	  expression<float64> $fraction : 0.01fl;
+	graph
+	  (stream<IN> OUT) as Sample = Functor(IN) {
+           logic state: float64 _fraction = $fraction;
+           
+	  	param
+	  	filter : random() < _fraction;
+	  }
+}
