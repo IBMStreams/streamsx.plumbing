@@ -21,7 +21,7 @@ graph
      stream<Data> Src5;
      stream<Data> Src6;
      stream<Data> Src7
-    ) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+    ) = com.ibm.streamsx.plumbing.balancers::ElasticLoadBalance(Src) {
         param bufferSize: 100u;     
               elastic: (boolean)getCompileTimeValue("elastic");
               initialActivePorts: (uint32)getCompileTimeValue("initialActivePorts");

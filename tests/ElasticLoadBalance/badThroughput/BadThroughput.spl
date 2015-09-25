@@ -7,7 +7,7 @@ composite BadThroughput {
 graph
     stream<int32 i> Src = Beacon() {}
 
-    stream<int32 i> Res0 = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+    stream<int32 i> Res0 = com.ibm.streamsx.plumbing.balancers::ElasticLoadBalance(Src) {
         param bufferSize: 100u;
               throughputTolerance: 1.2;
     }
