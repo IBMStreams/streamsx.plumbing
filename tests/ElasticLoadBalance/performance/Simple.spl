@@ -46,7 +46,7 @@ graph
      stream<Data> Src29;
      stream<Data> Src30;
      stream<Data> Src31
-    ) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+    ) = com.ibm.streamsx.plumbing.balancers::ElasticLoadBalance(Src) {
         param bufferSize: 100u;     
         config logLevel: info;
     }

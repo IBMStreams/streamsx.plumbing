@@ -11,7 +11,7 @@ graph
      stream<int32 i> Res1;
      stream<int32 i> Res2;
      stream<int32 i> Res3;
-     stream<int32 i> Res4) = com.ibm.streamsx.plumbing::ElasticLoadBalance(Src) {
+     stream<int32 i> Res4) = com.ibm.streamsx.plumbing.balancers::ElasticLoadBalance(Src) {
         param bufferSize: 100u;
               initialActivePorts: 6u;
     }
