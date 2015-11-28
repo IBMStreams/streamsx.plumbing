@@ -102,8 +102,8 @@ public boolean getExpressionShedderMode(rstring name)
  * Multiple `ExpressionLoadShedder` operator may share the same control variable,
  * by being invoked with the same value for the `name` parameter.
  * 
- * The application that invokes this operator must include a single invocation
- * of the `JobControlPlane` operator.
+ * Any application that invokes this operator must include a single invocation
+ * of the `spl.control::JobControlPlane` operator.
  * 
  * @param name Name of the control variable for this operator invocation.
  * @param expr Expression evaluated against each tuple when in shedding mode.

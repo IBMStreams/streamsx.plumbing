@@ -38,7 +38,7 @@ public stateful boolean registerSwitch(rstring name, boolean initialState)
  * If `on` is `true` then the switch is closed.
  * If `on` is `false` then the switch is open.
  * 
- * Any operator that invokes this must call [registerSwitch(rstring)]
+ * Any operator that invokes this must call [registerSwitch(rstring, boolean)]
  * in its `logic state` section, passing the same value for `name`.
  *
  * Any operator may invoke this method to control [ControlledSwitch] operator
@@ -55,7 +55,7 @@ public stateful void setSwitchState(rstring name, boolean  on)
 /**
  * Get the state of a switch with control variable `name`.
  * 
- * Any operator that invokes this must call [registerSwitch(rstring)]
+ * Any operator that invokes this must call [registerSwitch(rstring, boolean)]
  * in its `logic state` section, passing the same value for `name`.
  * 
  * @param name Name of the variable for the `RandomLoadShedder` operator invocation(s).
@@ -79,7 +79,7 @@ public boolean getSwitchState(rstring name)
  * processing being halted due to back pressure.
  *
  * Operator invocations in the same job register an interest
- * in controlling this switch by calling [registerSwitch(rstring)]
+ * in controlling this switch by calling [registerSwitch(rstring, boolean)]
  * passing the name of this switch. Then the state of this switch
  * is changed by calling [setSwitchState(rstring, boolean)].
  *
@@ -94,6 +94,9 @@ public boolean getSwitchState(rstring name)
  *
  * In the case of failure the state of the switch is retained
  * by the Job Control Plane.
+ *
+ * Any application that invokes this operator must include a single invocation
+ * of the `spl.control::JobControlPlane` operator.
  *
  * @param initialState This is an optional parameter of type boolean, which specifies
  * if the Switch operator starts in the open (false -> blocked) or closed (true -> flowing) state.
