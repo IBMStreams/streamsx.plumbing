@@ -1,0 +1,45 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2013, 2015
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with
+# IBM Corp.
+*/
+
+namespace com.ibm.streamsx.plumbing.switches ;
+
+/**
+ * Changeover switch.
+ * `ChangeoverSwitch` has the same control api as
+ * the `Switch` operator in the SPL standard toolkit, but delivers
+ * tuples and punctuation to a second output port `OPEN` when the switch is open, instead of blocking.
+ * 
+ * @param initialState This is an optional parameter of type boolean, which specifies
+ * if the Switch operator starts in the open (`false` -> submits tuples to output port `OPEN`)
+ * or closed (`true` -> submits tuples to output port `CLOSE`).
+ * If not specified, the default is `false` (tuples are submitted to `CLOSE`).
+ * 
+ * @param status This is a mandatory parameter of type boolean, which specifies if the Switch
+ * is open or closed. The expression is evaluated each time a tuple arrives on the second
+ * (`CONTROL`) port. If the expression evaluates to `true`, the switch will flow tuples to `CLOSED`.
+ * If the expression evaluates to `false`, the switch will flow tuples to `OPEN`.
+ * 
+ * @input IN Input stream to be switched.
+ * @input CONTROL Stream to control switching of `IN`.
+ * @output CLOSE Output port tuples and punctuation are submitted to when the switch is closed.
+ * @output OPEN Output port tuples and punctuation are submitted to when the switch is open.
+*/
+public composite ChangeoverSwitch (input IN, CONTROL; output CLOSE, OPEN) {
+    param expression<boolean> $initialState : false; 
+     expression<boolean> $status;
+   graph
+   (stream<IN> CLOSE; stream<IN> OPEN) as SPDT = Custom(IN ; CONTROL) {
+     logic
+     
+     state: {mutable boolean closed = $initialStatus;}
+     
+     onTuple IN: if (closed) submit(IN, CLOSE);  else submit(IN, OPEN);
+     onTuple CONTROL: closed = $status;
+     onPunct IN:  if (closed) submit(currentPunct(), CLOSE); else submit(currentPunct(), OPEN);
+   }
+}
