@@ -1,0 +1,19 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+namespace com.ibm.streamsx.plumbing.control;
+
+/**
+ * Get the object name in the Job Control Plane for
+ * a shared control variable.
+ *
+ * @param name Name of the control variable.
+*/
+public rstring getControlVariableObjectName(rstring name) {
+    return "com.ibm.streams.control:type=controlvariable,name=\""
+        + name + "\"";  
+}

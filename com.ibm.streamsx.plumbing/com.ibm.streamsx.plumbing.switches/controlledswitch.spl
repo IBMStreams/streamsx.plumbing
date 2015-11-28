@@ -1,0 +1,132 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2013, 2015
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with
+# IBM Corp.
+*/
+
+namespace com.ibm.streamsx.plumbing.switches ;
+
+use spl.control::ControlNotificationSource;
+use com.ibm.streamsx.plumbing.control::* ;
+
+stateful boolean __initSwitch(rstring name, boolean initialState)
+{
+	return registerSwitch(name, initialState) ;
+}
+
+/**
+ * Register that an operator invocation will call
+ * [setSwitchState(rstring, boolean)] or
+ * [getSwitchState(rstring)]. A  shared `boolean` control
+ * variable is created with name `name`.
+ * 
+ * This function must be called in the `logic state` section
+ * of any operator invocation that calls `setSwitchState`
+ * or `getSwitchState`.
+ * 
+ * @return `true`
+ */
+public stateful boolean registerSwitch(rstring name, boolean initialState)
+{
+	return createBooleanControlVariable(name, true, initialState) ;
+}
+
+/**
+ * Set the state of switches with control variable `name`.
+ * If `on` is `true` then the switch is closed.
+ * If `on` is `false` then the switch is open.
+ * 
+ * Any operator that invokes this must call [registerSwitch(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ *
+ * Any operator may invoke this method to control [ControlledSwitch] operator
+ * invocations within the same job, that were invoked with their parameter `name` set to `name`.
+ * 
+ * @param name Name of the switch
+ * @param on State to set the switch to.
+ */
+public stateful void setSwitchState(rstring name, boolean  on)
+{
+	setBooleanControlVariable(name, on) ;
+}
+
+/**
+ * Get the state of a switch with control variable `name`.
+ * 
+ * Any operator that invokes this must call [registerSwitch(rstring)]
+ * in its `logic state` section, passing the same value for `name`.
+ * 
+ * @param name Name of the variable for the `RandomLoadShedder` operator invocation(s).
+ */
+public boolean getSwitchState(rstring name)
+{
+	return getBooleanControlVariable(name) ;
+}
+
+/**
+ * Controlled switch.
+ *
+ * A controlled version of the SPL Standard toolkit `Switch` operator.
+ * When the switch is closed (state is `true`) tuples on its
+ * input port flow through it its output port unchanged.
+ *
+ * When the switch is open (state is `false`) tuples on its input
+ * port are blocked from flowing. Blocked tuples remain on the
+ * stream and will be submitted to the output stream once the
+ * switch is closed. Opening the switch can result in upstream
+ * processing being halted due to back pressure.
+ *
+ * Operator invocations in the same job register an interest
+ * in controlling this switch by calling [registerSwitch(rstring)]
+ * passing the name of this switch. Then the state of this switch
+ * is changed by calling [setSwitchState(rstring, boolean)].
+ *
+ * A `boolean` control variable named `name` is created in
+ * the Job Control Plane which provides notifications and operations
+ * to control if the switch is open or closed. 
+ *
+ * Multiple invocations of `ControlledSwitch` can share the same
+ * name and will then be controlled by the same control variable.
+ * Any call to [setSwitchState(rstring, boolean)] sets the state
+ * of all switches with the same name.
+ *
+ * In the case of failure the state of the switch is retained
+ * by the Job Control Plane.
+ *
+ * @param initialState This is an optional parameter of type boolean, which specifies
+ * if the Switch operator starts in the open (false -> blocked) or closed (true -> flowing) state.
+ * If not specified, the value is false.
+ * 
+ * @param name Name of the switch.
+ * 
+ * @input IN Input stream to be switched
+ * @output OUT Output stream tuples are submitted to when the switch is closed
+*/
+public composite ControlledSwitch(input IN; output OUT)
+{
+   param
+        expression<rstring> $name;
+        expression<boolean> $initialState : false;
+    graph
+
+        (stream<IN> OUT) as SlaveSwitch = Switch(IN ; SwitchControl)
+        {
+            logic state: {boolean _dummy = __initSwitch($name, $initialState);}
+            param
+                status : getSwitchState($name) ;
+                initialStatus: getSwitchState($name);
+            config placement: partitionColocation(getThisCompositeInstanceName());
+        }
+        // this issues an attribute change notification which is then
+        // sent to the Switch's control port. This will then call
+        // getSwitchState() to set the switch to its correct state.
+        stream<timestamp ts, uint64 sequence> SwitchControl = ControlNotificationSource()
+        {
+            param
+                objectNames : getControlVariableObjectName($name);
+                filters : "jmx.attribute.change";
+                config placement: partitionColocation(getThisCompositeInstanceName());
+        }
+}
