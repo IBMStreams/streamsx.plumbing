@@ -8,6 +8,9 @@
 
 namespace com.ibm.streamsx.plumbing.switches ;
 
+use spl.control::MBeanNotificationBase;
+use com.ibm.streamsx.plumbing.control::* ;
+
 /**
  * Changeover switch.
  * `Changeover` has the same control api as
@@ -15,9 +18,9 @@ namespace com.ibm.streamsx.plumbing.switches ;
  * tuples and punctuation to a second output port `OPEN` when the switch is open, instead of blocking.
  * 
  * @param initialState This is an optional parameter of type boolean, which specifies
- * if the Switch operator starts in the open (`false` -> submits tuples to output port `OPEN`)
+ * if the this operator starts in the open (`false` -> submits tuples to output port `OPEN`)
  * or closed (`true` -> submits tuples to output port `CLOSE`).
- * If not specified, the default is `false` (tuples are submitted to `CLOSE`).
+ * If not specified, the default is `false` (tuples are submitted to `OPEN`).
  * 
  * @param status This is a mandatory parameter of type boolean, which specifies if the Switch
  * is open or closed. The expression is evaluated each time a tuple arrives on the second
@@ -36,10 +39,76 @@ public composite Changeover (input IN, CONTROL; output CLOSE, OPEN) {
    (stream<IN> CLOSE; stream<IN> OPEN) as SPDT = Custom(IN ; CONTROL) {
      logic
      
-     state: {mutable boolean closed = $initialStatus;}
+     state: {mutable boolean closed = $initialState;}
      
      onTuple IN: if (closed) submit(IN, CLOSE);  else submit(IN, OPEN);
      onTuple CONTROL: closed = $status;
      onPunct IN:  if (closed) submit(currentPunct(), CLOSE); else submit(currentPunct(), OPEN);
    }
+}
+
+/**
+ * Controlled changeover switch.
+ *
+ * A controlled version of [Changeover].
+ *
+ * Operator invocations in the same job register an interest
+ * in controlling this switch by calling [registerSwitch(rstring, boolean)]
+ * passing the name of this switch. Then the state of this switch
+ * is changed by calling [setSwitchState(rstring, boolean)].
+ *
+ * A `boolean` control variable named `name` is created in
+ * the Job Control Plane which provides notifications and operations
+ * to control if the switch is open or closed. 
+ *
+ * Multiple invocations of `ControlledChangeover` can share the same
+ * name and will then be controlled by the same control variable.
+ * Any call to [setSwitchState(rstring, boolean)] sets the state
+ * of all switches with the same name.
+ *
+ * In the case of failure the state of the switch is retained
+ * by the Job Control Plane.
+ *
+ * Any application that invokes this operator must include a single invocation
+ * of the `spl.control::JobControlPlane` operator.
+ *
+ * @param name Name of the switch.
+ * @param initialState This is an optional parameter of type boolean, which specifies
+ * if the this operator starts in the open (`false` -> submits tuples to output port `OPEN`)
+ * or closed (`true` -> submits tuples to output port `CLOSE`).
+ * If not specified, the default is `false` (tuples are submitted to `OPEN`).
+ * 
+ * @input IN Input stream to be switched
+ * @output CLOSE Output port tuples and punctuation are submitted to when the switch is closed.
+ * @output OPEN Output port tuples and punctuation are submitted to when the switch is open.
+*/
+public composite ControlledChangeover(input IN; output CLOSE, OPEN)
+{
+   param
+        expression<rstring> $name;
+        expression<boolean> $initialState : false;
+    graph
+
+        (stream<IN> CLOSE; stream<IN> OPEN) as CtrlSPDT = Changeover(IN ; SwitchControl)
+        {
+            param
+                status : getSwitchState($name) ;
+                initialState: __initChangeover($name, $initialState);
+            config placement: partitionColocation(getThisCompositeInstanceName());
+        }
+        // this issues an attribute change notification which is then
+        // sent to the Changeover's control port. This will then call
+        // getSwitchState() to set the switch to its correct state.
+        stream<MBeanNotificationBase> SwitchControl = ControlVariableChange()
+        {
+            param
+                name : $name;
+            config placement: partitionColocation(getThisCompositeInstanceName());
+        }
+}
+
+stateful boolean __initChangeover(rstring name, boolean initialState)
+{
+        __initSwitch(name, initialState);
+	return getSwitchState(name) ;
 }

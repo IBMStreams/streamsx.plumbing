@@ -114,7 +114,7 @@ public composite ControlledSwitch(input IN; output OUT)
         expression<boolean> $initialState : false;
     graph
 
-        (stream<IN> OUT) as SlaveSwitch = Switch(IN ; SwitchControl)
+        stream<IN> OUT = Switch(IN ; SwitchControl)
         {
             logic state: {boolean _dummy = __initSwitch($name, $initialState);}
             param
