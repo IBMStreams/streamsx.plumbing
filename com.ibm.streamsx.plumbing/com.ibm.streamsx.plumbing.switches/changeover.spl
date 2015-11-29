@@ -10,7 +10,7 @@ namespace com.ibm.streamsx.plumbing.switches ;
 
 /**
  * Changeover switch.
- * `ChangeoverSwitch` has the same control api as
+ * `Changeover` has the same control api as
  * the `Switch` operator in the SPL standard toolkit, but delivers
  * tuples and punctuation to a second output port `OPEN` when the switch is open, instead of blocking.
  * 
@@ -29,7 +29,7 @@ namespace com.ibm.streamsx.plumbing.switches ;
  * @output CLOSE Output port tuples and punctuation are submitted to when the switch is closed.
  * @output OPEN Output port tuples and punctuation are submitted to when the switch is open.
 */
-public composite ChangeoverSwitch (input IN, CONTROL; output CLOSE, OPEN) {
+public composite Changeover (input IN, CONTROL; output CLOSE, OPEN) {
     param expression<boolean> $initialState : false; 
      expression<boolean> $status;
    graph
