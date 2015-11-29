@@ -8,7 +8,7 @@
 
 namespace com.ibm.streamsx.plumbing.switches ;
 
-use spl.control::ControlNotificationSource;
+use spl.control::MBeanNotificationBase;
 use com.ibm.streamsx.plumbing.control::* ;
 
 stateful boolean __initSwitch(rstring name, boolean initialState)
@@ -125,11 +125,10 @@ public composite ControlledSwitch(input IN; output OUT)
         // this issues an attribute change notification which is then
         // sent to the Switch's control port. This will then call
         // getSwitchState() to set the switch to its correct state.
-        stream<timestamp ts, uint64 sequence> SwitchControl = ControlNotificationSource()
+        stream<MBeanNotificationBase> SwitchControl = ControlVariableChange()
         {
             param
-                objectNames : getControlVariableObjectName($name);
-                filters : "jmx.attribute.change";
-                config placement: partitionColocation(getThisCompositeInstanceName());
+                name : $name;
+            config placement: partitionColocation(getThisCompositeInstanceName());
         }
 }
