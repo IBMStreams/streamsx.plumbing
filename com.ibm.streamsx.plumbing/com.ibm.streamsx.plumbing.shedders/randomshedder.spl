@@ -108,7 +108,7 @@ public float64 getRandomShedderFraction(rstring name)
  * Multiple `RandomLoadShedder` operator may share the same control variable,
  * by being invoked with the same value for the `name` parameter.
  * 
- * The application that invokes this operator must include a single invocation
+ * Any application that invokes this operator must include a single invocation
  * of the `JobControlPlane` operator.
  * 
  * @param name Name of the control variable for this operator invocation.

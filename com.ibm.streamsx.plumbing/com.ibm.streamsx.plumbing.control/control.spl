@@ -1,0 +1,43 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+namespace com.ibm.streamsx.plumbing.control;
+
+use spl.control::ControlNotificationSource;
+use spl.control::MBeanNotificationBase;
+
+/**
+ * Get the object name in the Job Control Plane for
+ * a shared control variable.
+ *
+ * @param name Name of the control variable.
+*/
+public rstring getControlVariableObjectName(rstring name) {
+    return "com.ibm.streams.control:type=controlvariable,name=\""
+        + name + "\"";  
+}
+
+
+/**
+ * Control variable change notifications.
+ * Issues a tuple for each attribute changed notification
+ * issued by a control variable.
+ *
+ * @param name Name of the control variable.
+ * @output CVN Control variable notifications,
+ * must be type `spl.control::MBeanNotification`.
+*/
+public composite ControlVariableChange(output stream<MBeanNotificationBase> CVN) {
+   param expression<rstring> $name;
+   graph
+    stream<MBeanNotificationBase> CVN = ControlNotificationSource()
+    {
+       param
+	objectNames : getControlVariableObjectName($name);
+	filters : "jmx.attribute.change";
+    }
+}

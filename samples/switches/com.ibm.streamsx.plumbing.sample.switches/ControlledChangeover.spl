@@ -1,0 +1,66 @@
+/*
+*******************************************************************************
+* Copyright (C) 2015, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+namespace com.ibm.streamsx.plumbing.sample.switches ;
+
+use com.ibm.streamsx.plumbing.switches::* ;
+
+public composite ControlledChangeoverSample
+{
+	graph
+		() as JCP = JobControlPlane()
+		{
+		}
+
+		// DataFlow with controlled switch
+		@spl_category(name = "data")
+		() as DF = ChangeoverDataFlow()
+		{
+		}
+
+		// Flow that controls DataFlow
+		// Note they are not connected using streams,
+		// only indirectly through the control mechanisms
+		// provided by JobControlPlane
+		@spl_note(id = "0", text =
+			"Flow that controls DataFlow by opening and closing the switch.")
+		@spl_category(name = "control")
+		() as CF = ControlFlow()
+		{
+		}
+
+}
+
+/**
+* The data flow that will demonstrate use
+* of `ControlledSwitch`. A Beacon
+* operator submits tuples around 100 per second
+* through a [com.ibm.streamsx.plumbing.switches::ControlledSwitch] and out to a sink operator.
+* Using Streams Studio or the Streams Console you can
+* watch the rate of tuples into the sink operator change
+* based upon the control signals from the separate
+* [ControlFlow] composite.
+*/
+composite ChangeoverDataFlow
+{
+	graph
+		stream<int64 a> Data = Beacon()
+		{
+			param
+				period : 0.01 ;
+		}
+
+		(stream<Data> MDClose; stream<Data> MDOpen) as MD = ControlledChangeover(Data)
+		{
+			param
+				name : "sampleSwitch" ;
+                                initialState : true;
+		}
+
+		() as ChangeoverClosed = Custom(MDClose) { }
+		() as ChangeoverOpened = Custom(MDOpen) { }
+
+}
