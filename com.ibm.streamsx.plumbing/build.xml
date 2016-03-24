@@ -44,6 +44,9 @@ artifacts were left around and caused issues with the ant build.
 	</path>
 
 	<path id="cp.compile">
+	   <path location="${basedir}/opt/apache-curator-2.7.1/curator-recipes-2.7.1.jar"/>
+	   <path location="${basedir}/opt/apache-curator-2.7.1/curator-framework-2.7.1.jar"/>
+	   <path location="${basedir}/opt/apache-curator-2.7.1/curator-client-2.7.1.jar"/>
 		<path refid="cp.streams" />
 	</path>
 
