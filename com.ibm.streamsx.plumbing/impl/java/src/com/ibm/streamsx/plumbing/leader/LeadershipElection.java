@@ -43,9 +43,9 @@ public class LeadershipElection extends AbstractOperator implements Controllable
 	public static final String OP_DESC = "Performs a leadership election between other operator invocations with the same `group`. "
 			+ "At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. "
 			+ "Invocations must be exlocated into different PEs."
-			+ "\\n"
+			+ "\\n\\n"
 			+ "The operator requires the application include an invocation of the `JobControlPlane` operator."
-			+ "\\n"
+			+ "\\n\\n"
 			+ "Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service."
 			+ "The Zookeeper root node for the recipe is a sub-node `group` within job's storage node "
 			+ "(`com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()`).";
