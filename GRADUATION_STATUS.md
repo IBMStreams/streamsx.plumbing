@@ -1,4 +1,4 @@
-# streamsx.XXXXX Graduation Status
+# streamsx.plumbing Graduation Status
 
 
 ## Overview
@@ -13,9 +13,9 @@ Incubation for projects is covered here: https://github.com/IBMStreams/administr
 - [ ] :large_orange_diamond: Project has samples and instructions to help users get started easily
   * Status: Some samples exist
 - [ ] :red_circle: Sufficient testing
-  * Status: **TBD**
+  * Status: Some tests exist
 - [ ] :red_circle: Instructions on how to get started with development and contributing to project
-  * Status: **TBD**
+  * Status: None
 - [ ] :white_check_mark: Website that contains information and documentation of the project
   * Status: http://ibmstreams.github.io/streamsx.plumbing/
 - [ ] :red_circle: Clear release plan
