@@ -7,21 +7,21 @@ Incubation for projects is covered here: https://github.com/IBMStreams/administr
 ## Status
 
 - [ ] :red_circle: Stable release(s)
-  * Status: **TBD**
-- [ ] :red_circle: Project is properly documented
-  * Status: **TBD**
-- [ ] :red_circle: Project has samples and instructions to help users get started easily
-  * Status: **TBD**
+  * Status: No releases yet, build does support generating a release.
+- [ ] :large_orange_diamond: Project is properly documented
+  * Status: SPLDOC exists, missing namespace-info for a number of namespaces. http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/index.html
+- [ ] :large_orange_diamond: Project has samples and instructions to help users get started easily
+  * Status: Some samples exist
 - [ ] :red_circle: Sufficient testing
   * Status: **TBD**
 - [ ] :red_circle: Instructions on how to get started with development and contributing to project
   * Status: **TBD**
-- [ ] :red_circle: Website that contains information and documentation of the project
-  * Status: **TBD**
+- [ ] :white_check_mark: Website that contains information and documentation of the project
+  * Status: http://ibmstreams.github.io/streamsx.plumbing/
 - [ ] :red_circle: Clear release plan
   * Status: **TBD**
-- [ ] :red_circle: At least one active committer
-  * Status: **TBD**
+- [ ] :white_check_mark: At least one active committer
+  * Status: @ddebrunner @scotts
 
 ### Key
 * :white_check_mark: - Complete
