@@ -1,0 +1,118 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2013, 2016
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with
+# IBM Corp.
+*/
+namespace com.ibm.streamsx.plumbing.leader ;
+
+use com.ibm.streamsx.plumbing.switches::Changeover ;
+use com.ibm.streamsx.plumbing.replay::ReplayBuffer ;
+
+/**
+ * Type of tuples submitted by [LeadershipElection] on its output port.
+ * If `leader` is true then the [LeadershipElection] operator that submitted it
+ * is the leader of the group.
+ */
+type LeaderStatus = rstring group, rstring id, boolean leader,  timestamp ts ;
+
+/**
+ * Changeover switch that changes state based upon if the PE is marked as
+ * the leader of `group`. Requires the application contains a
+ * `JobControlPlane` operator invocation.
+ * 
+ * @param group Group identifier for the leadership election.
+ * 
+ * @input In Stream to be switched
+ * @output WhenLeader Output stream tuples are submitted to when this PE is the leader in `group`.
+ * @output WhenNotLeader Output stream tuples are submitted to when this PE is not the leader in `group`.
+ * @output LeaderControl Output stream that submits a tuple when the leadership state of this operator's PE changes. Schema is required to be [LeaderStatus].
+ */
+public composite LeadershipChangeover(input In ; output WhenLeader, WhenNotLeader, stream<LeaderStatus> LeaderControl)
+{
+    param
+        expression<rstring> $group ;
+    graph
+      stream<LeaderStatus> LeaderControl = LeadershipElection()
+      {
+        param
+          group : $group ;
+      }
+
+      (stream<In> WhenLeader ; stream<In> WhenNotLeader) as LCS = Changeover(In ; LeaderControl)
+      {
+        param
+           status : leader ;
+           initialState : false ; // start off open, only close when become the leader
+      }
+}
+
+/**
+ * Switch operator that only generates
+ * output when its PE is the leader of the group.
+ * 
+ * [LeadershipChangeover] is used to elect the leader which
+ * in turn uses [LeadershipElection].
+ * 
+ * When this operator's PE is the leader, all tuples
+ * from `In` are submitted to `Out`.
+ * 
+ * When this operator's PE is not the leader, the last `period`
+ * seconds of tuples from `In` are maintained in a replay buffer.
+ * 
+ * When this operator's PE is elected the leader after a failure
+ * of the previous leader, all the tuples in the replay buffer
+ * are submitted to `Out` in addition to tuples arriving on `In`.
+ *
+ * For correct behavior all operators in this composite must be fused
+ * into a single processing element using partition colocation.
+ * This composite does not itself colocate as it is likely it
+ * will be fused with additional operators specific to the application.
+ * 
+ *     stream<B1> L1 = LeadershipSwitchWithReplay(B1) {
+ *       param
+ *         group : "lg" ;
+ *       config
+ *         placement: partitionColocation("lg1");
+ *     }
+ *     
+ * Note that instances of LeadershipSwitchWithReplay
+ * within the same group must not be partition colocated.
+ * 
+ * @param group Group identifier for the leadership election.
+ * @param period Time window for replay buffer in seconds, defaults to 10.0.
+ * 
+ * @input In Tuples to be switched 
+ * @output Out Tuples when this PE is the leader in `group`.
+ */		
+public composite LeadershipSwitchWithReplay(input In ; output Out)
+{
+param
+        expression<rstring> $group ;        
+        expression<float64> $period : 10.0;
+
+   graph
+
+		(stream<In> WhenLeader ; stream<In> WhenNotLeader; stream<LeaderStatus> LeaderControl ) as Switch =
+			LeadershipChangeover(In)
+		{
+			param
+				group : $group ;
+		}
+		
+		// Stream that will drive the replay when this PE becomes the leader.
+		stream<LeaderControl> IsLeader = Filter(LeaderControl) {
+		param
+		filter: leader == true;
+		}
+
+		stream<In> Replay = ReplayBuffer(WhenNotLeader ; IsLeader)
+		{
+			param
+				period : $period ;
+		}
+		
+		stream<In> Out = Functor(WhenLeader,Replay) {
+		}
+}
