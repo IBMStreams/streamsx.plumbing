@@ -1,0 +1,35 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2013, 2016
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with
+# IBM Corp.
+*/
+namespace com.ibm.streamsx.plumbing.replay ;
+
+/**
+ * Replay tuple buffer.
+ * Maintains a buffer of `period` seconds of tuples from `In` and replays
+ * all tuples in the buffer when a tuple is received on `Control`.
+ * 
+ * @param period Seconds to maintain input tuples for.
+ * 
+ * @input In Stream to be buffered.
+ * @input Control Control signal to replay tuples.
+ * @output Replayed Output stream tuples in the buffer are submitted to.
+ * 
+ */
+public composite ReplayBuffer(input In, Control ; output Replayed)
+{
+	param
+		expression<float64> $period ;
+	graph
+		(stream<In> Replayed) as Buffer = Join(In ; Control)
+		{
+			window
+				In : sliding, time($period) ;
+				Control : sliding, count(0) ;
+			param
+				match : true ;
+		}
+}

@@ -7,7 +7,12 @@
 */
 package com.ibm.streamsx.plumbing.leader;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.management.InstanceNotFoundException;
@@ -16,11 +21,14 @@ import javax.management.MBeanServerConnection;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
+import org.apache.curator.framework.recipes.leader.LeaderLatch.CloseMode;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
+import com.ibm.streams.operator.OutputTuple;
+import com.ibm.streams.operator.StreamingOutput;
 import com.ibm.streams.operator.control.ControlPlaneManagement;
 import com.ibm.streams.operator.control.Controllable;
 import com.ibm.streams.operator.logging.TraceLevel;
@@ -28,8 +36,11 @@ import com.ibm.streams.operator.metrics.Metric;
 import com.ibm.streams.operator.metrics.Metric.Kind;
 import com.ibm.streams.operator.model.CustomMetric;
 import com.ibm.streams.operator.model.Libraries;
+import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.model.PrimitiveOperator;
+import com.ibm.streams.operator.types.RString;
+import com.ibm.streams.operator.types.Timestamp;
 
 /**
  * Java primitive operator that uses ZooKeeper to implement a leadership
@@ -37,6 +48,7 @@ import com.ibm.streams.operator.model.PrimitiveOperator;
  * with the same group identifier.
  */
 @PrimitiveOperator(description = LeadershipElection.OP_DESC)
+@OutputPortSet(cardinality=1)
 @Libraries("opt/apache-curator-2.7.1/*")
 public class LeadershipElection extends AbstractOperator implements Controllable {
 
@@ -65,12 +77,43 @@ public class LeadershipElection extends AbstractOperator implements Controllable
     private String id;
 
     private static final Logger trace = Logger.getLogger("com.ibm.streamsx.plumbing");
+    
+    private final Map<String,Object> groupId = new HashMap<>();
+    
+    private ExecutorService singleThreadExecutor;
+    private boolean portsReady;
 
     @Override
     public void initialize(OperatorContext context) throws Exception {
         super.initialize(context);
-
+        
         id = "PE_" + context.getPE().getPEId().toString();
+        
+        groupId.put("group", new RString(getGroup()));
+        groupId.put("id", new RString(getId()));
+        
+        // Use a single thread executor for submitting tuples from
+        // the leadership latch on leadership changes.
+        //
+        // A task that blocks is added to stop any tuples being
+        // submitted before all ports ready. The leadership election
+        // is started as soon as possible to avoid any delays once
+        // all ports ready occurs. Once allPortsReady is called
+        // the blocking task will complete, allowing any pending
+        // leadership tuples to be sent. Note on startup a tuple
+        // is only sent if the operator becomes the leader.
+        singleThreadExecutor = Executors.newFixedThreadPool(1, context.getThreadFactory());
+        singleThreadExecutor.submit(new Callable<Object>() {
+
+            @Override
+            public Object call() throws Exception {
+                synchronized (LeadershipElection.this) {
+                    while (!portsReady)
+                        LeadershipElection.this.wait();
+                }
+                trace.fine("Released portReady block: " + id);
+                return null;
+            }});
 
         String connString = System.getenv("STREAMS_ZKCONNECT");
         client = CuratorFrameworkFactory.newClient(connString,
@@ -83,24 +126,38 @@ public class LeadershipElection extends AbstractOperator implements Controllable
 
         // Attach as soon as possible, to avoid any delays during allPortsReady.
         getControlPlaneContext().connect(this);
+        
+        createAvoidCompletionThread();
     }
 
     @Override
     public void shutdown() throws Exception {
+        boolean wasLeader = false;
         if (leaderLatch != null) {
-            leaderLatch.close();
+            wasLeader = leaderLatch.hasLeadership();
+            leaderLatch.close(CloseMode.NOTIFY_LEADER);
             leaderLatch = null;
+            if (wasLeader)
+                submitTuple(false);
         }
 
         if (client != null) {
             client.close();
             client = null;
         }
+        
+        singleThreadExecutor.shutdown();
+        if (wasLeader)
+            Thread.sleep(200);
+        singleThreadExecutor.awaitTermination(1, TimeUnit.SECONDS);
+                       
         super.shutdown();
     }
 
     @Override
-    public void allPortsReady() {
+    public synchronized void allPortsReady() {
+        portsReady = true;
+        notifyAll();
     }
 
     @Parameter(description = "Leadership group name. All instances of this operator within the same job and having the same `group`"
@@ -109,8 +166,12 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         this.group = group;
     }
 
-    public String getGroup() {
+    private String getGroup() {
         return group;
+    }
+    
+    private String getId() {
+        return id;
     }
 
     protected Metric getIsLeader() {
@@ -120,6 +181,34 @@ public class LeadershipElection extends AbstractOperator implements Controllable
     @CustomMetric(kind = Kind.GAUGE, description = "Is this invocation the leader. 1 this operator invocation is the leader for the group, 0 is it not the leader.")
     public void setIsLeader(Metric isLeader) {
         this.isLeader = isLeader;
+    }
+    
+    /**
+     * Submit a tuple when the leadership changes.
+     * 
+     * The schema can include any or all of these attributes:
+     * rstring group
+     * rstring id
+     * boolean leader
+     * timestamp ts
+     * 
+     * @param leader True if this operator is the leader, false otherwise.
+     */
+    private void submitTuple(boolean leader) {
+        
+        StreamingOutput<OutputTuple> out = getOutput(0);
+        Map<String,Object> attributes = new HashMap<>(groupId);
+        attributes.put("leader", leader);
+        attributes.put("ts", Timestamp.currentTime());
+
+        trace.info("About to send tuple:" + attributes.toString());
+        try {
+            out.submitMapAsTuple(attributes);
+        } catch (Exception e) {
+            trace.info("Execption sending tuple" + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -131,6 +220,10 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         return true;
     }
 
+    /**
+     * Determine the job specific zookeeper storage node to
+     * use and then create and start a leadership latch.
+     */
     @Override
     public void setup(MBeanServerConnection jcp, OperatorContext context) throws InstanceNotFoundException, Exception {
 
@@ -150,21 +243,25 @@ public class LeadershipElection extends AbstractOperator implements Controllable
 
                 @Override
                 public void notLeader() {
+                    submitTuple(false);
+                    
                     // Set the metric
                     getIsLeader().setValue(0);
+                    
                     if (trace.isLoggable(TraceLevel.INFO))
                         trace.info("Group:" + getGroup() + " id:" + id + " lost the leader");
                 }
 
                 @Override
                 public void isLeader() {
+                    submitTuple(true);
                     // Set the metric
                     getIsLeader().setValue(1);
                     if (trace.isLoggable(TraceLevel.INFO))
                         trace.info("Group:" + getGroup() + " id:" + id + " became the leader");
 
                 }
-            }, Executors.newFixedThreadPool(1, context.getThreadFactory()));
+            }, singleThreadExecutor);
         }
 
         trace.fine("Starting leadership latch for id: " + id);
