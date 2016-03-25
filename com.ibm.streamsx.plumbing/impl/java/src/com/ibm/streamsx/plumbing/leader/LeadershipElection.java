@@ -129,17 +129,22 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         
         createAvoidCompletionThread();
     }
-
-    @Override
-    public void shutdown() throws Exception {
+    
+    private boolean relinquishLeadership(CloseMode mode) throws Exception {
         boolean wasLeader = false;
         if (leaderLatch != null) {
             wasLeader = leaderLatch.hasLeadership();
-            leaderLatch.close(CloseMode.NOTIFY_LEADER);
+            leaderLatch.close(mode);
             leaderLatch = null;
-            if (wasLeader)
-                submitTuple(false);
         }
+        return wasLeader;
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        boolean wasLeader = relinquishLeadership(CloseMode.NOTIFY_LEADER);
+        if (wasLeader)
+            submitTuple(false);
 
         if (client != null) {
             client.close();
@@ -201,12 +206,14 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         attributes.put("leader", leader);
         attributes.put("ts", Timestamp.currentTime());
 
-        trace.info("About to send tuple:" + attributes.toString());
         try {
             out.submitMapAsTuple(attributes);
         } catch (Exception e) {
-            trace.info("Execption sending tuple" + e.getMessage());
-            e.printStackTrace();
+            try {
+                relinquishLeadership(CloseMode.SILENT);
+            } catch (Exception e1) {
+                throw new RuntimeException(e);
+            }
             throw new RuntimeException(e);
         }
     }
