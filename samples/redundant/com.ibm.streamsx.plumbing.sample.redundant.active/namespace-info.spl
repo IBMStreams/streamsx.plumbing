@@ -1,0 +1,51 @@
+/*
+*******************************************************************************
+* Copyright (C) 2013,2016 International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Sample applications demonstrating redundant active flows.
+ *
+ * An application submitted to an IBM® Streams instance represents a
+ * dataflow graph or flow, processing continuous data streams.
+ * Streams provides capabilities to restart processing elements that have
+ * failed due to host or process failure. However, while the processing
+ * element (PE) is restarting, the flow is not fully functional,
+ * and therefore may not be processing the streams correctly or with the
+ * required latency. Availability may be increased by executing multiple copies
+ * of the flow, called active replicas, so that with N active replicas,
+ * N-1 failures can be tolerated. For example with two flows, a single failure
+ * leaves one of the flows correctly processing the streams with the required
+ * latency. With the processing elements being restartable, then the failed
+ * flow can recover allowing the system to return to two active flows.
+ * Availability is increased by increasing the number of active replicas
+ * at the cost of duplicated processing and hardware.
+ * A flow (or active replica) is considered to be available when all PEs in the flow are healthy.
+ *
+ * This namespace contains applications demonstrating execution of
+ * active replicas. In each case N independent flows are executed
+ * on a different set of hosts so that a single host failure only
+ * affects a single flow. The application [com.ibm.streamsx.plumbing.sample.redundant.flow::Flow] is a simulation representing reading messages from
+ * a message broker, analyzing them to find faults and sending SMS
+ * alert messages based upon the analysis.
+ *
+ * With active replicas all N copies of the application are executing,
+ * each with its own independent connection to the message broker
+ * (simulated by a Beacon) and independent sink operator to send an
+ * SMS alert (simulated by a Custom that does nothing). This
+ * means that any receiver of the alerts will receive N copies of
+ * an alert, one for each replica. In some scenarios this may be acceptable,
+ * for example:
+ * * The alert is to turn off a system in case of imminent failure and receiving multiple off messages is not an issue. In this case multiple active replicas ensure the lowest latency for the alert by not having any recovery time since at least one replica is always active.
+ * * The external system receiving the output from the flow can itself deduplicate messages, for example a database using an UPDATE or UPSERT statement.
+ * 
+ * The sample applications are:
+ *
+ * * [ActiveReplicasManual2] - Execution of two copies of a flow in a single job on different sets of hosts using host pool tags.
+ * * [ActiveReplicasManual3] - Execution of three copies of a flow in a single job on different sets of hosts using host pool tags.
+ * * [ActiveReplicasUDP] - Execution of N copies of a flow in a single job on different sets of hosts using host pool tag replication. N can be set by a submission time parameter, defaulting to three.
+*/
+
+namespace com.ibm.streamsx.plumbing.sample.redundant.active;

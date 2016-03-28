@@ -1,0 +1,45 @@
+/*
+*******************************************************************************
+* Copyright (C) 2013,2016 International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+namespace com.ibm.streamsx.plumbing.sample.redundant.active;
+
+use com.ibm.streamsx.plumbing.sample.redundant.flow::Flow;
+
+/**
+ * Execution of three copies of Flow() to provide two levels
+ * of redundancy. The flows are separated into three separate host
+ * pools (Rack_0, Rack_1, Rack2) to allow each flow to be executed
+ * on a different set of hosts. In this case the pools are defined
+ * by host tags, requiring three distinct sets of hosts, 
+ * tagged with `rack_0`, `rack_1` and `rack_2`.
+ */
+public composite ActiveReplicasManual3
+{
+    graph
+      () as RedundantFlow_0 = Flow()
+      {
+        config placement: host(Rack_0);
+      }
+
+      () as RedundantFlow_1 = Flow()
+      {
+        config placement: host(Rack_1);
+      }
+
+      () as RedundantFlow_2 = Flow()
+      {
+        config placement: host(Rack_2);
+      }
+
+    config
+       // Pools are created shared to allow
+       // other applications to use the same hosts.
+       hostPool:
+            Rack_0 = createPool({tags=["rack_0"]}, Sys.Shared),
+            Rack_1 = createPool({tags=["rack_1"]}, Sys.Shared),
+            Rack_2 = createPool({tags=["rack_2"]}, Sys.Shared);      
+}
+
