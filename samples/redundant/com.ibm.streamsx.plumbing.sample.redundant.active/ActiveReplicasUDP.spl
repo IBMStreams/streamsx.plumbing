@@ -1,0 +1,57 @@
+/*
+*******************************************************************************
+* Copyright (C) 2016 International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+namespace com.ibm.streamsx.plumbing.sample.redundant.active;
+
+use com.ibm.streamsx.plumbing.sample.redundant.flow::Flow;
+
+/**
+ * Execution of redundant copies of Flow() using `@parallel`.
+ * `Flow` is invoked once in the source code but replicated using
+ * `@parallel`. The number of replicas (parallel width) is set
+ * by the submission time paramater `replicas` defaulting to three.
+ *
+ * This technique only works for redundant flows if the
+ * composite `@parallel` is applied to has no inputs. If
+ * the composite had inputs then each replica (channel) would
+ * only receive a subset of the tuples, thus not acting as
+ * a redundant flow.
+ *
+ * Each replica flow will execute in its own hostpool defined
+ * by the host tag `rack_n` where n is the channel number.
+ * This is achieved by the `replicateHostTags` argument to
+ * `@parallel`. The host tag `rack` is replicated to N copies
+ * where N is the width of the parallel region, with the
+ * tags being `rack_0 ... rack_N`. 
+ *
+ * The replication of the host tags also drives the replication
+ * of host pools that use the tags, thus at runtime there
+ * are N host pools corresponding to the replicated host tags.
+ *
+ * In this case there is no host pool `Rack` that corresponds
+ * to the tag `rack`. It would only be created if there was an
+ * operator invocation that was placed on hostpool `Rack` without
+ * using replicated hsot tags.
+ */
+public composite ActiveReplicasUDP
+{
+    param
+        expression<int32> $replicas : (int32) getSubmissionTimeValue("replicas", "3");
+         
+    graph
+      @parallel(width=$replicas, replicateHostTags=["rack"])
+      () as RedundantFlow = Flow()
+      {
+        config placement: host(Rack);
+      }
+
+    config
+       // Pools are created shared to allow
+       // other applications to use the same hosts.
+       hostPool:
+            Rack = createPool({tags=["rack"]}, Sys.Shared);
+}
+
