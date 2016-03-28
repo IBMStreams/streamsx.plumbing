@@ -25,37 +25,55 @@ type T = uint64 id, float64 v;
 public composite Flow
 {
     graph
-    stream<T> Messages = Analytics() {}
-    () as SMS = SendSMS(Messages) {}
+    stream<T> Messages = Source() {}
+    stream<T> Alerts = Analytics(Messages) {}
+    () as SMS = SendSMS(Alerts) {}
+}
+
+public composite Source(output Messages)
+{
+    graph
+        stream<T> Raw = Beacon()
+        {
+          param
+            period: 0.05;
+          output Raw:
+               id = IterationCount();
+        }
+        // Random value for v that will be consistent
+        // across multiple replicas
+        stream<T> Messages = Functor(Raw) {
+          logic
+             state: {
+                mutable uint64 seed = 9221ul;
+                mutable uint64 next = 0l;
+             }
+             onTuple Raw: {
+               seed = seed * 1103515245ul + 12345ul;
+               next = (seed / 65536ul) % 1000ul;
+             }
+          output Messages: v = ((float64) next) / 1000.0l;
+        }
 }
 
 /**
  * The "analytics" portion of the application
  * including the source.
 */
-public composite Analytics(output Messages)
+public composite Analytics(input Messages; output Alerts)
 {
     graph
-        stream<T> Source = Beacon()
-        {
-          param
-            period: 0.05;
-          output Source:
-               id = IterationCount(),
-               v = random();
-        }
-
-        stream<T> FA1 = Functor(Source) { }
+        stream<T> FA1 = Functor(Messages) { }
         stream<T> FA2 = Filter(FA1) {
           param filter: v <= 0.10;
         }
 
-        stream<T> FB1 = Functor(Source) { }
+        stream<T> FB1 = Functor(Messages) { }
         stream<T> FB2 = Functor(FB1) {
           param filter: v >= 0.80;
         }
 
-        stream<T> Messages = Functor(FA2,FB2) { }
+        stream<T> Alerts = Functor(FA2,FB2) { }
 }
 
 /**
@@ -65,8 +83,8 @@ public composite Analytics(output Messages)
  * that sends a SMS (text message) alert for
  * each tuple received.
 */
-public composite SendSMS(input Messages)
+public composite SendSMS(input Alerts)
 {
     graph
-     () as SMS = Custom(Messages) { }
+     () as SMS = Custom(Alerts) { }
 }
