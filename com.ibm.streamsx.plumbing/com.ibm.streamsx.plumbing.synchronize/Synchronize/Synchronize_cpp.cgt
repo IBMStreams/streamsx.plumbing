@@ -1,0 +1,244 @@
+/*
+ * Copyright (C) 2013, 2016 International Business Machines Corporation. 
+ * All Rights Reserved.
+ */
+
+
+#include <sys/time.h>
+#include <time.h>
+#include <float.h>
+#include <SPL/Runtime/Utility/BackoffSpinner.h>
+
+
+<%
+  use strict;
+  use warnings;
+
+  # get the name of this operator's template
+  my $myOperatorKind = $model->getContext()->getKind();
+
+  # this operator must have the same number of input and output ports
+  SPL::CodeGen::exit("Sorry, input and output port counts are not the same") 
+    unless $model->getNumberOfInputPorts() == $model->getNumberOfOutputPorts();
+
+  # the types of the input and output ports must be the same, port by port
+  for (my $i=0; $i < $model->getNumberOfInputPorts(); $i++) {
+    print "// DEBUG: inputPort[$i] type is " . $model->getInputPortAt($i)->getSPLTupleType() . "\n";
+    print "// DEBUG: outputPort[$i] type is " . $model->getOutputPortAt($i)->getSPLTupleType() . "\n";
+    SPL::CodeGen::exit("Sorry, input and output ports do not have matching types") 
+      unless $model->getInputPortAt($i)->getSPLTupleType() eq $model->getOutputPortAt($i)->getSPLTupleType();
+  }
+    
+  # get hash of input attribute names that could contain timestamps
+  print "// DEBUG: timeAttributes count is " . $model->getParameterByName("timeAttributes")->getNumberOfValues() . "\n";
+  my %timeAttributeNames = ();
+  for (my $i=0; $i < $model->getParameterByName("timeAttributes")->getNumberOfValues(); $i++) {
+    my $attributeName = $model->getParameterByName("timeAttributes")->getValueAt($i)->getSPLExpression();
+    $attributeName =~ s/"//g;
+    print "// DEBUG: timeAttribute[$i] is '$attributeName'\n";
+    $timeAttributeNames{$attributeName} = 1;
+  }
+  print "// DEBUG: timeAttributeNames are " . join(",", keys %timeAttributeNames) . "\n";
+
+  # find the first attribute in each input port that contains a timestamp 
+  my @timeAttributeIndexes = ();
+  for (my $i=0; $i < $model->getNumberOfInputPorts(); $i++) {
+    my $attributeNumber = -1;
+    for (my $j=0; $j < $model->getInputPortAt($i)->getNumberOfAttributes(); $j++) {
+      my $attributeName = $model->getInputPortAt($i)->getAttributeAt($j)->getName();
+      print "// DEBUG: inputPort[$i] inputAttribute[$j] name is $attributeName, match=" . (exists $timeAttributeNames{$attributeName} ) . "\n";
+      $attributeNumber = $j, last if ( exists $timeAttributeNames{$attributeName} );
+    }
+    SPL::CodeGen::exit("Sorry, input port $i does not contain any attributes listed in parameter 'timeAttributes'") 
+      unless $attributeNumber>=0;
+    my $attributeType = $model->getInputPortAt($i)->getAttributeAt($attributeNumber)->getSPLType();
+    SPL::CodeGen::exit("Sorry, input port $i time attribute $attributeNumber is not of type 'float64'") 
+      unless $attributeType eq "float64";
+    push @timeAttributeIndexes, $attributeNumber;
+  }
+  print "// DEBUG: timeAttributeIndexes are " . join(",", @timeAttributeIndexes) . "\n";
+
+  # get C++ expression for getting the value of the optional time factor parameter
+  my $timeFactor = $model->getParameterByName("timeFactor") ? $model->getParameterByName("timeFactor")->getValueAt(0)->getCppExpression() : undef;
+  print "// DEBUG: timeFactor is '$timeFactor'\n" if $timeFactor;
+%>
+
+
+<%SPL::CodeGen::implementationPrologue($model);%>
+
+
+// Constructor
+MY_OPERATOR::MY_OPERATOR()
+{
+    SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> constructor", "Synchronize");
+
+<% if ($timeFactor) { %>
+    if (<%=$timeFactor%> < 0) THROW (SPLRuntimeOperator, "Sorry, 'timeFactor' parameter must be greater than zero");
+<% } %>
+
+    // initialize all state variables
+
+    previousSubmitTime = 0;
+    previousTupleTimestamp = 0;
+
+    for (int i=0; i < <%=$model->getNumberOfInputPorts()%>; i++) {
+    	nextTimestamp[i] = 0;
+	stopCount[i] = 0;
+	clearCount[i] = 0;
+    }
+
+   SPLLOG(L_TRACE, "leaving <%=$myOperatorKind%> constructor", "Synchronize");
+}
+
+
+// Destructor
+MY_OPERATOR::~MY_OPERATOR() 
+{
+}
+
+
+// Notify port readiness
+void MY_OPERATOR::allPortsReady() 
+{
+}
+
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+	cvStopped.broadcast();
+	cvCleared.broadcast();
+}
+
+
+// Processing for source and threaded operators   
+void MY_OPERATOR::process(uint32_t idx)
+{
+}
+
+
+// Tuple processing for mutating ports 
+void MY_OPERATOR::process(Tuple & tuple, uint32_t port)
+{
+}
+
+
+// get the current time, as a 'double', in seconds since the Unix epoch, with microsecond accuracy
+double theTimeRightNow()
+{
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+}
+
+
+// determine whether or not this port is next in line to submit its tuple
+bool MY_OPERATOR::itsOurTurn(uint32_t ourPort)
+{
+    uint32_t nextPort = -1;
+    double oldestTimestamp = DBL_MAX;
+    for (int i=0; i < <%=$model->getNumberOfInputPorts()%>; i++) {
+      if ( stopCount[i] != stopCount[ourPort] ) continue;
+      if ( nextTimestamp[i] == 0 ) return false;
+      if ( nextTimestamp[i] >= oldestTimestamp ) continue;
+      nextPort = i;
+      oldestTimestamp = nextTimestamp[i];
+    }
+    if (nextPort == -1) SPLLOG(L_ERROR, "all input ports stopped", "Synchronize");
+
+    return (ourPort==nextPort);
+}
+
+
+// Tuple processing for non-mutating ports
+void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
+{
+    SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> process(," << port << "), tuple=" << tuple, "Synchronize");
+
+    // get the value of the timestamp attribute from the tuple received by this input port
+    const uint32_t timestampAttributes[] = { <%=join(",", @timeAttributeIndexes)%> }; 
+    nextTimestamp[port] = static_cast<double>(tuple.getAttributeValue(timestampAttributes[port]));
+    SPLLOG(L_TRACE, "next timestamp for port " << port << " is " << nextTimestamp[port], "Synchronize");
+
+    // wait (in a spin loop) until this port's tuple is next in time sequence
+    BackoffSpinner spinner;
+    SPLLOG(L_TRACE, "port " << port << " waiting for its turn", "Synchronize");
+    while( !getPE().getShutdownRequested() && !itsOurTurn(port) ) spinner.wait();
+
+<% if ($timeFactor) { %>
+    // wait a bit longer until its time to replay this port's tuple
+    if (<%=$timeFactor%> > 0) {
+       const double delay = previousTupleTimestamp ? ( nextTimestamp[port] - previousTupleTimestamp ) / <%=$timeFactor%> : 0;
+       const double theTimeToSubmit = previousSubmitTime + delay; // note that 'previousSubmitTime' will be zero on first tuple
+       SPLLOG(L_TRACE, "port " << port << " taking its turn, waiting " << delay << " seconds", "Synchronize");
+       while ( !getPE().getShutdownRequested() && theTimeRightNow() < theTimeToSubmit ) spinner.wait();
+    }
+<% } %>
+
+    // advance the shared timestamp
+    if (previousTupleTimestamp < nextTimestamp[port]) previousTupleTimestamp = nextTimestamp[port];
+
+    // forward the tuple downstream, and remember when we sent it
+    SPLLOG(L_TRACE, "port " << port << " submitting tuple=" << tuple, "Synchronize");
+    previousSubmitTime = theTimeRightNow();
+
+    // submit the current tuple now
+    submit(tuple, port);
+
+    // this port needs to receive another tuple before any port can proceed
+    nextTimestamp[port] = 0;
+
+    SPLLOG(L_TRACE, "leaving <%=$myOperatorKind%> process(," << port << "), tuple=" << tuple, "Synchronize");
+}
+
+
+std::string printCounts(uint32_t* counters) {
+
+   std::stringstream buffer;
+   buffer << "[";
+   for (int i=0; i < <%=$model->getNumberOfInputPorts()%>; i++) { buffer << (i==0 ? "" : ",") << counters[i]; }
+   buffer << "]";
+   return buffer.str();
+}
+
+
+// determine whether or not all ports have caught up to this port at a checkpoint
+bool MY_OPERATOR::allCaughtUp(uint32_t* counters, uint32_t port)
+{
+    for (int i=0; i < <%=$model->getNumberOfInputPorts()%>; i++) { if (  counters[i]<counters[port] ) return false; }
+    return true;
+}
+
+
+// Punctuation processing
+void MY_OPERATOR::process(Punctuation const & punct, uint32_t port)
+{
+    SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> process(" << punct << ", " << port << ")", "Synchronize");
+    
+    {
+	AutoMutex am(mutexStopped);
+	stopCount[port]++;
+	SPLLOG(L_DEBUG, "port " << port << " stopped at " << punct << " " << stopCount[port] << ", others at p=" << printCounts(stopCount), "Synchronize");
+	while ( !getPE().getShutdownRequested() && !allCaughtUp(stopCount, port) ) cvStopped.wait(mutexStopped);
+	cvStopped.broadcast();
+    }
+
+    submit(punct, port);
+    previousSubmitTime = 0; 
+    previousTupleTimestamp = 0;
+    nextTimestamp[port] = 0;
+
+    {
+	AutoMutex am(mutexCleared);
+	clearCount[port]++;
+	SPLLOG(L_TRACE, "port " << port << " cleared at " << punct << " " << clearCount[port] << ", others at c=" << printCounts(clearCount), "Synchronize");
+	while ( !getPE().getShutdownRequested() && !allCaughtUp(clearCount, port) ) cvCleared.wait(mutexCleared);
+	cvCleared.broadcast();
+    }
+
+    SPLLOG(L_DEBUG, "port " << port << " resuming after " << punct << " " << stopCount[port] << ", others at p=" << printCounts(stopCount) << ", c=" << printCounts(clearCount), "Synchronize");
+    SPLLOG(L_TRACE, "leaving <%=$myOperatorKind%> process(" << punct << ", " << port << ")", "Synchronize");
+}
+
+
+<%SPL::CodeGen::implementationEpilogue($model);%>

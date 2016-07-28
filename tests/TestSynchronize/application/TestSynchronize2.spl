@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2013, 2016 International Business Machines Corporation. 
+ * All Rights Reserved.
+ */
+
+namespace application;
+
+/**
+ * tbd ...
+ */
+composite TestSynchronize2 {
+
+	type TestType = float64 time, rstring label;
+	
+	graph 
+
+	stream<int32 i> NumberStream as Out = Beacon() { 
+	logic state: {
+		mutable int32 i = 0; }
+	param 
+		iterations: 3; 
+		period: 0.0; 
+	output Out: 
+		i = ++i; }
+		
+	stream<rstring filename> EvenFilenameStream as Out = Functor(NumberStream as In) { 
+	output Out: 
+		filename = "sync" + (rstring)i + ".even.in"; 
+	config threadedPort: 
+		queue(In, Sys.DropFirst, 100); }
+
+	stream<rstring filename> OddFilenameStream as Out = Functor(NumberStream as In) { 
+	output Out: 
+		filename = "sync" + (rstring)i + ".odd.in"; 
+	config threadedPort: 
+		queue(In, Sys.DropFirst, 100); }
+	
+	stream<TestType> EvenStream = FileSource(EvenFilenameStream) { param format: csv; initDelay: 0.0; }
+	() as EvenSink = FileSink(EvenStream) { param file: "debug.TestSynchronize2.EvenStream.out"; format: txt; flush: 1u; writePunctuations: true; }
+	
+	stream<TestType> OddStream = FileSource(OddFilenameStream) { param format: csv; initDelay: 0.0; }
+	() as OddSink = FileSink(OddStream) { param file: "debug.TestSynchronize2.OddStream.out"; format: txt; flush: 1u; writePunctuations: true; }
+	
+	( stream<TestType> SynchronizedEvenStream ;
+	  stream<TestType> SynchronizedOddStream ) = com.ibm.streamsx.plumbing.synchronize::Synchronize(EvenStream as In1; OddStream as In2) {
+	param 
+		timeAttributes: "time"; 
+		timeFactor: 2.0; }
+	() as SynchronizedSink = FileSink(SynchronizedEvenStream, SynchronizedOddStream) { param file: "debug.TestSynchronize2.SynchronizedStreams.out"; format: txt; flush: 1u; writePunctuations: true; }
+}

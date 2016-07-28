@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2013, 2016 International Business Machines Corporation. 
+ * All Rights Reserved.
+ */
+
+namespace application;
+
+/**
+ * tbd ...
+ */
+composite TestSynchronize1 {
+
+	type TestType = float64 time, rstring label;
+	
+	graph 
+	
+	stream<TestType> EvenStream = FileSource() { param file: "sync2.even.in"; format: csv; }
+	
+	stream<TestType> OddStream = FileSource() { param file: "sync2.odd.in"; format: csv; }
+	
+	( stream<TestType> SynchronizedEvenStream ;
+	  stream<TestType> SynchronizedOddStream ) = com.ibm.streamsx.plumbing.synchronize::Synchronize(EvenStream as In1; OddStream as In2) {
+	param 
+		timeAttributes: "time"; 
+		timeFactor: 2.0;
+	config threadedPort: 
+		queue(In1, Sys.DropFirst, 100),
+		queue(In2, Sys.DropFirst, 100); }	
+	() as SynchronizedSink = FileSink(SynchronizedEvenStream, SynchronizedOddStream) { param file: "debug.TestSynchronize1.SynchronizedStreams.out"; format: txt; flush: 1u; writePunctuations: true; }
+}

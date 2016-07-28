@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                                                                        -->
+<!-- Copyright (C) 2013, 2016 International Business Machines Corporation.  -->
+<!-- All Rights Reserved.                                                   -->
+<!--                                                                        -->
+<operatorModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common"
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+
+    <context>
+      <description>
+
+Synchronize is an operator for the IBM InfoSphere Streams product.  The operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
+
+The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
+
+The Synchronize operator synchronizes streams by receiving tuples in all of its input ports and forwarding them downstream in order according to their timestamps, temporarily holding tuples in faster streams until slower streams catch up.  Optionally, the operator can pace tuples by delaying them according to the differences between their timestamps, according to a time-scaling factor. 
+
+The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
+
+The Synchronize operator recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps.
+
+The Synchronize operator requires that each input port run on a different thread of execution:
+
+* One way to ensure this is for the tuples received on each input port to originate from different source operators, since each source operator runs on a seprate thread.  In this case, the Synchronize operator may block faster source operators, slowing them down to the pace of the slowest source operator.
+
+* Another way to ensure that each input port runs on a different thread is to configure the Synchronize operator with a 'threadedPort' for each input port.  The size of the queue specified for each input port determines how far ahead the faster sources can get, relative to the slowest source, and what happens if the fastest sources fill up an input port's queue.
+
+**Note:** The values of each stream's timestamps should have overlapping ranges.  If they do not, the operator will block indefinitely a stream whose first tuple has a timestamp larger than any of the other streams.
+
+      </description>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <allowCustomLogic>false</allowCustomLogic>
+    </context>
+
+    <parameters>
+      <allowAny>false</allowAny>
+
+      <parameter>
+        <name>timeAttributes</name>
+        <description>
+
+This required parameter specifies a list of one or more names of input attributes that contain timestamps.  Each input port's type must contain a 'float64' attribute with one of the listed names.  The operator will use the first attribute with a matching name as the timestamp for synchronization.
+
+        </description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>rstring</type>
+        <cardinality>-1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>timeFactor</name>
+        <description>
+
+This optional parameter specifies a time-scaling factor for forwarding the tuples.  If specified, tuples are delayed according to the differences between their timestamps, divided by this factor.  If its value is greater than 1.0, then tuples of each stream will be forwarded faster than they were originally produced, or, if less than 1.0, tuples will be forwarded slower. 
+
+For example, a factor of `2.0` will forward tuples at twice the rate indicated by their timestamps, and a factor of `0.5` will forward tuples  at half the rate indicated by their timestamps.
+
+If this parameter is not specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+
+        </description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>float64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+    </parameters>
+
+    <inputPorts>
+      <inputPortOpenSet>
+        <description>
+
+The Synchronize operator may be configured with one or more input ports, each of which may have a different tuple type.  Each input port's type must have some numeric attribute that increases in value monotonically with each tuple.  This is most commonly a timestamp.
+
+Each input port must run on a different thread of execution.  This occurs implicitly when each port is fed by a different source operator.  This may also be specified explicitly by configuring the input ports with 'threaded queues'.
+
+
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+      </inputPortOpenSet>
+    </inputPorts>
+
+    <outputPorts>
+      <outputPortOpenSet>
+        <description>
+
+This operator must have the same number of output ports as input ports, and their types must match.  The operator forwards tuples and punctuation from each input port to the corresponding output port without altering or reordering them.
+
+        </description>
+        <expressionMode>Nonexistent</expressionMode>
+        <autoAssignment>true</autoAssignment>
+        <completeAssignment>true</completeAssignment>
+        <rewriteAllowed>false</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <windowPunctuationInputPort>0</windowPunctuationInputPort>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+      </outputPortOpenSet>
+    </outputPorts>
+
+  </cppOperatorModel>
+</operatorModel>
