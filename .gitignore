@@ -8,6 +8,7 @@
 **/log/
 **/doc/spldoc/
 **/data/debug.*
+**/data/*.out
 **/toolkit.xml
 **/.toolkitList
 

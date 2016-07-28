@@ -61,7 +61,7 @@ This optional parameter specifies a time-scaling factor for forwarding the tuple
 
 For example, a factor of `2.0` will forward tuples at twice the rate indicated by their timestamps, and a factor of `0.5` will forward tuples  at half the rate indicated by their timestamps.
 
-If this parameter is not specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
 
         </description>
         <optional>true</optional>
