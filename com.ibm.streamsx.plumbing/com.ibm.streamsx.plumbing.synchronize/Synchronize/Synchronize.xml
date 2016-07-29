@@ -66,7 +66,7 @@ If this parameter is not specified, or a value of zero is specified, then the op
         </description>
         <optional>true</optional>
         <rewriteAllowed>true</rewriteAllowed>
-        <expressionMode>Constant</expressionMode>
+        <expressionMode>Expression</expressionMode>
         <type>float64</type>
         <cardinality>1</cardinality>
       </parameter>
@@ -80,7 +80,6 @@ If this parameter is not specified, or a value of zero is specified, then the op
 The Synchronize operator may be configured with one or more input ports, each of which may have a different tuple type.  Each input port's type must have some numeric attribute that increases in value monotonically with each tuple.  This is most commonly a timestamp.
 
 Each input port must run on a different thread of execution.  This occurs implicitly when each port is fed by a different source operator.  This may also be specified explicitly by configuring the input ports with 'threaded queues'.
-
 
         </description>
         <tupleMutationAllowed>false</tupleMutationAllowed>
