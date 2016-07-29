@@ -43,13 +43,13 @@ The Synchronize operator requires that each input port run on a different thread
         <name>timeAttributes</name>
         <description>
 
-This required parameter specifies a list of one or more names of input attributes that contain timestamps.  Each input port's type must contain a 'float64' attribute with one of the listed names.  The operator will use the first attribute with a matching name as the timestamp for synchronization.
+This required parameter specifies a list of input attributes that contain timestamps. The number of input attributes specified must be equal to the number of input ports, and each input attribute specified must be present in the corresponding input port. All attributes must be of a numeric type.
 
         </description>
         <optional>false</optional>
         <rewriteAllowed>true</rewriteAllowed>
-        <expressionMode>Constant</expressionMode>
-        <type>rstring</type>
+        <expressionMode>Attribute</expressionMode>
+        <type></type>
         <cardinality>-1</cardinality>
       </parameter>
 

@@ -55,7 +55,7 @@ composite SynchronizeTwoStreamsWithPunctuation {
                                                      EvenStream as In1 ; 
                                                      OddStream as In2 ) {
 	param
-		timeAttributes: "time"; 
+		timeAttributes: In1.time, In2.time; 
 		timeFactor: 2.0; }
 
     // merge the two streams of synchronized tuples and write them to a file

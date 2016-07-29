@@ -91,7 +91,7 @@ composite SynchronizeThreeStreams {
                                                             IndentedPunctuatedSpeech2Stream as In2; 
                                                             IndentedPunctuatedSubtitleStream as InT) {
 	param 
-		timeAttributes: "start"; 
+		timeAttributes: In1.start, In2.start, InT.start; 
 		timeFactor: 0.0; // replay as fast as possible
 	config threadedPort: 
 		queue(In1, Sys.DropFirst, 1000),

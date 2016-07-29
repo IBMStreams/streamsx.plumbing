@@ -28,37 +28,20 @@
     SPL::CodeGen::exit("Sorry, input and output ports do not have matching types") 
       unless $model->getInputPortAt($i)->getSPLTupleType() eq $model->getOutputPortAt($i)->getSPLTupleType();
   }
-    
-  # get hash of input attribute names that could contain timestamps
-  print "// DEBUG: timeAttributes count is " . $model->getParameterByName("timeAttributes")->getNumberOfValues() . "\n";
-  my %timeAttributeNames = ();
+  
+  # the 'timeAttribute' parameter must have the same number of values as the number of input ports
+  SPL::CodeGen::exit("Sorry, not enough 'timeAttribute' values for all of the input ports") 
+    if $model->getParameterByName("timeAttributes")->getNumberOfValues() < $model->getNumberOfInputPorts();
+  SPL::CodeGen::exit("Sorry, not enough input ports for all of the 'timeAttribute' values") 
+    if $model->getParameterByName("timeAttributes")->getNumberOfValues() > $model->getNumberOfInputPorts();
+
+  # get C++ expressions for getting the values of the required 'timeAttributes' parameter
+  my @timeAttributes = ();
   for (my $i=0; $i < $model->getParameterByName("timeAttributes")->getNumberOfValues(); $i++) {
-    my $attributeName = $model->getParameterByName("timeAttributes")->getValueAt($i)->getSPLExpression();
-    $attributeName =~ s/"//g;
-    print "// DEBUG: timeAttribute[$i] is '$attributeName'\n";
-    $timeAttributeNames{$attributeName} = 1;
+    push @timeAttributes, $model->getParameterByName("timeAttributes")->getValueAt($i)->getCppExpression();
   }
-  print "// DEBUG: timeAttributeNames are " . join(",", keys %timeAttributeNames) . "\n";
 
-  # find the first attribute in each input port that contains a timestamp 
-  my @timeAttributeIndexes = ();
-  for (my $i=0; $i < $model->getNumberOfInputPorts(); $i++) {
-    my $attributeNumber = -1;
-    for (my $j=0; $j < $model->getInputPortAt($i)->getNumberOfAttributes(); $j++) {
-      my $attributeName = $model->getInputPortAt($i)->getAttributeAt($j)->getName();
-      print "// DEBUG: inputPort[$i] inputAttribute[$j] name is $attributeName, match=" . (exists $timeAttributeNames{$attributeName} ) . "\n";
-      $attributeNumber = $j, last if ( exists $timeAttributeNames{$attributeName} );
-    }
-    SPL::CodeGen::exit("Sorry, input port $i does not contain any attributes listed in parameter 'timeAttributes'") 
-      unless $attributeNumber>=0;
-    my $attributeType = $model->getInputPortAt($i)->getAttributeAt($attributeNumber)->getSPLType();
-    SPL::CodeGen::exit("Sorry, input port $i time attribute $attributeNumber is not of type 'float64'") 
-      unless $attributeType eq "float64";
-    push @timeAttributeIndexes, $attributeNumber;
-  }
-  print "// DEBUG: timeAttributeIndexes are " . join(",", @timeAttributeIndexes) . "\n";
-
-  # get C++ expression for getting the value of the optional time factor parameter
+  # get C++ expression for getting the value of the optional 'timeFactor' parameter
   my $timeFactor = $model->getParameterByName("timeFactor") ? $model->getParameterByName("timeFactor")->getValueAt(0)->getCppExpression() : undef;
   print "// DEBUG: timeFactor is '$timeFactor'\n" if $timeFactor;
 %>
@@ -156,8 +139,13 @@ void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
     SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> process(," << port << "), tuple=" << tuple, "Synchronize");
 
     // get the value of the timestamp attribute from the tuple received by this input port
-    const uint32_t timestampAttributes[] = { <%=join(",", @timeAttributeIndexes)%> }; 
-    nextTimestamp[port] = static_cast<double>(tuple.getAttributeValue(timestampAttributes[port]));
+    switch(port) {
+<%
+for (my $i=0; $i < $model->getParameterByName("timeAttributes")->getNumberOfValues(); $i++) {
+      print "case $i: { const IPort${i}Type& iport\$${i} = tuple; nextTimestamp[$i] = static_cast<double>($timeAttributes[$i]); } break;\n";
+}
+%> 
+    }
     SPLLOG(L_TRACE, "next timestamp for port " << port << " is " << nextTimestamp[port], "Synchronize");
 
     // wait (in a spin loop) until this port's tuple is next in time sequence

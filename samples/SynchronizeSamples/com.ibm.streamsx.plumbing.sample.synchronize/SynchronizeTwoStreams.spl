@@ -36,7 +36,7 @@ composite SynchronizeTwoStreams {
                                                        EvenStream as In1 ; 
                                                        OddStream as In2 ) {
 	param 
-		timeAttributes: "time"; 
+		timeAttributes: In1.time, In2.time; 
 		timeFactor: 2.0;
 	config threadedPort: 
 		queue(In1, Sys.DropFirst, 100),
