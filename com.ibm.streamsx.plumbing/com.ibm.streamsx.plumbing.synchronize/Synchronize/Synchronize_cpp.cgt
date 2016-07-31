@@ -42,8 +42,10 @@
   }
 
   # get C++ expression for getting the value of the optional 'timeFactor' parameter
-  my $timeFactor = $model->getParameterByName("timeFactor") ? $model->getParameterByName("timeFactor")->getValueAt(0)->getCppExpression() : undef;
-  print "// DEBUG: timeFactor is '$timeFactor'\n" if $timeFactor;
+  my $timeFactor = $model->getParameterByName("timeFactor") ? $model->getParameterByName("timeFactor")->getValueAt(0)->getCppExpression() : 0;
+  my $ignorePunctuation = $model->getParameterByName("ignorePunctuation") ? $model->getParameterByName("ignorePunctuation")->getValueAt(0)->getCppExpression() : 0;
+  print "// DEBUG: timeFactor is '$timeFactor'\n";
+  print "// DEBUG: ignorePunctuation is '$ignorePunctuation'\n";
 %>
 
 
@@ -55,11 +57,13 @@ MY_OPERATOR::MY_OPERATOR()
 {
     SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> constructor", "Synchronize");
 
-<% if ($timeFactor) { %>
-    if (<%=$timeFactor%> < 0) THROW (SPLRuntimeOperator, "Sorry, 'timeFactor' parameter must be greater than zero");
-<% } %>
+    // initialize parameter-based constants
 
-    // initialize all state variables
+    timeFactor = <%=$timeFactor%>;
+    ignorePunctuation = <%=$ignorePunctuation%>;
+    if (timeFactor<0) THROW (SPLRuntimeOperator, "Sorry, 'timeFactor' parameter must be greater than zero");
+
+    // initialize state variables
 
     previousSubmitTime = 0;
     previousTupleTimestamp = 0;
@@ -142,7 +146,7 @@ void MY_OPERATOR::process(Tuple const & tuple, uint32_t port)
     switch(port) {
 <%
 for (my $i=0; $i < $model->getParameterByName("timeAttributes")->getNumberOfValues(); $i++) {
-      print "case $i: { const IPort${i}Type& iport\$${i} = tuple; nextTimestamp[$i] = static_cast<double>($timeAttributes[$i]); } break;\n";
+      print "    case $i: { const IPort${i}Type& iport\$${i} = tuple; nextTimestamp[$i] = static_cast<double>($timeAttributes[$i]); } break;\n";
 }
 %> 
     }
@@ -153,15 +157,13 @@ for (my $i=0; $i < $model->getParameterByName("timeAttributes")->getNumberOfValu
     SPLLOG(L_TRACE, "port " << port << " waiting for its turn", "Synchronize");
     while( !getPE().getShutdownRequested() && !itsOurTurn(port) ) spinner.wait();
 
-<% if ($timeFactor) { %>
-    // wait a bit longer until its time to replay this port's tuple
-    if (<%=$timeFactor%> > 0) {
-       const double delay = previousTupleTimestamp ? ( nextTimestamp[port] - previousTupleTimestamp ) / <%=$timeFactor%> : 0;
+    // wait a bit longer until its time to replay this port's tuple if 'timeFactor' is set
+    if (timeFactor>0) {
+       const double delay = previousTupleTimestamp ? ( nextTimestamp[port] - previousTupleTimestamp ) / timeFactor : 0;
        const double theTimeToSubmit = previousSubmitTime + delay; // note that 'previousSubmitTime' will be zero on first tuple
        SPLLOG(L_TRACE, "port " << port << " taking its turn, waiting " << delay << " seconds", "Synchronize");
        while ( !getPE().getShutdownRequested() && theTimeRightNow() < theTimeToSubmit ) spinner.wait();
     }
-<% } %>
 
     // advance the shared timestamp
     if (previousTupleTimestamp < nextTimestamp[port]) previousTupleTimestamp = nextTimestamp[port];
@@ -203,6 +205,8 @@ void MY_OPERATOR::process(Punctuation const & punct, uint32_t port)
 {
     SPLLOG(L_TRACE, "entering <%=$myOperatorKind%> process(" << punct << ", " << port << ")", "Synchronize");
     
+    if (ignorePunctuation && punct!=Punctuation::FinalMarker) return;
+
     {
 	AutoMutex am(mutexStopped);
 	stopCount[port]++;

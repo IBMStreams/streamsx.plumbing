@@ -21,7 +21,7 @@ The Synchronize operator synchronizes streams by receiving tuples in all of its 
 
 The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
 
-The Synchronize operator recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps.
+The Synchronize operator by default recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps. Or, the operator may be configured to ignore punctuation received from input streams.
 
 The Synchronize operator requires that each input port run on a different thread of execution:
 
@@ -61,7 +61,7 @@ This optional parameter specifies a time-scaling factor for forwarding the tuple
 
 For example, a factor of `2.0` will forward tuples at twice the rate indicated by their timestamps, and a factor of `0.5` will forward tuples  at half the rate indicated by their timestamps.
 
-If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as downstream operators consume them.
 
         </description>
         <optional>true</optional>
@@ -70,6 +70,27 @@ If this parameter is not specified, or a value of zero is specified, then the op
         <type>float64</type>
         <cardinality>1</cardinality>
       </parameter>
+
+
+      <parameter>
+        <name>ignorePunctuation</name>
+        <description>
+
+This optional parameter specifies how the operator should handle punctuation received from input streams.
+
+If this parameter is specified with a value of `true`, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
+
+If this parameter is not specified, or a value of `false` is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
+
+        </description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Expression</expressionMode>
+        <type>boolean</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+
 
     </parameters>
 

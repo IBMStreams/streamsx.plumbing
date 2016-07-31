@@ -46,6 +46,10 @@ public:
 
 private:
 
+  // for parameters
+  double timeFactor;
+  bool ignorePunctuation;
+
   // for synchronizing tuples
   volatile double previousSubmitTime; // clock time, shared by all ports
   volatile double previousTupleTimestamp; // tuple time, shared by all ports
