@@ -10,7 +10,7 @@
 <section>
   <title outputclass="splhead-1">Operators</title>
 <sl>
-<sli><b><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></b>: Synchronize is an operator for the IBM InfoSphere Streams product.
+<sli><b><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></b>: The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.
 </sli>
 </sl>
 </section>

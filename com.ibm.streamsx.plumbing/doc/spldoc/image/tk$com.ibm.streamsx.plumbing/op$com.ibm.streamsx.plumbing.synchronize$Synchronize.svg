@@ -56,9 +56,11 @@
       ><set attributeName="visibility" from="hidden" end="sdt0.mouseout" to="visible" begin="sdt0.mouseover"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"
-    ><rect x="47.65" y="89.0" width="238.37999" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="14.0"
-      /><text x="48.65" y="99.0"
-      >Required: timeAttributes / Optional: timeFactor</text
+    ><rect x="47.65" y="77.0" width="244.73999" style="fill:rgb(230,230,255);stroke:rgb(0,0,80);" rx="2.0" ry="2.0" height="26.0"
+      /><text x="48.65" y="87.0"
+      >Required: timeAttributes / Optional: timeFactor, </text
+      ><text x="48.65" y="99.0"
+      >ignorePunctuation</text
       ><set attributeName="visibility" from="hidden" end="sdt1.mouseout" to="visible" begin="sdt1.mouseover"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"

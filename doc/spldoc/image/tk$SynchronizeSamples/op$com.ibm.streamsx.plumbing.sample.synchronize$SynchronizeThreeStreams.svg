@@ -244,9 +244,9 @@
     ><g style="font-size:7; fill:rgb(0,102,153); text-rendering:geometricPrecision; font-family:sans-serif; stroke-linejoin:round; stroke:rgb(0,102,153); stroke-width:2.0105; stroke-miterlimit:3.7321;"
     ><path d="M416 95 L442 95 L442 106 L453 106" style="fill:none; clip-path:url(#clipPath2);"
       /><polygon points=" 453 106 446 102 446 110" style="stroke-miterlimit:10; stroke-width:1; clip-path:url(#clipPath2); stroke:none; stroke-linejoin:miter;"
-      /><path d="M416 116 L442 116 L442 106 L453 106" style="fill:none; clip-path:url(#clipPath2);"
-      /><polygon points=" 453 106 446 102 446 110" style="stroke-miterlimit:10; stroke-width:1; clip-path:url(#clipPath2); stroke:none; stroke-linejoin:miter;"
       /><path d="M416 106 L453 106" style="fill:none; clip-path:url(#clipPath2);"
+      /><polygon points=" 453 106 446 102 446 110" style="stroke-miterlimit:10; stroke-width:1; clip-path:url(#clipPath2); stroke:none; stroke-linejoin:miter;"
+      /><path d="M416 116 L442 116 L442 106 L453 106" style="fill:none; clip-path:url(#clipPath2);"
       /><polygon points=" 453 106 446 102 446 110" style="stroke-miterlimit:10; stroke-width:1; clip-path:url(#clipPath2); stroke:none; stroke-linejoin:miter;"
     /></g
     ><g visibility="hidden" style="stroke:none;font-style:italic;font-size:12px;font-family:&apos;Helvetica&apos;,&apos;SansSerif&apos;;"

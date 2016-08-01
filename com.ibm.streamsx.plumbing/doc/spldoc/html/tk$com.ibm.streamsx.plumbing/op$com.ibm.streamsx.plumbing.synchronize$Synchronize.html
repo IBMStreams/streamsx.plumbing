@@ -32,7 +32,7 @@
 
 <div class="section">
 
-<p class="p">Synchronize is an operator for the IBM InfoSphere Streams product.  The operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
+<p class="p">The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
 </p>
 
 <p class="p">The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
@@ -44,7 +44,7 @@
 <p class="p">The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
 </p>
 
-<p class="p">The Synchronize operator recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps.
+<p class="p">The Synchronize operator by default recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps. Or, the operator may be configured to ignore punctuation received from input streams.
 </p>
 
 <p class="p">The Synchronize operator requires that each input port run on a different thread of execution:
@@ -86,14 +86,14 @@
  
   <dt class="dt dlterm">Parameters</dt>
 
-  <dd class="dd">This operator supports 2 parameters.
+  <dd class="dd">This operator supports 3 parameters.
 <p class="p"> Required: 
 <a class="xref" href="#spldoc_operator__parameter__timeAttributes">timeAttributes</a>
 
 </p>
 
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__timeFactor">timeFactor</a>
+<a class="xref" href="#spldoc_operator__parameter__timeFactor">timeFactor</a>, <a class="xref" href="#spldoc_operator__parameter__ignorePunctuation">ignorePunctuation</a>
 
 </p>
 </dd>
@@ -225,7 +225,7 @@
 
 <div class="section">
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
-This operator supports 2 parameters.<dl class="dl">
+This operator supports 3 parameters.<dl class="dl">
   
      <dt class="dt dlterm"><a name="spldoc_operator__parameter__timeAttributes"><!-- --></a><tt class="ph tt">timeAttributes</tt></dt>
 
@@ -268,7 +268,7 @@ This operator supports 2 parameters.<dl class="dl">
 <p class="p">For example, a factor of <tt class="ph tt">2.0</tt> will forward tuples at twice the rate indicated by their timestamps, and a factor of <tt class="ph tt">0.5</tt> will forward tuples  at half the rate indicated by their timestamps.
 </p>
 
-<p class="p">If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+<p class="p">If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as downstream operators consume them.
 </p>
 
   <dl class="dl">
@@ -285,7 +285,48 @@ This operator supports 2 parameters.<dl class="dl">
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
      </li>
 
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Constant
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Expression
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__ignorePunctuation"><!-- --></a><tt class="ph tt">ignorePunctuation</tt></dt>
+
+     <dd class="dd">
+<p class="p">This optional parameter specifies how the operator should handle punctuation received from input streams.
+</p>
+
+<p class="p">If this parameter is specified with a value of <tt class="ph tt">true</tt>, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
+</p>
+
+<p class="p">If this parameter is not specified, or a value of <tt class="ph tt">false</tt> is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Expression
      </li>
 
    </ul>

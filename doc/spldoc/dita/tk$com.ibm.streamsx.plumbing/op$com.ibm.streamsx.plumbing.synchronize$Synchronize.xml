@@ -15,7 +15,7 @@
 </section>
 <section>
 
-<p>Synchronize is an operator for the IBM InfoSphere Streams product.  The operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
+<p>The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
 </p>
 <p>The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
 </p>
@@ -23,7 +23,7 @@
 </p>
 <p>The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
 </p>
-<p>The Synchronize operator recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps.
+<p>The Synchronize operator by default recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps. Or, the operator may be configured to ignore punctuation received from input streams.
 </p>
 <p>The Synchronize operator requires that each input port run on a different thread of execution:
 </p>
@@ -51,13 +51,13 @@
  </dlentry>
  <dlentry>
   <dt>Parameters</dt>
-  <dd>This operator supports 2 parameters.
+  <dd>This operator supports 3 parameters.
 <p> Required: 
 <xref href="#spldoc_operator/parameter__timeAttributes">timeAttributes</xref>
 
 </p>
 <p> Optional: 
-<xref href="#spldoc_operator/parameter__timeFactor">timeFactor</xref>
+<xref href="#spldoc_operator/parameter__timeFactor">timeFactor</xref>, <xref href="#spldoc_operator/parameter__ignorePunctuation">ignorePunctuation</xref>
 
 </p></dd>
  </dlentry>
@@ -142,7 +142,7 @@
 </dl>
 </section>
 <section>
-<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters">Parameters</xref></b></p>This operator supports 2 parameters.<dl>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters">Parameters</xref></b></p>This operator supports 3 parameters.<dl>
   <dlentry id="parameter__timeAttributes">
      <dt><tt>timeAttributes</tt></dt>
      <dd>
@@ -171,7 +171,7 @@
 </p>
 <p>For example, a factor of <tt>2.0</tt> will forward tuples at twice the rate indicated by their timestamps, and a factor of <tt>0.5</tt> will forward tuples  at half the rate indicated by their timestamps.
 </p>
-<p>If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+<p>If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as downstream operators consume them.
 </p>
   <dl>
     <dlentry>
@@ -183,7 +183,34 @@
      </sli>
      <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
      </sli>
-     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Expression
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__ignorePunctuation">
+     <dt><tt>ignorePunctuation</tt></dt>
+     <dd>
+<p>This optional parameter specifies how the operator should handle punctuation received from input streams.
+</p>
+<p>If this parameter is specified with a value of <tt>true</tt>, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
+</p>
+<p>If this parameter is not specified, or a value of <tt>false</tt> is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: boolean
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Expression
      </sli>
    </sl>
      <p></p>     </dd>

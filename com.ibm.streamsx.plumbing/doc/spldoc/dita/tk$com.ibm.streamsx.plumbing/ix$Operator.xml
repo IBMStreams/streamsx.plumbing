@@ -60,7 +60,7 @@
 </dlentry>
 <dlentry>
   <dt><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></dt>
-  <dd>Synchronize is an operator for the IBM InfoSphere Streams product.</dd>
+  <dd>The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.</dd>
 </dlentry>
 </dl>
 </section>
