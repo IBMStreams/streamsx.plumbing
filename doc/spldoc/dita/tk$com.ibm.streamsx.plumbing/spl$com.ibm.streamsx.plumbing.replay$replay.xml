@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>replay.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.replay.xml">com.ibm.streamsx.plumbing.replay</xref> &gt; replay.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.replay$replay.xml#spldoc_compilationunit/composite_operator__ReplayBuffer">ReplayBuffer</xref></b>: Replay tuple buffer.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ReplayBuffer">
+  <title outputclass="splpart">composite ReplayBuffer(output Replayed; input In, Control)</title>
+</section>
+<section>
+
+<p>Replay tuple buffer. Maintains a buffer of <tt>period</tt> seconds of tuples from <tt>In</tt> and replays all tuples in the buffer when a tuple is received on <tt>Control</tt>.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>period</b>: Seconds to maintain input tuples for. 
+</sli>
+</sl>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>In</b>: Stream to be buffered.
+</sli>
+<sli><b>Control</b>: Control signal to replay tuples.
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>Replayed</b>: Output stream tuples in the buffer are submitted to. 
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.replay$ReplayBuffer.svg" width="142" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.replay$ReplayBuffer.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ReplayBuffer(input In, Control ; output Replayed)
+ {
+ 	param
+ 		expression<float64> $period ;
+ 	graph
+ 		(stream<In> Replayed) as Buffer = Join(In ; Control)
+ 		{
+ 			window
+ 				In : sliding, time($period) ;
+ 				Control : sliding, count(0) ;
+ 			param
+ 				match : true ;
+ 		}
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

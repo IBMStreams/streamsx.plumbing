@@ -37,6 +37,12 @@
 
       <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a></strong>: The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a></strong>: The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>.
+</li>
+
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderFailureSample">RandomShedderFailureSample</a></strong>: Sample application that can be used to demonstrate recovery from failure for <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. A single change is made to shed tuples in the data flow after 30 seconds to some random fraction &gt;= 0.2. The failure modes that can be manually tested are:  Killing or restarting the PE containing <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. Killing or restarting the PE containing <tt class="ph tt">JobControlPlane</tt> and <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. Stopping the PE containing <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a> before the shedding fraction is changedand then restarting it.
 </li>
 
@@ -74,7 +80,182 @@
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.svg" width="118" height="199"/>
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.svg" width="118" height="197"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite RandomShedderSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled load shedding
+ 		@spl_category(name = "data")
+ 		() as DF = DataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+ 		@spl_category(name = "control")
+ 		() as CF = ControlFlow()
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__DataFlow"><h2 class="title sectiontitle splpart">public composite DataFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>. A Beacon operator submits tuples around 100 per second through a <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a> and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a> composite. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$DataFlow.svg" width="337" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite DataFlow
+ {
+ 	graph
+ 		stream&lt;int64 a&gt; Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		stream&lt;Data&gt; ManagedData = RandomLoadShedder(Data)
+ 		{
+ 			param
+ 				name : "sampleShedder" ;
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__ControlFlow"><h2 class="title sectiontitle splpart">public composite ControlFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a>. Every thirty seconds the fraction of tuples to shed increases by 0.25, cycling back to 0.0 (no drops) after reaching 1.0 (everything dropped). 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ControlFlow.svg" width="232" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite ControlFlow()
+ {
+ 	graph
+ 		stream&lt;float64 fractionDelta&gt; Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 30.0 ;
+ 				period : 30.0 ;
+ 			output
+ 				Control : fractionDelta = 0.25 ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerRandomShedder("sampleShedder") ;
+ 					mutable float64 _fraction = 0.0 ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					_fraction += fractionDelta ;
+ 					if(_fraction &gt; 1.0) _fraction = 0.0 ;
+ 					setRandomShedderFraction("sampleShedder", _fraction) ;
+ 				}
+ 
+ 				config
+ 					tracing : debug ;
+ 			}
+ 
+ }
+
+   </pre>
+
 </div>
 
 <div class="section" id="spldoc_compilationunit__composite_operator__RandomShedderFailureSample"><h2 class="title sectiontitle splpart">composite RandomShedderFailureSample</h2>
@@ -123,7 +304,53 @@ and then restarting it.
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderFailureSample.svg" width="232" height="199"/>
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderFailureSample.svg" width="232" height="197"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite RandomShedderFailureSample {
+    graph
+    		() as JCP = JobControlPlane() {}
+    		
+    				// DataFlow with controlled load shedding
+ 		@spl_category(name = "data")
+ 		() as DF = DataFlow()
+ 		{
+ 		}
+ 		
+ 		stream&lt;float64 fraction&gt; Control = Beacon()
+ 		{
+ 			param
+ 			    initDelay: 30.0;
+ 				iterations: 1u;
+ 			output
+ 				Control : fraction = random() + 0.2;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerRandomShedder("sampleShedder") ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					setRandomShedderFraction("sampleShedder", fraction) ;
+ 				}
+ 			}
+ }
+
+   </pre>
+
 </div>
 
 </div>

@@ -37,7 +37,13 @@
 
       <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a></strong>: The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a>.
+</li>
+
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a></strong>
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a></strong>: The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>.
 </li>
 
 </ul>
@@ -71,7 +77,175 @@
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.svg" width="118" height="199"/>
+  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.svg" width="118" height="197"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ControlledSwitchSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled switch
+ 		@spl_category(name = "data")
+ 		() as DF = DataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by opening and closing the switch.")
+ 		@spl_category(name = "control")
+ 		() as CF = ControlFlow()
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__DataFlow"><h2 class="title sectiontitle splpart">public composite DataFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>. A Beacon operator submits tuples around 100 per second through a <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</a> and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a> composite. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$DataFlow.svg" width="337" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite DataFlow
+ {
+ 	graph
+ 		stream&lt;int64 a&gt; Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+ 		}
+ 
+ 		stream&lt;Data&gt; ManagedData = ControlledSwitch(Data)
+ 		{
+ 			param
+ 				name : "sampleSwitch" ;
+                                 initialState : true;
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__ControlFlow"><h2 class="title sectiontitle splpart">public composite ControlFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a>. Every twenty seconds a random value between 0.0 and 1.0 is submitted by a <tt class="ph tt">Beacon</tt>. If it is less that 0.3 the switch is closed otherwise it is opened. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlFlow.svg" width="232" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite ControlFlow()
+ {
+ 	graph
+ 		stream&lt;float64 rv&gt; Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 10.0 ;
+ 				period : 20.0 ;
+ 			output
+ 				Control : rv = random() ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerSwitch("sampleSwitch", true ) ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					setSwitchState("sampleSwitch", rv &gt;= 0.3) ;
+ 				}
+ 			}
+ 
+ }
+
+   </pre>
+
 </div>
 
 </div>

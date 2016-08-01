@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>leader.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.leader.xml">com.ibm.streamsx.plumbing.leader</xref> &gt; leader.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipChangeover">LeadershipChangeover</xref></b>: Changeover switch that changes state based upon if the PE is marked as the leader of <tt>group</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</xref></b>: Switch operator that only generates output when its PE is the leader of the group.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Types</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/type__LeaderStatus">LeaderStatus</xref></b>: Type of tuples submitted by <xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref> on its output port.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__LeadershipChangeover">
+  <title outputclass="splpart">composite LeadershipChangeover(output WhenLeader, WhenNotLeader, LeaderControl; input In)</title>
+</section>
+<section>
+
+<p>Changeover switch that changes state based upon if the PE is marked as the leader of <tt>group</tt>. Requires the application contains a <tt>JobControlPlane</tt> operator invocation.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>group</b>: Group identifier for the leadership election. 
+</sli>
+</sl>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>In</b>: Stream to be switched
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>WhenLeader</b>: Output stream tuples are submitted to when this PE is the leader in <tt>group</tt>.
+</sli>
+<sli><b>WhenNotLeader</b>: Output stream tuples are submitted to when this PE is not the leader in <tt>group</tt>.
+</sli>
+<sli><b>LeaderControl</b>: Output stream that submits a tuple when the leadership state of this operator's PE changes. Schema is required to be <xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/type__LeaderStatus">LeaderStatus</xref>.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipChangeover.svg" width="252" height="114">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipChangeover.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite LeadershipChangeover(input In ; output WhenLeader, WhenNotLeader, stream<LeaderStatus> LeaderControl)
+ {
+     param
+         expression<rstring> $group ;
+     graph
+       stream<LeaderStatus> LeaderControl = LeadershipElection()
+       {
+         param
+           group : $group ;
+       }
+ 
+       (stream<In> WhenLeader ; stream<In> WhenNotLeader) as LCS = Changeover(In ; LeaderControl)
+       {
+         param
+            status : leader ;
+            initialState : false ; // start off open, only close when become the leader
+       }
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__LeadershipSwitchWithReplay">
+  <title outputclass="splpart">composite LeadershipSwitchWithReplay(output Out; input In)</title>
+</section>
+<section>
+
+<p>Switch operator that only generates output when its PE is the leader of the group.
+</p>
+<p><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipChangeover">LeadershipChangeover</xref> is used to elect the leader which in turn uses <xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref>.
+</p>
+<p>When this operator's PE is the leader, all tuples from <tt>In</tt> are submitted to <tt>Out</tt>.
+</p>
+<p>When this operator's PE is not the leader, the last <tt>period</tt> seconds of tuples from <tt>In</tt> are maintained in a replay buffer.
+</p>
+<p>When this operator's PE is elected the leader after a failure of the previous leader, all the tuples in the replay buffer are submitted to <tt>Out</tt> in addition to tuples arriving on <tt>In</tt>.
+</p>
+<p>For correct behavior all operators in this composite must be fused into a single processing element using partition colocation. This composite does not itself colocate as it is likely it will be fused with additional operators specific to the application.
+</p>
+<p>
+<codeblock>
+<![CDATA[stream<B1> L1 = LeadershipSwitchWithReplay(B1) {
+  param
+    group : "lg" ;
+  config
+    placement: partitionColocation("lg1");
+}
+]]></codeblock>
+
+</p>
+<p>Note that instances of LeadershipSwitchWithReplay within the same group must not be partition colocated.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>group</b>: Group identifier for the leadership election.
+</sli>
+<sli><b>period</b>: Time window for replay buffer in seconds, defaults to 10.0. 
+</sli>
+</sl>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>In</b>: Tuples to be switched 
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>Out</b>: Tuples when this PE is the leader in <tt>group</tt>.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipSwitchWithReplay.svg" width="477" height="148">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipSwitchWithReplay.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite LeadershipSwitchWithReplay(input In ; output Out)
+ {
+ param
+         expression<rstring> $group ;        
+         expression<float64> $period : 10.0;
+ 
+    graph
+ 
+ 		(stream<In> WhenLeader ; stream<In> WhenNotLeader; stream<LeaderStatus> LeaderControl ) as Switch =
+ 			LeadershipChangeover(In)
+ 		{
+ 			param
+ 				group : $group ;
+ 		}
+ 		
+ 		// Stream that will drive the replay when this PE becomes the leader.
+ 		stream<LeaderControl> IsLeader = Filter(LeaderControl) {
+ 		param
+ 		filter: leader == true;
+ 		}
+ 
+ 		stream<In> Replay = ReplayBuffer(WhenNotLeader ; IsLeader)
+ 		{
+ 			param
+ 				period : $period ;
+ 		}
+ 		
+ 		stream<In> Out = Functor(WhenLeader,Replay) {
+ 		}
+ }
+]]>
+   </codeblock>
+</section>
+<section>
+  <title outputclass="splhead-1">Types</title>
+</section>
+<section id="type__LeaderStatus">
+  <title outputclass="splpart">LeaderStatus</title>
+</section><section>
+
+<p>Type of tuples submitted by <xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref> on its output port. If <tt>leader</tt> is true then the <xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref> operator that submitted it is the leader of the group. 
+</p>
+</section>
+<section>
+   <p>
+<tt>LeaderStatus = rstring group, rstring id, boolean leader, timestamp ts;</tt>
+   </p>
+</section>
+</refbody>
+</reference>
+

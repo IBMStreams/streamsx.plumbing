@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Operators: switches 1.0.0</title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$switches.xml">switches 1.0.0</xref> &gt; Operators</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<dl>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ChangeoverDataFlow">ChangeoverDataFlow</xref></dt>
+  <dd>The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref></dt>
+  <dd>The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeoverSample">ControlledChangeoverSample</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref></dt>
+  <dd>The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.</dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

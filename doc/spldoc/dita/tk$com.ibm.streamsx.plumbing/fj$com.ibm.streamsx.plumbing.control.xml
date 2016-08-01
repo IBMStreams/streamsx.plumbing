@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_functions">
+<title>Java Native Functions: <tt>com.ibm.streamsx.plumbing.control</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.control.xml">com.ibm.streamsx.plumbing.control</xref> &gt; Java Native Functions</p>
+</section>
+<section>
+This page documents native functions that can be invoked from SPL, including the SPL interfaces that can be used to invoke each of the native functions.
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/FunctionModel.xml#spldoc_reference_function_model/functionset__functions">Functions</xref></b></p><dl compact="yes">
+ <dlentry>
+   <dt outputclass="splpart"       id="createBooleanControlVariable.T.boolean.boolean"><tt>      <![CDATA[<string T> public stateful boolean createBooleanControlVariable(T name, boolean shared, boolean initialValue)]]>      </tt>   </dt>
+   <dd>
+<p>Create a <tt>boolean</tt> control variable named <tt>name</tt>. If <tt>shared</tt> is <tt>true</tt> then the control variable is intended for use by multiple operators,if <tt>false</tt> then the control variable is intended for use for a single operator. A control variable may be created by multiple operators, the first will create the MXBeanrepresenting the control variable, subsequent creates will just reference the exisitng MXBean.
+</p>
+   </dd>
+ </dlentry>
+ <dlentry>
+   <dt outputclass="splpart"       id="createFloat64ControlVariable.T.boolean.float64"><tt>      <![CDATA[<string T> public stateful boolean createFloat64ControlVariable(T name, boolean shared, float64 initialValue)]]>      </tt>   </dt>
+   <dd>
+<p>Create a <tt>float64</tt> control variable named <tt>name</tt>. If <tt>shared</tt> is <tt>true</tt> then the control variable is intended for use by multiple operators,if <tt>false</tt> then the control variable is intended for use for a single operator. A control variable may be created by multiple operators, the first will create the MXBeanrepresenting the control variable, subsequent creates will just reference the exisitng MXBean.
+</p>
+   </dd>
+ </dlentry>
+ <dlentry>
+   <dt outputclass="splpart"       id="getBooleanControlVariable.T"><tt>      <![CDATA[<string T> public boolean getBooleanControlVariable(T name)]]>      </tt>   </dt>
+   <dd>
+<p>Get the value of <tt>name</tt> <tt>boolean</tt> control variable. Any operator invoking this function must call <tt>createBooleanControlVariable</tt>, typically in its <tt>logic state</tt> clause, before invoking this function.
+</p>
+   </dd>
+ </dlentry>
+ <dlentry>
+   <dt outputclass="splpart"       id="getFloat64ControlVariable.T"><tt>      <![CDATA[<string T> public float64 getFloat64ControlVariable(T name)]]>      </tt>   </dt>
+   <dd>
+<p>Get the value of <tt>name</tt> <tt>float64</tt> control variable. Any operator invoking this function must call <tt>createFloat64ControlVariable</tt>, typically in its <tt>logic state</tt> clause, before invoking this function.
+</p>
+   </dd>
+ </dlentry>
+ <dlentry>
+   <dt outputclass="splpart"       id="setBooleanControlVariable.T.boolean"><tt>      <![CDATA[<string T> public stateful void setBooleanControlVariable(T name, boolean value)]]>      </tt>   </dt>
+   <dd>
+<p>Set the value of <tt>name</tt> <tt>boolean</tt> control variable to <tt>value</tt>. Any operator invoking this function must call <tt>createBooleanControlVariable</tt>, typically in its <tt>logic state</tt> clause, before invoking this function.
+</p>
+   </dd>
+ </dlentry>
+ <dlentry>
+   <dt outputclass="splpart"       id="setFloat64ControlVariable.T.float64"><tt>      <![CDATA[<string T> public stateful void setFloat64ControlVariable(T name, float64 value)]]>      </tt>   </dt>
+   <dd>
+<p>Set the value of <tt>name</tt> <tt>float64</tt> control variable to <tt>value</tt>. Any operator invoking this function must call <tt>createFloat64ControlVariable</tt>, typically in its <tt>logic state</tt> clause, before invoking this function.
+</p>
+   </dd>
+ </dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

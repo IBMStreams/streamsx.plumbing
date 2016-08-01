@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Namespace com.ibm.streamsx.plumbing.sample.redundant.active"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_namespace"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>Namespace com.ibm.streamsx.plumbing.sample.redundant.active</title>
+</head>
+<body id="spldoc_namespace">
+
+
+<h1 class="title topictitle1">Namespace <tt class="ph tt">com.ibm.streamsx.plumbing.sample.redundant.active</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$redundant.html">redundant 1.0.0</a> &gt; com.ibm.streamsx.plumbing.sample.redundant.active</p>
+
+</div>
+
+<div class="section">
+
+<p class="p">Sample applications demonstrating redundant active flows.
+</p>
+
+<p class="p">An application submitted to an IBM® Streams instance represents a dataflow graph or flow, processing continuous data streams. Streams provides capabilities to restart processing elements that have failed due to host or process failure. However, while the processing element (PE) is restarting, the flow is not fully functional, and therefore may not be processing the streams correctly or with the required latency. Availability may be increased by executing multiple copies of the flow, called active replicas, so that with N active replicas, N-1 failures can be tolerated. For example with two flows, a single failure leaves one of the flows correctly processing the streams with the required latency. With the processing elements being restartable, then the failed flow can recover allowing the system to return to two active flows. Availability is increased by increasing the number of active replicas at the cost of duplicated processing and hardware. A flow (or active replica) is considered to be available when all PEs in the flow are healthy.
+</p>
+
+<p class="p">This namespace contains applications demonstrating execution of active replicas. In each case N independent flows are executed on a different set of hosts so that a single host failure only affects a single flow. The application <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Flow">com.ibm.streamsx.plumbing.sample.redundant.flow::Flow</a> is a simulation representing reading messages from a message broker, analyzing them to find faults and sending SMS alert messages based upon the analysis.
+</p>
+
+<div class="p">With active replicas all N copies of the application are executing, each with its own independent connection to the message broker (simulated by a Beacon) and independent sink operator to send an SMS alert (simulated by a Custom that does nothing). This means that any receiver of the alerts will receive N copies of an alert, one for each replica. In some scenarios this may be acceptable, for example:
+<ul class="ul">
+<li class="li"> The alert is to turn off a system in case of imminent failure and receiving multiple off messages is not an issue. In this case multiple active replicas ensure the lowest latency for the alert by not having any recovery time since at least one replica is always active.</li>
+
+<li class="li"> The external system receiving the output from the flow can itself deduplicate messages, for example a database using an UPDATE or UPSERT statement.</li>
+
+</ul>
+
+</div>
+
+<p class="p">The sample applications are:
+</p>
+
+<div class="p">
+<ul class="ul">
+<li class="li"> <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</a> - Execution of two copies of a flow in a single job on different sets of hosts using host pool tags.</li>
+
+<li class="li"> <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</a> - Execution of three copies of a flow in a single job on different sets of hosts using host pool tags.</li>
+
+<li class="li"> <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.html#spldoc_compilationunit__composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</a> - Execution of N copies of a flow in a single job on different sets of hosts using host pool tag replication. N can be set by a submission time parameter, defaulting to three. </li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Operators</h2>
+  
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</a></strong>: Execution of two copies of Flow() to provide a single level of redundancy.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</a></strong>: Execution of three copies of Flow() to provide two levels of redundancy.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.html#spldoc_compilationunit__composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</a></strong>: Execution of redundant copies of Flow() using <tt class="ph tt">@parallel</tt>.
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

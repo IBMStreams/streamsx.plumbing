@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.leader</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; com.ibm.streamsx.plumbing.leader</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipChangeover">LeadershipChangeover</xref></b>: Changeover switch that changes state based upon if the PE is marked as the leader of <tt>group</tt>.
+</sli>
+<sli><b><xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref></b>: Performs a leadership election between other operator invocations with the same <tt>group</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</xref></b>: Switch operator that only generates output when its PE is the leader of the group.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-1">Types</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/type__LeaderStatus">LeaderStatus</xref></b>: Type of tuples submitted by <xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref> on its output port.
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

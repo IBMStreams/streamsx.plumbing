@@ -7,22 +7,22 @@
 <meta name="copyright" content="(C) Copyright 2005"/>
 <meta name="DC.rights.owner" content="(C) Copyright 2005"/>
 <meta name="DC.Type" content="reference"/>
-<meta name="DC.Title" content="Toolkit com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8"/>
+<meta name="DC.Title" content="Toolkit com.ibm.streamsx.plumbing 0.3.0.__dev__"/>
 <meta name="DC.Format" content="XHTML"/>
 <meta name="DC.Identifier" content="spldoc_toolkit"/>
 <link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
 <link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
-<title>Toolkit com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</title>
+<title>Toolkit com.ibm.streamsx.plumbing 0.3.0.__dev__</title>
 </head>
 <body id="spldoc_toolkit">
 
 
-<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</tt></h1>
+<h1 class="title topictitle1 spltoolkitname">Toolkit <tt class="ph tt">com.ibm.streamsx.plumbing 0.3.0.__dev__</tt></h1>
 
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</p>
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; com.ibm.streamsx.plumbing 0.3.0.__dev__</p>
 
 </div>
 
@@ -36,7 +36,7 @@
   
   <dt class="dt dlterm">Version</dt>
 
-  <dd class="dd">0.2.0.commit_1b1f6a8</dd>
+  <dd class="dd">0.3.0.__dev__</dd>
 
   
   
@@ -68,6 +68,9 @@
 <dd class="dd"/>
 
     <dt class="dt dlterm"><a class="xref" href="ix$Function.html">Functions</a></dt>
+<dd class="dd"/>
+
+    <dt class="dt dlterm"><a class="xref" href="ix$Type.html">Types</a></dt>
 <dd class="dd"/>
 
   </dl>
@@ -146,6 +149,62 @@ Functionality that utilizes the <tt class="ph tt">JobControlPlane</tt> operator 
 </dd>
 
          
+      <dt class="dt dlterm splpart"><a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a></dt>
+
+      <dd class="dd"/>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Operators</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipChangeover">LeadershipChangeover</a></li>
+
+<li class="sli"><a class="xref" href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a></li>
+
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Types</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__type__LeaderStatus">LeaderStatus</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+         
+      <dt class="dt dlterm splpart"><a class="xref" href="ns$com.ibm.streamsx.plumbing.replay.html">com.ibm.streamsx.plumbing.replay</a></dt>
+
+      <dd class="dd"/>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Operators</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.replay$replay.html#spldoc_compilationunit__composite_operator__ReplayBuffer">ReplayBuffer</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+         
       <dt class="dt dlterm splpart"><a class="xref" href="ns$com.ibm.streamsx.plumbing.sampling.html">com.ibm.streamsx.plumbing.sampling</a></dt>
 
       <dd class="dd"/>
@@ -208,6 +267,10 @@ Load shedding operators provide the ability for SPL applications to temporarily 
 
         <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.html#spldoc_compilationunit__function____initExpressionShedder.rstring">__initExpressionShedder(rstring)</a></li>
+
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function____initRandomShedder.rstring">__initRandomShedder(rstring)</a></li>
+
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.html#spldoc_compilationunit__function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</a></li>
 
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</a></li>
@@ -255,11 +318,34 @@ Load shedding operators provide the ability for SPL applications to temporarily 
 
         <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__function____initChangeover.rstring.boolean">__initChangeover(rstring, boolean)</a></li>
+
+<li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function____initSwitch.rstring.boolean">__initSwitch(rstring, boolean)</a></li>
+
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function__getSwitchState.rstring">getSwitchState(rstring)</a></li>
 
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function__registerSwitch.rstring.boolean">registerSwitch(rstring, boolean)</a></li>
 
 <li class="sli"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function__setSwitchState.rstring.boolean">setSwitchState(rstring, boolean)</a></li>
+
+</ul>
+
+        </dd>
+
+      </dl>
+</dd>
+
+         
+      <dt class="dt dlterm splpart"><a class="xref" href="ns$com.ibm.streamsx.plumbing.synchronize.html">com.ibm.streamsx.plumbing.synchronize</a></dt>
+
+      <dd class="dd"/>
+
+      <dd class="dd"><dl class="dl">
+        <dt class="dt dlterm">Operators</dt>
+
+        <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><a class="xref" href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.html">Synchronize</a></li>
 
 </ul>
 

@@ -1,0 +1,1504 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<srcCode:sourceModel xmlns:srcCode="http://www.ibm.com/xmlns/prod/streams/spl/sourceCode" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.switches/changeover.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="6" name="com.ibm.streamsx.plumbing.switches"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="8" namespaceName="spl.control" tail="::MBeanNotificationBase"/>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.control" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="24" endLine="110" startColumn="1" startLine="107">
+          <srcCode:functionHead column="1" line="107" name="__initChangeover" returnType="boolean">
+            <srcCode:modifiers>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="43" line="107" name="name" type="rstring"/>
+              <srcCode:parameter column="57" line="107" name="initialState" type="boolean"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  __initSwitch(name, initialState);
+  return getSwitchState(name);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="45" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="32" name="Changeover">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Changeover switch.
+`Changeover` has the same control api as
+the `Switch` operator in the SPL standard toolkit, but delivers
+tuples and punctuation to a second output port `OPEN` when the switch is open, instead of blocking.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="initialState">
+                <srcCode:description>This is an optional parameter of type boolean, which specifies
+if the this operator starts in the open (`false` -&gt; submits tuples to output port `OPEN`)
+or closed (`true` -&gt; submits tuples to output port `CLOSE`).
+If not specified, the default is `false` (tuples are submitted to `OPEN`).
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="status">
+                <srcCode:description>This is a mandatory parameter of type boolean, which specifies if the Switch
+is open or closed. The expression is evaluated each time a tuple arrives on the second
+(`CONTROL`) port. If the expression evaluates to `true`, the switch will flow tuples to `CLOSED`.
+If the expression evaluates to `false`, the switch will flow tuples to `OPEN`.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="IN">
+                <srcCode:description>Input stream to be switched.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="CONTROL">
+                <srcCode:description>Stream to control switching of `IN`.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="CLOSE">
+                <srcCode:description>Output port tuples and punctuation are submitted to when the switch is closed.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="OPEN">
+                <srcCode:description>Output port tuples and punctuation are submitted to when the switch is open.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="36" index="0" line="32" name="IN"/>
+              <srcCode:iport column="40" index="1" line="32" name="CONTROL"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="56" index="0" line="32" name="CLOSE"/>
+              <srcCode:oport column="63" index="1" line="32" name="OPEN"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="31" defaultValue="false;" line="33" name="$initialState">
+                <srcCode:expressionMode mode="expression" type="boolean"/>
+              </srcCode:parameter>
+              <srcCode:parameter column="26" line="34" name="$status">
+                <srcCode:expressionMode mode="expression" type="boolean"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="43" invocationAlias="SPDT" line="36" operatorName="Custom">
+                  <srcCode:outputs>
+                    <srcCode:output column="16" index="0" line="36" streamName="CLOSE" type="IN"/>
+                    <srcCode:output column="34" index="1" line="36" streamName="OPEN" type="IN"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="57" index="0" line="36">
+                      <srcCode:istream column="57" line="36" name="IN"/>
+                    </srcCode:input>
+                    <srcCode:input column="62" index="1" line="36">
+                      <srcCode:istream column="62" line="36" name="CONTROL"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="14" line="41" portName="IN"/>
+                    <srcCode:onTuple column="14" line="42" portName="CONTROL"/>
+                    <srcCode:onPunct column="14" line="43" portName="IN"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="105" startColumn="1" startLine="47">
+          <srcCode:compositeHead column="1" line="82" name="ControlledChangeover">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Controlled changeover switch.
+
+A controlled version of [Changeover].
+
+Operator invocations in the same job register an interest
+in controlling this switch by calling [registerSwitch(rstring, boolean)]
+passing the name of this switch. Then the state of this switch
+is changed by calling [setSwitchState(rstring, boolean)].
+
+A `boolean` control variable named `name` is created in
+the Job Control Plane which provides notifications and operations
+to control if the switch is open or closed. 
+
+Multiple invocations of `ControlledChangeover` can share the same
+name and will then be controlled by the same control variable.
+Any call to [setSwitchState(rstring, boolean)] sets the state
+of all switches with the same name.
+
+In the case of failure the state of the switch is retained
+by the Job Control Plane.
+
+Any application that invokes this operator must include a single invocation
+of the `spl.control::JobControlPlane` operator.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the switch.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="initialState">
+                <srcCode:description>This is an optional parameter of type boolean, which specifies
+if the this operator starts in the open (`false` -&gt; submits tuples to output port `OPEN`)
+or closed (`true` -&gt; submits tuples to output port `CLOSE`).
+If not specified, the default is `false` (tuples are submitted to `OPEN`).
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="IN">
+                <srcCode:description>Input stream to be switched</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="CLOSE">
+                <srcCode:description>Output port tuples and punctuation are submitted to when the switch is closed.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="OPEN">
+                <srcCode:description>Output port tuples and punctuation are submitted to when the switch is open.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="45" index="0" line="82" name="IN"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="56" index="0" line="82" name="CLOSE"/>
+              <srcCode:oport column="63" index="1" line="82" name="OPEN"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="29" line="85" name="$name">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+              <srcCode:parameter column="29" defaultValue="false;" line="86" name="$initialState">
+                <srcCode:expressionMode mode="expression" type="boolean"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="48" invocationAlias="CtrlSPDT" line="89" operatorName="Changeover">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="89" streamName="CLOSE" type="IN"/>
+                    <srcCode:output column="39" index="1" line="89" streamName="OPEN" type="IN"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="70" index="0" line="89">
+                      <srcCode:istream column="70" line="89" name="IN"/>
+                    </srcCode:input>
+                    <srcCode:input column="75" index="1" line="89">
+                      <srcCode:istream column="75" line="89" name="SwitchControl"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="92" name="status">
+                      <srcCode:value expr="getSwitchState($name)"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="17" line="93" name="initialState">
+                      <srcCode:value expr="__initChangeover($name, $initialState)"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="20" line="94" name="placement">
+                      <srcCode:option column="31" line="94" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="55" line="99" operatorName="ControlVariableChange">
+                  <srcCode:outputs>
+                    <srcCode:output column="39" index="0" line="99" streamName="SwitchControl" type="MBeanNotificationBase"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="102" name="name">
+                      <srcCode:value expr="$name"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="20" line="103" name="placement">
+                      <srcCode:option column="31" line="103" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.switches/controlledswitch.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="6" name="com.ibm.streamsx.plumbing.switches"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="8" namespaceName="spl.control" tail="::MBeanNotificationBase"/>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.control" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="30" endLine="13" startColumn="1" startLine="11">
+          <srcCode:functionHead column="1" line="11" name="__initSwitch" returnType="boolean">
+            <srcCode:modifiers>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="39" line="11" name="name" type="rstring"/>
+              <srcCode:parameter column="53" line="11" name="initialState" type="boolean"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return registerSwitch(name, initialState);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="50" endLine="30" startColumn="1" startLine="16">
+          <srcCode:functionHead column="1" line="28" name="registerSwitch" returnType="boolean">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Register that an operator invocation will call
+[setSwitchState(rstring, boolean)] or
+[getSwitchState(rstring)]. A  shared `boolean` control
+variable is created with name `name`.
+
+This function must be called in the `logic state` section
+of any operator invocation that calls `setSwitchState`
+or `getSwitchState`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="return">
+                <srcCode:description>`true`</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="48" line="28" name="name" type="rstring"/>
+              <srcCode:parameter column="62" line="28" name="initialState" type="boolean"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return createBooleanControlVariable(name, true, initialState);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="34" endLine="49" startColumn="1" startLine="33">
+          <srcCode:functionHead column="1" line="47" name="setSwitchState" returnType="void">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Set the state of switches with control variable `name`.
+If `on` is `true` then the switch is closed.
+If `on` is `false` then the switch is open.
+
+Any operator that invokes this must call [registerSwitch(rstring, boolean)]
+in its `logic state` section, passing the same value for `name`.
+
+Any operator may invoke this method to control [ControlledSwitch] operator
+invocations within the same job, that were invoked with their parameter `name` set to `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the switch</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="on">
+                <srcCode:description>State to set the switch to.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="45" line="47" name="name" type="rstring"/>
+              <srcCode:parameter column="60" line="47" name="on" type="boolean"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  setBooleanControlVariable(name, on);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="35" endLine="62" startColumn="1" startLine="52">
+          <srcCode:functionHead column="1" line="60" name="getSwitchState" returnType="boolean">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Get the state of a switch with control variable `name`.
+
+Any operator that invokes this must call [registerSwitch(rstring, boolean)]
+in its `logic state` section, passing the same value for `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the variable for the `RandomLoadShedder` operator invocation(s).</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="39" line="60" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return getBooleanControlVariable(name);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="131" startColumn="1" startLine="65">
+          <srcCode:compositeHead column="1" line="107" name="ControlledSwitch">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Controlled switch.
+
+A controlled version of the SPL Standard toolkit `Switch` operator.
+When the switch is closed (state is `true`) tuples on its
+input port flow through it its output port unchanged.
+
+When the switch is open (state is `false`) tuples on its input
+port are blocked from flowing. Blocked tuples remain on the
+stream and will be submitted to the output stream once the
+switch is closed. Opening the switch can result in upstream
+processing being halted due to back pressure.
+
+Operator invocations in the same job register an interest
+in controlling this switch by calling [registerSwitch(rstring, boolean)]
+passing the name of this switch. Then the state of this switch
+is changed by calling [setSwitchState(rstring, boolean)].
+
+A `boolean` control variable named `name` is created in
+the Job Control Plane which provides notifications and operations
+to control if the switch is open or closed. 
+
+Multiple invocations of `ControlledSwitch` can share the same
+name and will then be controlled by the same control variable.
+Any call to [setSwitchState(rstring, boolean)] sets the state
+of all switches with the same name.
+
+In the case of failure the state of the switch is retained
+by the Job Control Plane.
+
+Any application that invokes this operator must include a single invocation
+of the `spl.control::JobControlPlane` operator.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="initialState">
+                <srcCode:description>This is an optional parameter of type boolean, which specifies
+if the Switch operator starts in the open (false -&gt; blocked) or closed (true -&gt; flowing) state.
+If not specified, the value is false.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the switch.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="IN">
+                <srcCode:description>Input stream to be switched</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="OUT">
+                <srcCode:description>Output stream tuples are submitted to when the switch is closed</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="41" index="0" line="107" name="IN"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="52" index="0" line="107" name="OUT"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="29" line="110" name="$name">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+              <srcCode:parameter column="29" defaultValue="false;" line="111" name="$initialState">
+                <srcCode:expressionMode mode="expression" type="boolean"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="26" line="114" operatorName="Switch">
+                  <srcCode:outputs>
+                    <srcCode:output column="20" index="0" line="114" streamName="OUT" type="IN"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="114">
+                      <srcCode:istream column="33" line="114" name="IN"/>
+                    </srcCode:input>
+                    <srcCode:input column="38" index="1" line="114">
+                      <srcCode:istream column="38" line="114" name="SwitchControl"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true"/>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="118" name="status">
+                      <srcCode:value expr="getSwitchState($name)"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="17" line="119" name="initialStatus">
+                      <srcCode:value expr="getSwitchState($name)"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="20" line="120" name="placement">
+                      <srcCode:option column="31" line="120" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="55" line="125" operatorName="ControlVariableChange">
+                  <srcCode:outputs>
+                    <srcCode:output column="39" index="0" line="125" streamName="SwitchControl" type="MBeanNotificationBase"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="128" name="name">
+                      <srcCode:value expr="$name"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="20" line="129" name="placement">
+                      <srcCode:option column="31" line="129" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.shedders/randomshedder.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="8" name="com.ibm.streamsx.plumbing.shedders"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="10" namespaceName="com.ibm.streamsx.plumbing.control" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="9" endLine="17" startColumn="1" startLine="11">
+          <srcCode:functionHead column="1" line="11" name="__initRandomShedder" returnType="boolean">
+            <srcCode:modifiers>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="46" line="11" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  registerRandomShedder(name);
+  createCustomMetric("sheddingFraction", "Fraction of tuples shed (tuples per million), controlled by variable: " + name, Sys.Gauge, 0l);
+  return false;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="9" endLine="35" startColumn="1" startLine="20">
+          <srcCode:functionHead column="1" line="32" name="registerRandomShedder" returnType="boolean">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Register that an operator invocation will call
+[setRandomShedderFraction(rstring, float64)] or
+[getRandomShedderFraction(rstring)]. A  shared`float64` control
+variable is created with name `name`.
+
+This function must be called in the `logic state` section
+of any operator invocation that calls `setRandomShedderFraction`
+or `getRandomShedderFraction`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="return">
+                <srcCode:description>`true`</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="55" line="32" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  createFloat64ControlVariable(name, true, -1.0);
+  return true;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="34" endLine="58" startColumn="1" startLine="38">
+          <srcCode:functionHead column="1" line="56" name="setRandomShedderFraction" returnType="void">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Set the fraction of tuples to be shed for [RandomLoadShedder] operator
+invocations  using control variable `name`.
+If `fraction` is less than or equal to 0.0, then no tuples
+will be shed. If `fraction` is greater than or equal to 1.0 then all tuples
+will be shed. Otherwise `fraction` represents the approximate fraction
+of tuples that will be shed by invocations of [RandomLoadShedder] using
+control variable `name`.
+
+Any operator that invokes this must call [registerRandomShedder(rstring)]
+in its `logic state` section, passing the same value for `name`.
+Any operator may invoke this method to control [RandomLoadShedder] operator
+invocations within the same job, that were invoked with their parameter `name`
+set to `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the variable for the `RandomLoadShedder` operator invocation(s).</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="fraction">
+                <srcCode:description>Fraction of tuples to shed.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="55" line="56" name="name" type="rstring"/>
+              <srcCode:parameter column="69" line="56" name="fraction" type="float64"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  setFloat64ControlVariable(name, fraction);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="9" endLine="75" startColumn="1" startLine="61">
+          <srcCode:functionHead column="1" line="70" name="getRandomShedderFraction" returnType="float64">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Get the fraction of tuples being shed for [RandomLoadShedder] operator
+invocations using control variable `name`.
+
+Any operator that invokes this must call [registerRandomShedder(rstring)]
+in its `logic state` section, passing the same value for `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the variable for the `RandomLoadShedder` operator invocation(s).</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="49" line="70" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  float64 value = getFloat64ControlVariable(name);
+  if (value &gt; 1.0)
+    return 1.0;
+  if (value &lt;= 0.0)
+    return 0.0;
+  return value;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="155" startColumn="1" startLine="78">
+          <srcCode:compositeHead column="1" line="119" name="RandomLoadShedder">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Controllable load shedder that sheds (drops) tuples randomly.
+Tuple that are not shed are copied from the input port to the output
+port without modification. Punctuation marks
+are always forwarded from `In` to `Out`.
+
+This operator creates a `float64` control variable named
+`name`. Initially the variable is set to 0.0 which means
+no tuples will be shed. If the variable is changed to
+a non-zero value between 0.0 and 1.0 then approximately
+that fraction of tuples will be shed. The selection
+of tuples to drop is random. If the variable is changed to
+1.0 (or higher) than no tuples will be delivered to `Out`.
+
+The control variable may be shared across multiple invocations
+of `RandomLoadShedder`, by invoking them with the same value for `name`.
+`name` is scoped to the job.
+
+The shedding fraction is changed by calling the function [setRandomShedderFraction(rstring, float64)]
+from any operator in same job. Thus the logic that determines the fraction
+to shed does not define a stream connection to this operator, instead the
+Job Control Plane, through the the control variable, provides the control mechanism.
+When the job is first submitted the fraction of tuples to shed is set to 0.0,
+so no tuples will be shed. Upon any failure, the fraction of tuples to shed
+is maintained by the control variable.
+
+Java primitive operators may also change the shedding fraction
+by modifying the control variable using functionality in the
+`com.ibm.streams.operator.control.variable` package.
+
+Multiple `RandomLoadShedder` operator may share the same control variable,
+by being invoked with the same value for the `name` parameter.
+
+Any application that invokes this operator must include a single invocation
+of the `JobControlPlane` operator.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the control variable for this operator invocation.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="In">
+                <srcCode:description>Port containing tuples that will be copied to the output if they not shed.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="Out">
+                <srcCode:description>Port containing tuples from `In` that were not shed.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="42" index="0" line="119" name="In"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="54" index="0" line="119" name="Out"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="23" line="122" name="$name">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="23" invocationAlias="LoadShedder" line="125" operatorName="Custom">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="125" streamName="Out" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="44" index="0" line="125">
+                      <srcCode:istream column="44" line="125" name="In"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="135" portName="In"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.shedders/namespace-info.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splDoc>
+        <srcCode:description>
+          <srcCode:description>Load shedding operators provide the ability for
+SPL applications to temporarily discard tuples to reduce
+workload, for example an application may shed
+tuples in a low priority analytic flow
+to ensure high priority analytics have
+access to required cluster resources,
+during a peak in activity.
+</srcCode:description>
+        </srcCode:description>
+      </srcCode:splDoc>
+      <srcCode:splNamespace column="11" line="18" name="com.ibm.streamsx.plumbing.shedders"/>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.shedders/exprshedder.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="8" name="com.ibm.streamsx.plumbing.shedders"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="10" namespaceName="com.ibm.streamsx.plumbing.control" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="9" endLine="17" startColumn="1" startLine="11">
+          <srcCode:functionHead column="1" line="11" name="__initExpressionShedder" returnType="boolean">
+            <srcCode:modifiers>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="50" line="11" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  registerExpressionShedder(name);
+  createCustomMetric("shedding", "Expression shedding mode (0:not shedding, 1:shedding), controlled by variable: " + name, Sys.Gauge, 0l);
+  return false;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="9" endLine="35" startColumn="1" startLine="20">
+          <srcCode:functionHead column="1" line="32" name="registerExpressionShedder" returnType="boolean">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Register that an operator invocation will call
+[setExpressionShedderMode(rstring, boolean)] or
+[getExpressionShedderMode(rstring)]. A  shared`boolean` control
+variable is created with name `name`.
+
+This function must be called in the `logic state` section
+of any operator invocation that calls `setExpressionShedderMode`
+or `getExpressionShedderMode`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="return">
+                <srcCode:description>`true`</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="59" line="32" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  createBooleanControlVariable(name, true, false);
+  return true;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="34" endLine="57" startColumn="1" startLine="38">
+          <srcCode:functionHead column="1" line="55" name="setExpressionShedderMode" returnType="void">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Set the shedding mode for [ExpressionLoadShedder] operator
+invocations  using control variable `name`.
+If `shed` is `false`, then no tuples
+will be shed. If `shed` is `true` then any tuple that
+evaluates the operator invocation's expression to `true`
+will be shed
+
+Any operator that invokes this must call [registerExpressionShedder(rstring)]
+in its `logic state` section, passing the same value for `name`.
+Any operator may invoke this method to control [ExpressionLoadShedder] operator
+invocations within the same job, that were invoked with their parameter `name`
+set to `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the variable for the `ExpressionLoadShedder` operator invocation(s).</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="shed">
+                <srcCode:description>`true` to set [ExpressionLoadShedder] invocations to shed tuples, `false` to stop shedding.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+              <srcCode:modifier name="stateful"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="55" line="55" name="name" type="rstring"/>
+              <srcCode:parameter column="69" line="55" name="shed" type="boolean"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  setBooleanControlVariable(name, shed);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:functionDefinition endColumn="35" endLine="71" startColumn="1" startLine="60">
+          <srcCode:functionHead column="1" line="69" name="getExpressionShedderMode" returnType="boolean">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Get the shedding mode for [ExpressionLoadShedder] operator
+invocations using control variable `name`.
+
+Any operator that invokes this must call [registerExpressionShedder(rstring)]
+in its `logic state` section, passing the same value for `name`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the variable for the `ExpressionLoadShedder` operator invocation(s).</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="49" line="69" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return getBooleanControlVariable(name);
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="150" startColumn="1" startLine="74">
+          <srcCode:compositeHead column="1" line="114" name="ExpressionLoadShedder">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Controllable load shedder that sheds (drops) tuples based upon evaluating an expression.
+Tuple that are not shed are copied from the input port to the output
+port without modification. Punctuation marks
+are always forwarded from `In` to `Out`.
+
+This operator creates a `boolean` control variable named
+`name`. Initially the variable is set to `false` which means
+no tuples will be shed. If the variable is changed to
+`true` then tuples will be shed. The selection
+of tuples to shed is defined by `expr`. If 
+
+The control variable may be shared across multiple invocations
+of `ExpreessionLoadShedder`, by invoking them with the same value for `name`.
+`name` is scoped to the job.
+
+The shedding mode is changed by calling the function [setExpressionShedderMode(rstring, boolean)]
+from any operator in same job. Thus the logic that determines the shedding
+mode does not define a stream connection to this operator, instead the
+Job Control Plane, through the the control variable, provides the control mechanism.
+When the job is first submitted the shedding mode is set to `false`,
+so no tuples will be shed. Upon any failure, the shedding
+is maintained by the control variable.
+
+Java primitive operators may also change the shedding mode
+by modifying the control variable using functionality in the
+`com.ibm.streams.operator.control.variable` package.
+
+Multiple `ExpressionLoadShedder` operator may share the same control variable,
+by being invoked with the same value for the `name` parameter.
+
+Any application that invokes this operator must include a single invocation
+of the `spl.control::JobControlPlane` operator.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the control variable for this operator invocation.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="expr">
+                <srcCode:description>Expression evaluated against each tuple when in shedding mode.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="In">
+                <srcCode:description>Port containing tuples that will be copied to the output if they not shed.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="Out">
+                <srcCode:description>Port containing tuples from `In` that were not shed.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="46" index="0" line="114" name="In"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="58" index="0" line="114" name="Out"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="23" line="117" name="$name">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+              <srcCode:parameter column="23" line="118" name="$expr">
+                <srcCode:expressionMode mode="expression" type="boolean"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="23" invocationAlias="LoadShedder" line="121" operatorName="Custom">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="121" streamName="Out" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="44" index="0" line="121">
+                      <srcCode:istream column="44" line="121" name="In"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="131" portName="In"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sampling/sampling.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sampling"/>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="22" endLine="13" startColumn="1" startLine="9">
+          <srcCode:functionHead column="1" line="12" name="percent" returnType="float64">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Convert a percent to a fraction by dividing by 100.0.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="32" line="12" name="percent" type="float64"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return percent / 100.0fl;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="38" startColumn="1" startLine="16">
+          <srcCode:compositeHead column="1" line="27" name="RandomSample">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Randomly sample a stream. Fraction of tuples to
+pass through is specified by parameter `fraction`, defaults to 0.01 (1%) .
+I.e. random selection of 1% of tuples are passed through.
+
+The output stream's schema must be the same as the input schema.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="input" target="IN">
+                <srcCode:description>Stream to be sampled</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="fraction">
+                <srcCode:description>Fraction of the stream to pass through</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="OUT">
+                <srcCode:description>Sampled stream with the tuples randomly selected</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="37" index="0" line="27" name="IN"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="48" index="0" line="27" name="OUT"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="24" defaultValue="0.01fl;" line="30" name="$fraction">
+                <srcCode:expressionMode mode="expression" type="float64"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="24" invocationAlias="Sample" line="32" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="16" index="0" line="32" streamName="OUT" type="IN"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="41" index="0" line="32">
+                      <srcCode:istream column="41" line="32" name="IN"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true"/>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="36" name="filter">
+                      <srcCode:value expr="random() &lt; _fraction"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.replay/replay.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="5" name="com.ibm.streamsx.plumbing.replay"/>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="32" startColumn="1" startLine="7">
+          <srcCode:compositeHead column="1" line="19" name="ReplayBuffer">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Replay tuple buffer.
+Maintains a buffer of `period` seconds of tuples from `In` and replays
+all tuples in the buffer when a tuple is received on `Control`.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="period">
+                <srcCode:description>Seconds to maintain input tuples for.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="In">
+                <srcCode:description>Stream to be buffered.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="Control">
+                <srcCode:description>Control signal to replay tuples.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="Replayed">
+                <srcCode:description>Output stream tuples in the buffer are submitted to.
+</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="37" index="0" line="19" name="In"/>
+              <srcCode:iport column="41" index="1" line="19" name="Control"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="58" index="0" line="19" name="Replayed"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="23" line="22" name="$period">
+                <srcCode:expressionMode mode="expression" type="float64"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="28" invocationAlias="Buffer" line="24" operatorName="Join">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="24" streamName="Replayed" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="42" index="0" line="24">
+                      <srcCode:istream column="42" line="24" name="In"/>
+                    </srcCode:input>
+                    <srcCode:input column="47" index="1" line="24">
+                      <srcCode:istream column="47" line="24" name="Control"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:windows>
+                    <srcCode:window column="5" line="27" partitioned="false" portName="In" windowType="sliding">
+                      <srcCode:evictionPolicy column="19" kind="time" line="27" size="$period"/>
+                      <srcCode:triggerPolicy column="5" kind="count" line="27" size="1"/>
+                    </srcCode:window>
+                    <srcCode:window column="5" line="28" partitioned="false" portName="Control" windowType="sliding">
+                      <srcCode:evictionPolicy column="24" kind="count" line="28" size="0"/>
+                      <srcCode:triggerPolicy column="5" kind="count" line="28" size="1"/>
+                    </srcCode:window>
+                  </srcCode:windows>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="30" name="match">
+                      <srcCode:value expr="true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.leader/leader.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="5" name="com.ibm.streamsx.plumbing.leader"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="7" namespaceName="com.ibm.streamsx.plumbing.switches" tail="::Changeover"/>
+        <srcCode:useDirective column="5" line="8" namespaceName="com.ibm.streamsx.plumbing.replay" tail="::ReplayBuffer"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:typeDefinition endColumn="78" endLine="15" name="LeaderStatus" startColumn="1" startLine="15" value="rstring group, rstring id, boolean leader, timestamp ts">
+          <srcCode:splDoc>
+            <srcCode:description>
+              <srcCode:description>Type of tuples submitted by [LeadershipElection] on its output port.
+If `leader` is true then the [LeadershipElection] operator that submitted it
+is the leader of the group.
+</srcCode:description>
+            </srcCode:description>
+          </srcCode:splDoc>
+        </srcCode:typeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="46" startColumn="1" startLine="17">
+          <srcCode:compositeHead column="1" line="29" name="LeadershipChangeover">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Changeover switch that changes state based upon if the PE is marked as
+the leader of `group`. Requires the application contains a
+`JobControlPlane` operator invocation.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="group">
+                <srcCode:description>Group identifier for the leadership election.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="In">
+                <srcCode:description>Stream to be switched</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="WhenLeader">
+                <srcCode:description>Output stream tuples are submitted to when this PE is the leader in `group`.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="WhenNotLeader">
+                <srcCode:description>Output stream tuples are submitted to when this PE is not the leader in `group`.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="LeaderControl">
+                <srcCode:description>Output stream that submits a tuple when the leadership state of this operator's PE changes. Schema is required to be [LeaderStatus].</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="45" index="0" line="29" name="In"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="57" index="0" line="29" name="WhenLeader"/>
+              <srcCode:oport column="69" index="1" line="29" name="WhenNotLeader"/>
+              <srcCode:oport column="105" index="2" line="29" name="LeaderControl" type="stream&lt;LeaderStatus>"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="29" line="32" name="$group">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="44" line="34" operatorName="LeadershipElection">
+                  <srcCode:outputs>
+                    <srcCode:output column="28" index="0" line="34" streamName="LeaderControl" type="LeaderStatus"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="11" line="37" name="group">
+                      <srcCode:value expr="$group"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="61" invocationAlias="LCS" line="40" operatorName="Changeover">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="40" streamName="WhenLeader" type="In"/>
+                    <srcCode:output column="43" index="1" line="40" streamName="WhenNotLeader" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="78" index="0" line="40">
+                      <srcCode:istream column="78" line="40" name="In"/>
+                    </srcCode:input>
+                    <srcCode:input column="83" index="1" line="40">
+                      <srcCode:istream column="83" line="40" name="LeaderControl"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="12" line="43" name="status">
+                      <srcCode:value expr="leader"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="12" line="44" name="initialState">
+                      <srcCode:value expr="false"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="115" startColumn="1" startLine="48">
+          <srcCode:compositeHead column="1" line="86" name="LeadershipSwitchWithReplay">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Switch operator that only generates
+output when its PE is the leader of the group.
+
+[LeadershipChangeover] is used to elect the leader which
+in turn uses [LeadershipElection].
+
+When this operator's PE is the leader, all tuples
+from `In` are submitted to `Out`.
+
+When this operator's PE is not the leader, the last `period`
+seconds of tuples from `In` are maintained in a replay buffer.
+
+When this operator's PE is elected the leader after a failure
+of the previous leader, all the tuples in the replay buffer
+are submitted to `Out` in addition to tuples arriving on `In`.
+
+For correct behavior all operators in this composite must be fused
+into a single processing element using partition colocation.
+This composite does not itself colocate as it is likely it
+will be fused with additional operators specific to the application.
+
+    stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
+      param
+        group : "lg" ;
+      config
+        placement: partitionColocation("lg1");
+    }
+
+Note that instances of LeadershipSwitchWithReplay
+within the same group must not be partition colocated.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="group">
+                <srcCode:description>Group identifier for the leadership election.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="param" target="period">
+                <srcCode:description>Time window for replay buffer in seconds, defaults to 10.0.
+</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="input" target="In">
+                <srcCode:description>Tuples to be switched </srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="Out">
+                <srcCode:description>Tuples when this PE is the leader in `group`.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="51" index="0" line="86" name="In"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="63" index="0" line="86" name="Out"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="29" line="89" name="$group">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+              <srcCode:parameter column="29" defaultValue="10.0;" line="90" name="$period">
+                <srcCode:expressionMode mode="expression" type="float64"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="94" invocationAlias="Switch" line="94" operatorName="LeadershipChangeover">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="94" streamName="WhenLeader" type="In"/>
+                    <srcCode:output column="39" index="1" line="94" streamName="WhenNotLeader" type="In"/>
+                    <srcCode:output column="75" index="2" line="94" streamName="LeaderControl" type="LeaderStatus"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="25" index="0" line="95">
+                      <srcCode:istream column="25" line="95" name="In"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="98" name="group">
+                      <srcCode:value expr="$group"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="36" line="102" operatorName="Filter">
+                  <srcCode:outputs>
+                    <srcCode:output column="25" index="0" line="102" streamName="IsLeader" type="LeaderControl"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="43" index="0" line="102">
+                      <srcCode:istream column="43" line="102" name="LeaderControl"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="3" line="104" name="filter">
+                      <srcCode:value expr="leader == true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="23" line="107" operatorName="ReplayBuffer">
+                  <srcCode:outputs>
+                    <srcCode:output column="14" index="0" line="107" streamName="Replay" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="36" index="0" line="107">
+                      <srcCode:istream column="36" line="107" name="WhenNotLeader"/>
+                    </srcCode:input>
+                    <srcCode:input column="52" index="1" line="107">
+                      <srcCode:istream column="52" line="107" name="IsLeader"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="110" name="period">
+                      <srcCode:value expr="$period"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="20" line="113" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="14" index="0" line="113" streamName="Out" type="In"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="28" index="0" line="113">
+                      <srcCode:istream column="28" line="113" name="WhenLeader"/>
+                      <srcCode:istream column="39" line="113" name="Replay"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.control/namespace-info.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splDoc>
+        <srcCode:description>
+          <srcCode:description>Functionality that utilizes the
+`JobControlPlane` operator to provide
+intra-job control mechanisms.
+</srcCode:description>
+        </srcCode:description>
+      </srcCode:splDoc>
+      <srcCode:splNamespace column="11" line="14" name="com.ibm.streamsx.plumbing.control"/>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.control/control.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="8" name="com.ibm.streamsx.plumbing.control"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="10" namespaceName="spl.control" tail="::ControlNotificationSource"/>
+        <srcCode:useDirective column="5" line="11" namespaceName="spl.control" tail="::MBeanNotificationBase"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="18" endLine="21" startColumn="1" startLine="13">
+          <srcCode:functionHead column="1" line="19" name="getControlVariableObjectName" returnType="rstring">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Get the object name in the Job Control Plane for
+a shared control variable.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the control variable.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:parameters>
+              <srcCode:parameter column="53" line="19" name="name" type="rstring"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  return "com.ibm.streams.control:type=controlvariable,name=\"" + name + "\"";
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="43" startColumn="1" startLine="25">
+          <srcCode:compositeHead column="1" line="34" name="ControlVariableChange">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Control variable change notifications.
+Issues a tuple for each attribute changed notification
+issued by a control variable.
+
+</srcCode:description>
+              </srcCode:description>
+              <srcCode:annotation name="param" target="name">
+                <srcCode:description>Name of the control variable.</srcCode:description>
+              </srcCode:annotation>
+              <srcCode:annotation name="output" target="CVN">
+                <srcCode:description>Control variable notifications,
+must be type `spl.control::MBeanNotification`.</srcCode:description>
+              </srcCode:annotation>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:outputs>
+              <srcCode:oport column="77" index="0" line="34" name="CVN" type="stream&lt;MBeanNotificationBase>"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="30" line="35" name="$name">
+                <srcCode:expressionMode mode="expression" type="rstring"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="41" line="37" operatorName="ControlNotificationSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="35" index="0" line="37" streamName="CVN" type="MBeanNotificationBase"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="2" line="40" name="objectNames">
+                      <srcCode:value expr="getControlVariableObjectName($name)"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="2" line="41" name="filters">
+                      <srcCode:value expr="&quot;jmx.attribute.change&quot;"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+</srcCode:sourceModel>

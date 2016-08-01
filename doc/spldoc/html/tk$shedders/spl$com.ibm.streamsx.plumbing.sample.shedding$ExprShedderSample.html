@@ -37,6 +37,12 @@
 
       <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__EControlFlow">EControlFlow</a></strong>: The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__ExpressionShedderSample">ExpressionShedderSample</a>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__EDataFlow">EDataFlow</a></strong>: The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>.
+</li>
+
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__ExpressionShedderSample">ExpressionShedderSample</a></strong>
 </li>
 
@@ -71,7 +77,181 @@
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ExpressionShedderSample.svg" width="118" height="199"/>
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ExpressionShedderSample.svg" width="118" height="197"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ExpressionShedderSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled load shedding
+ 		@spl_category(name = "data")
+ 		() as DF = EDataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+ 		@spl_category(name = "control")
+ 		() as CF = EControlFlow()
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__EDataFlow"><h2 class="title sectiontitle splpart">public composite EDataFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>. A Beacon operator submits tuples around 100 per second through a [RandomLoadShedder] and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a> composite. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EDataFlow.svg" width="337" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite EDataFlow
+ {
+ 	graph
+ 		stream&lt;float64 a&gt; Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+                         output Data: a = random();
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		stream&lt;Data&gt; ManagedData = ExpressionLoadShedder(Data)
+ 		{
+ 			param
+ 				name : "sampleShedder" ;
+ 				expr : a &lt; 0.7;
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__EControlFlow"><h2 class="title sectiontitle splpart">public composite EControlFlow</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__ExpressionShedderSample">ExpressionShedderSample</a>. Every thirty seconds the fraction of tuples to shed increases by 0.25, cycling back to 0.0 (no drops) after reaching 1.0 (everything dropped). 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EControlFlow.svg" width="232" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ composite EControlFlow()
+ {
+ 	graph
+ 		stream&lt;boolean cd&gt; Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 30.0 ;
+ 				period : 30.0 ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerExpressionShedder("sampleShedder") ;
+ 					mutable boolean _shed = false ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					_shed = !_shed ;
+ 					setExpressionShedderMode("sampleShedder", _shed) ;
+ 				}
+ 
+ 				config
+ 					tracing : debug ;
+ 			}
+ 
+ }
+
+   </pre>
+
 </div>
 
 </div>

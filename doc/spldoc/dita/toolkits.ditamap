@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map id="spldoc_map">
+<title>streamsx.plumbing</title>
+<topicref navtitle="streamsx.plumbing" locktitle="yes" href="toolkits/toolkits.xml" toc="yes" linking="normal">
+<topicref navtitle="Namespaces" locktitle="yes" href="toolkits/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="toolkits/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Functions" locktitle="yes" href="toolkits/ix$Function.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Types" locktitle="yes" href="toolkits/ix$Type.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="SynchronizeSamples 1.0.0" locktitle="yes" href="tk$SynchronizeSamples/tk$SynchronizeSamples.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$SynchronizeSamples/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$SynchronizeSamples/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Functions" locktitle="yes" href="tk$SynchronizeSamples/ix$Function.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.synchronize" locktitle="yes" href="tk$SynchronizeSamples/ns$com.ibm.streamsx.plumbing.sample.synchronize.xml" toc="yes" linking="none">
+<topicref navtitle="SynchronizeThreeStreams.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="SynchronizeTwoStreams.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="SynchronizeTwoStreamsWithPunctuation.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing 0.3.0.__dev__" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/tk$com.ibm.streamsx.plumbing.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Functions" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ix$Function.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Types" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ix$Type.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.balancers" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.balancers.xml" toc="yes" linking="none">
+<topicref navtitle="ElasticLoadBalance" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.control" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.control.xml" toc="yes" linking="none">
+<topicref navtitle="Java Native Functions" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="control.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.control$control.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.leader" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.leader.xml" toc="yes" linking="none">
+<topicref navtitle="LeadershipElection" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="leader.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.replay" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.replay.xml" toc="yes" linking="none">
+<topicref navtitle="replay.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.replay$replay.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sampling" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.sampling.xml" toc="yes" linking="none">
+<topicref navtitle="sampling.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.sampling$sampling.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.shedders" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.shedders.xml" toc="yes" linking="none">
+<topicref navtitle="exprshedder.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="randomshedder.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.switches" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.switches.xml" toc="yes" linking="none">
+<topicref navtitle="changeover.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$changeover.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="controlledswitch.spl" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.synchronize" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.synchronize.xml" toc="yes" linking="none">
+<topicref navtitle="Synchronize" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="redundant 1.0.0" locktitle="yes" href="tk$redundant/tk$redundant.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$redundant/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$redundant/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Types" locktitle="yes" href="tk$redundant/ix$Type.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.redundant.active" locktitle="yes" href="tk$redundant/ns$com.ibm.streamsx.plumbing.sample.redundant.active.xml" toc="yes" linking="none">
+<topicref navtitle="ActiveReplicasManual2.spl" locktitle="yes" href="tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="ActiveReplicasManual3.spl" locktitle="yes" href="tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="ActiveReplicasUDP.spl" locktitle="yes" href="tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.redundant.flow" locktitle="yes" href="tk$redundant/ns$com.ibm.streamsx.plumbing.sample.redundant.flow.xml" toc="yes" linking="none">
+<topicref navtitle="Flow.spl" locktitle="yes" href="tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="shedders 1.0.0" locktitle="yes" href="tk$shedders/tk$shedders.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$shedders/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$shedders/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.shedding" locktitle="yes" href="tk$shedders/ns$com.ibm.streamsx.plumbing.sample.shedding.xml" toc="yes" linking="none">
+<topicref navtitle="ExprShedderSample.spl" locktitle="yes" href="tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="RandomShedderSample.spl" locktitle="yes" href="tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="switches 1.0.0" locktitle="yes" href="tk$switches/tk$switches.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$switches/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$switches/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.switches" locktitle="yes" href="tk$switches/ns$com.ibm.streamsx.plumbing.sample.switches.xml" toc="yes" linking="none">
+<topicref navtitle="ControlledChangeover.spl" locktitle="yes" href="tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="ControlledSwitchSample.spl" locktitle="yes" href="tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="Operator Model" locktitle="yes" href="references/OperatorModel.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Function Model" locktitle="yes" href="references/FunctionModel.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</map>
+

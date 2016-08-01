@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>exprshedder.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.shedders.xml">com.ibm.streamsx.plumbing.shedders</xref> &gt; exprshedder.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref></b>: Controllable load shedder that sheds (drops) tuples based upon evaluating an expression.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Functions</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function____initExpressionShedder.rstring">__initExpressionShedder(rstring)</xref></b>
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref></b>: Get the shedding mode for <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations using control variable <tt>name</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__registerExpressionShedder.rstring">registerExpressionShedder(rstring)</xref></b>: Register that an operator invocation will call <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref> or <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref></b>: Set the shedding mode for <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations  using control variable <tt>name</tt>.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ExpressionLoadShedder">
+  <title outputclass="splpart">composite ExpressionLoadShedder(output Out; input In)</title>
+</section>
+<section>
+
+<p>Controllable load shedder that sheds (drops) tuples based upon evaluating an expression. Tuple that are not shed are copied from the input port to the output port without modification. Punctuation marks are always forwarded from <tt>In</tt> to <tt>Out</tt>.
+</p>
+<p>This operator creates a <tt>boolean</tt> control variable named <tt>name</tt>. Initially the variable is set to <tt>false</tt> which means no tuples will be shed. If the variable is changed to <tt>true</tt> then tuples will be shed. The selection of tuples to shed is defined by <tt>expr</tt>. If 
+</p>
+<p>The control variable may be shared across multiple invocations of <tt>ExpreessionLoadShedder</tt>, by invoking them with the same value for <tt>name</tt>. <tt>name</tt> is scoped to the job.
+</p>
+<p>The shedding mode is changed by calling the function <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref> from any operator in same job. Thus the logic that determines the shedding mode does not define a stream connection to this operator, instead the Job Control Plane, through the the control variable, provides the control mechanism. When the job is first submitted the shedding mode is set to <tt>false</tt>, so no tuples will be shed. Upon any failure, the shedding is maintained by the control variable.
+</p>
+<p>Java primitive operators may also change the shedding mode by modifying the control variable using functionality in the <tt>com.ibm.streams.operator.control.variable</tt> package.
+</p>
+<p>Multiple <tt>ExpressionLoadShedder</tt> operator may share the same control variable, by being invoked with the same value for the <tt>name</tt> parameter.
+</p>
+<p>Any application that invokes this operator must include a single invocation of the <tt>spl.control::JobControlPlane</tt> operator.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>name</b>: Name of the control variable for this operator invocation.
+</sli>
+<sli><b>expr</b>: Expression evaluated against each tuple when in shedding mode. 
+</sli>
+</sl>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>In</b>: Port containing tuples that will be copied to the output if they not shed.
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>Out</b>: Port containing tuples from <tt>In</tt> that were not shed.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.shedders$ExpressionLoadShedder.svg" width="142" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.shedders$ExpressionLoadShedder.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ExpressionLoadShedder(input In ; output Out)
+ {
+ 	param
+ 		expression<rstring> $name ;
+ 		expression<boolean> $expr ;
+ 	graph
+ 
+ 		(stream<In> Out) as LoadShedder = Custom(In)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 				    rstring _name = $name;
+ 					boolean __unused = __initExpressionShedder(_name) ;
+ 					mutable boolean currentShed = false;
+ 				}
+ 
+ 				onTuple In :
+ 				{
+ 				    boolean shed = getExpressionShedderMode(_name);
+ 					if(!shed)
+ 					{
+ 						submit(In, Out) ;
+ 					}
+ 					else if (!($expr))
+ 					{
+ 					   submit(In, Out) ;
+ 					}
+ 					
+ 					if (shed != currentShed) {
+ 					    setCustomMetricValue("shedding", shed ? 1l : 0l) ;
+ 					    currentShed = shed;
+ 					}
+ 
+ 				}
+ 			}
+ }
+]]>
+   </codeblock>
+</section>
+<section>
+  <title outputclass="splhead-1">Functions</title>
+</section>
+<section id="function____initExpressionShedder.rstring">
+  <title outputclass="splpart">boolean __initExpressionShedder(rstring name)</title>
+</section><section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>name</b>
+   </sli>
+ </sl>
+</section>
+<section>
+<title>Returns</title>
+<sl><sli>
+<tt>boolean</tt>
+</sli></sl>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ stateful boolean __initExpressionShedder(rstring name)
+ {
+ 	registerExpressionShedder(name) ;
+ 	createCustomMetric("shedding",
+ 		"Expression shedding mode (0:not shedding, 1:shedding), controlled by variable: " +
+ 		name, Sys.Gauge, 0l) ;
+ 	return false ;
+ }
+]]>
+   </codeblock>
+</section>
+<section id="function__registerExpressionShedder.rstring">
+  <title outputclass="splpart">boolean registerExpressionShedder(rstring name)</title>
+</section><section>
+
+<p>Register that an operator invocation will call <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref> or <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref>. A  shared<tt>boolean</tt> control variable is created with name <tt>name</tt>.
+</p>
+<p>This function must be called in the <tt>logic state</tt> section of any operator invocation that calls <tt>setExpressionShedderMode</tt> or <tt>getExpressionShedderMode</tt>.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>name</b>
+   </sli>
+ </sl>
+</section>
+<section>
+<title>Returns</title>
+<sl><sli>
+<tt>true</tt></sli></sl>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ public stateful boolean registerExpressionShedder(rstring name)
+ {
+ 	createBooleanControlVariable(name, true, false) ;
+ 	return true ;
+ }
+]]>
+   </codeblock>
+</section>
+<section id="function__setExpressionShedderMode.rstring.boolean">
+  <title outputclass="splpart">void setExpressionShedderMode(rstring name, boolean shed)</title>
+</section><section>
+
+<p>Set the shedding mode for <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations  using control variable <tt>name</tt>. If <tt>shed</tt> is <tt>false</tt>, then no tuples will be shed. If <tt>shed</tt> is <tt>true</tt> then any tuple that evaluates the operator invocation's expression to <tt>true</tt> will be shed
+</p>
+<p>Any operator that invokes this must call <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__registerExpressionShedder.rstring">registerExpressionShedder(rstring)</xref> in its <tt>logic state</tt> section, passing the same value for <tt>name</tt>. Any operator may invoke this method to control <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations within the same job, that were invoked with their parameter <tt>name</tt> set to <tt>name</tt>.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>name</b>: Name of the variable for the <tt>ExpressionLoadShedder</tt> operator invocation(s).
+   </sli>
+   <sli>
+<b>shed</b>: <tt>true</tt> to set <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> invocations to shed tuples, <tt>false</tt> to stop shedding.
+   </sli>
+ </sl>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ public stateful void setExpressionShedderMode(rstring name, boolean shed)
+ {
+ 	setBooleanControlVariable(name, shed) ;
+ }
+]]>
+   </codeblock>
+</section>
+<section id="function__getExpressionShedderMode.rstring">
+  <title outputclass="splpart">boolean getExpressionShedderMode(rstring name)</title>
+</section><section>
+
+<p>Get the shedding mode for <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations using control variable <tt>name</tt>.
+</p>
+<p>Any operator that invokes this must call <xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__registerExpressionShedder.rstring">registerExpressionShedder(rstring)</xref> in its <tt>logic state</tt> section, passing the same value for <tt>name</tt>.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>name</b>: Name of the variable for the <tt>ExpressionLoadShedder</tt> operator invocation(s).
+   </sli>
+ </sl>
+</section>
+<section>
+<title>Returns</title>
+<sl><sli>
+<tt>boolean</tt>
+</sli></sl>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ public boolean getExpressionShedderMode(rstring name)
+ {
+ 	return getBooleanControlVariable(name) ;
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

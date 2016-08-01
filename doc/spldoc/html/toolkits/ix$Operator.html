@@ -30,9 +30,51 @@
   
 <dl class="dl">
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</a></dt>
+
+  <dd class="dd">Execution of two copies of Flow() to provide a single level of redundancy.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</a></dt>
+
+  <dd class="dd">Execution of three copies of Flow() to provide two levels of redundancy.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.html#spldoc_compilationunit__composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</a></dt>
+
+  <dd class="dd">Execution of redundant copies of Flow() using <tt class="ph tt">@parallel</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Analytics">Analytics</a></dt>
+
+  <dd class="dd">The "analytics" portion of the application including the source.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__composite_operator__Changeover">Changeover</a></dt>
 
   <dd class="dd">Changeover switch.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.html#spldoc_compilationunit__composite_operator__ChangeoverDataFlow">ChangeoverDataFlow</a></dt>
+
+  <dd class="dd">The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a></dt>
+
+  <dd class="dd">The flow that controls <a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a></dt>
+
+  <dd class="dd">The flow that controls <a class="xref" href="../tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="../tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a>.</dd>
 
 
 
@@ -66,6 +108,30 @@
 
 
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a></dt>
+
+  <dd class="dd">The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a></dt>
+
+  <dd class="dd">The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__EControlFlow">EControlFlow</a></dt>
+
+  <dd class="dd">The flow that controls <a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__ExpressionShedderSample">ExpressionShedderSample</a>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__EDataFlow">EDataFlow</a></dt>
+
+  <dd class="dd">The data flow that will demonstrate load shedding using <tt class="ph tt">RandomLoadShedder</tt>.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.html">ElasticLoadBalance</a></dt>
 
   <dd class="dd">This operator distributes tuples to the output ports that have the capacity to receive them.</dd>
@@ -81,6 +147,30 @@
   <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.html#spldoc_compilationunit__composite_operator__ExpressionShedderSample">ExpressionShedderSample</a></dt>
 
   <dd class="dd"/>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Flow">Flow</a></dt>
+
+  <dd class="dd">Simple flow to be executed multiple times to provide redundant copies.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipChangeover">LeadershipChangeover</a></dt>
+
+  <dd class="dd">Changeover switch that changes state based upon if the PE is marked as the leader of <tt class="ph tt">group</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a></dt>
+
+  <dd class="dd">Performs a leadership election between other operator invocations with the same <tt class="ph tt">group</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</a></dt>
+
+  <dd class="dd">Switch operator that only generates output when its PE is the leader of the group.</dd>
 
 
 
@@ -105,6 +195,48 @@
   <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a></dt>
 
   <dd class="dd"/>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.replay$replay.html#spldoc_compilationunit__composite_operator__ReplayBuffer">ReplayBuffer</a></dt>
+
+  <dd class="dd">Replay tuple buffer.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__SendSMS">SendSMS</a></dt>
+
+  <dd class="dd">The sink of the application.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Source">Source</a></dt>
+
+  <dd class="dd"/>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.html">Synchronize</a></dt>
+
+  <dd class="dd">Synchronize is an operator for the IBM InfoSphere Streams product.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.html#spldoc_compilationunit__composite_operator__SynchronizeThreeStreams">SynchronizeThreeStreams</a></dt>
+
+  <dd class="dd">This sample application for the Synchronize operator reads three pre-recorded streams from three files.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.html#spldoc_compilationunit__composite_operator__SynchronizeTwoStreams">SynchronizeTwoStreams</a></dt>
+
+  <dd class="dd">This sample application for the Synchronize operator reads a pair of streams from files.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.html#spldoc_compilationunit__composite_operator__SynchronizeTwoStreamsWithPunctuation">SynchronizeTwoStreamsWithPunctuation</a></dt>
+
+  <dd class="dd">This sample application for the Synchronize operator reads a pair of streams from three pairs of files.</dd>
 
 
 </dl>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_operator">
+<title>Operator <tt>Synchronize</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.synchronize.xml">com.ibm.streamsx.plumbing.synchronize</xref> &gt; Synchronize</p>
+</section>
+<section outputclass="splprimop">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.svg" width="672" height="112">
+    <alt>Primitive operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.svg
+</alt>
+  </image>
+</section>
+<section>
+
+<p>Synchronize is an operator for the IBM InfoSphere Streams product.  The operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
+</p>
+<p>The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
+</p>
+<p>The Synchronize operator synchronizes streams by receiving tuples in all of its input ports and forwarding them downstream in order according to their timestamps, temporarily holding tuples in faster streams until slower streams catch up.  Optionally, the operator can pace tuples by delaying them according to the differences between their timestamps, according to a time-scaling factor. 
+</p>
+<p>The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
+</p>
+<p>The Synchronize operator recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps.
+</p>
+<p>The Synchronize operator requires that each input port run on a different thread of execution:
+</p>
+<p>
+<ul>
+<li> One way to ensure this is for the tuples received on each input port to originate from different source operators, since each source operator runs on a seprate thread.  In this case, the Synchronize operator may block faster source operators, slowing them down to the pace of the slowest source operator.</li>
+<li>
+<p> Another way to ensure that each input port runs on a different thread is to configure the Synchronize operator with a 'threadedPort' for each input port.  The size of the queue specified for each input port determines how far ahead the faster sources can get, relative to the slowest source, and what happens if the fastest sources fill up an input port's queue.
+</p></li>
+</ul>
+</p>
+<p><b>Note:</b> The values of each stream's timestamps should have overlapping ranges.  If they do not, the operator will block indefinitely a stream whose first tuple has a timestamp larger than any of the other streams.
+</p>
+</section>
+<section>
+<title outputclass="splhead-1">Summary</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Ports</dt>
+  <dd>This operator has 1 or more input ports and 1 or more output ports.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Windowing</dt>
+  <dd>This operator does not accept any windowing configurations.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Parameters</dt>
+  <dd>This operator supports 2 parameters.
+<p> Required: 
+<xref href="#spldoc_operator/parameter__timeAttributes">timeAttributes</xref>
+
+</p>
+<p> Optional: 
+<xref href="#spldoc_operator/parameter__timeFactor">timeFactor</xref>
+
+</p></dd>
+ </dlentry>
+ <dlentry>
+  <dt>Metrics</dt>
+  <dd>This operator does not report any metrics.</dd>
+ </dlentry>
+</dl></section>
+<section>
+<title outputclass="splhead-1">Properties</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Implementation</dt>
+  <dd>C++</dd>
+ </dlentry>
+ <dlentry>
+  <dt><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__providessinglethreadedexecutioncontext">Threading</xref></dt>
+  <dd><tt>Never</tt> - Operator never provides a single threaded execution context.</dd>
+ </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set">Input Ports</xref></b></p><dl>
+  <dlentry>
+   <dt>Ports (0...)</dt>
+   <dd>
+
+<p>The Synchronize operator may be configured with one or more input ports, each of which may have a different tuple type.  Each input port's type must have some numeric attribute that increases in value monotonically with each tuple.  This is most commonly a timestamp.
+</p>
+<p>Each input port must run on a different thread of execution.  This occurs implicitly when each port is fed by a different source operator.  This may also be specified explicitly by configuring the input ports with 'threaded queues'.
+</p>
+   <dl>
+    <dlentry>
+      <dt>Properties</dt>
+      <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__controlport">ControlPort</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__tuplemutationallowed">TupleMutationAllowed</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__windowingmode">WindowingMode</xref>: NonWindowed
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</xref>: Oblivious
+     </sli>
+   </sl>
+      </dd>    </dlentry>
+   </dl>
+   <p></p>
+   </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set">Output Ports</xref></b></p><dl>
+  <dlentry>
+     <dt>Assignments</dt>
+     <dd>This operator does not allow assignments to output attributes.</dd>
+  </dlentry>
+</dl>
+<dl>
+  <dlentry>
+   <dt>Ports (0...)</dt>
+   <dd>
+
+<p>This operator must have the same number of output ports as input ports, and their types must match.  The operator forwards tuples and punctuation from each input port to the corresponding output port without altering or reordering them.
+</p>
+   <p></p>
+    <p></p>
+   <dl>
+    <dlentry>
+      <dt>Properties</dt>
+      <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__tuplemutationallowed">TupleMutationAllowed</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</xref>: Preserving
+     </sli>
+   </sl>
+</dd>    </dlentry>
+   </dl>
+   <p></p>
+   </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters">Parameters</xref></b></p>This operator supports 2 parameters.<dl>
+  <dlentry id="parameter__timeAttributes">
+     <dt><tt>timeAttributes</tt></dt>
+     <dd>
+<p>This required parameter specifies a list of input attributes that contain timestamps. The number of input attributes specified must be equal to the number of input ports, and each input attribute specified must be present in the corresponding input port. All attributes must be of a numeric type.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Attribute
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__timeFactor">
+     <dt><tt>timeFactor</tt></dt>
+     <dd>
+<p>This optional parameter specifies a time-scaling factor for forwarding the tuples.  If specified, tuples are delayed according to the differences between their timestamps, divided by this factor.  If its value is greater than 1.0, then tuples of each stream will be forwarded faster than they were originally produced, or, if less than 1.0, tuples will be forwarded slower. 
+</p>
+<p>For example, a factor of <tt>2.0</tt> will forward tuples at twice the rate indicated by their timestamps, and a factor of <tt>0.5</tt> will forward tuples  at half the rate indicated by their timestamps.
+</p>
+<p>If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as it can, while respecting their timestamps.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: float64
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+
