@@ -1,0 +1,10 @@
+	@$(CXX) $(SPL_CXXFLAGS) -o bin/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeTwoStreamsWithPunctuation-a.dpe -fPIC -shared $(PEcom.ibm.streamsx.plumbing.sample.synchronize.SynchronizeTwoStreamsWithPunctuation-a) -lstreams-stdtk-runtime -lstreams_boost_iostreams -lstreams_boost_filesystem -lstreams_boost_system -lstreams-stdtk-runtime -lstreams_boost_iostreams -lstreams_boost_filesystem -lstreams_boost_system $(SPL_LDFLAGS)build/pe/BeJwztHAtS81zy8xJzUvMTQ0uKUpNzI03NAAJwjhGfqW5SalFUK6RUXBlXnJGUX5eZlVqCrI6M2SJ4My87HgAWb8jBN.o \
+	    build/operator/NumberStream.o \
+	    build/type/BeJwrMcw0zAQABRMBCp.o \
+	    build/operator/EvenFilenameStream.o \
+	    build/type/BeJwrMSy2SMvMSc1LzE0FABy3ASS.o \
+	    build/operator/EvenStream.o \
+	    build/type/BeJyrNI03Ti4uMy6pKDFOyswzTcrJT842ycnMSwUAf_1wJCo.o \
+	    build/type/BeJwrMXIzKcnMTS02zUlMSs0BACoHAV4.o \
+	    build/operator/SynchronizedEvenStream.o \
+	    build/operator/SynchronizedSink.o 

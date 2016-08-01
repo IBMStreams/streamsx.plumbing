@@ -1,0 +1,24 @@
+// eJwzYHQsLclnNGZ0LUvNCy4pSk3MZQyuzEvOKMrPy6xKTcEhHJyZlw0AW7MVCL
+
+
+
+#ifndef BEJWZNHATS80LLILKTCYNNZIKRSXLZIJKZ8USSK1BKJA0Q5YIZSZLJGCAALWVDT_H_
+#define BEJWZNHATS80LLILKTCYNNZIKRSXLZIJKZ8USSK1BKJA0Q5YIZSZLJGCAALWVDT_H_
+
+#include <SPL/Runtime/ProcessingElement/PE.h>
+
+#define MYPE BeJwzNHAtS80LLilKTcyNNzIKrsxLzijKz8usSk1BkjA0Q5YIzszLjgcAaLwVDT
+
+namespace SPL 
+{
+    class MYPE : public SPL::PE
+    {
+    public:
+        MYPE(bool isStandalone=false);
+    };
+} // end namespace SPL
+
+#undef MYPE
+
+#endif // BEJWZNHATS80LLILKTCYNNZIKRSXLZIJKZ8USSK1BKJA0Q5YIZSZLJGCAALWVDT_H_
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_toolkits">
+<title>streamsx.plumbing</title>
+<refbody>
+<section>
+  <title outputclass="splhead-1">Indexes</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Namespace.xml">Namespaces</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Operator.xml">Operators</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Function.xml">Functions</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Type.xml">Types</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Toolkits</title>
+<dl>
+<dlentry>
+  <dt><xref href="../tk$SynchronizeSamples/tk$SynchronizeSamples.xml">SynchronizeSamples 1.0.0</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref></dt>
+  <dd>Plumbing operators manipulate the flow of tuples in a Streams application, but are not part of the logic of the application.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$redundant/tk$redundant.xml">redundant 1.0.0</xref></dt>
+  <dd>Sample applications demonstrating redundant stream processing.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$shedders/tk$shedders.xml">shedders 1.0.0</xref></dt>
+  <dd>Sample applications that use load shedding operators</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$switches/tk$switches.xml">switches 1.0.0</xref></dt>
+  <dd>Sample applications that use switch operators</dd>
+</dlentry>
+</dl>
+</section>
+<section>
+  <title outputclass="splhead-1">References</title>
+  <dl>
+    <dlentry><dt><xref href="../references/OperatorModel.xml">Operator Model</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="../references/FunctionModel.xml">Function Model</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+</refbody>
+</reference>
+

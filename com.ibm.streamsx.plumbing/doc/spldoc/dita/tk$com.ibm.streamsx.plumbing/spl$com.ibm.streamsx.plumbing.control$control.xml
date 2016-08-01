@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>control.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.control.xml">com.ibm.streamsx.plumbing.control</xref> &gt; control.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/composite_operator__ControlVariableChange">ControlVariableChange</xref></b>: Control variable change notifications.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Functions</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/function__getControlVariableObjectName.rstring">getControlVariableObjectName(rstring)</xref></b>: Get the object name in the Job Control Plane for a shared control variable.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ControlVariableChange">
+  <title outputclass="splpart">composite ControlVariableChange(output CVN)</title>
+</section>
+<section>
+
+<p>Control variable change notifications. Issues a tuple for each attribute changed notification issued by a control variable.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>name</b>: Name of the control variable.
+</sli>
+</sl>
+</section>
+<section>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>CVN</b>: Control variable notifications, must be type <tt>spl.control::MBeanNotification</tt>.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.control$ControlVariableChange.svg" width="142" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.control$ControlVariableChange.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ControlVariableChange(output stream<MBeanNotificationBase> CVN) {
+    param expression<rstring> $name;
+    graph
+     stream<MBeanNotificationBase> CVN = ControlNotificationSource()
+     {
+        param
+ 	objectNames : getControlVariableObjectName($name);
+ 	filters : "jmx.attribute.change";
+     }
+ }
+]]>
+   </codeblock>
+</section>
+<section>
+  <title outputclass="splhead-1">Functions</title>
+</section>
+<section id="function__getControlVariableObjectName.rstring">
+  <title outputclass="splpart">rstring getControlVariableObjectName(rstring name)</title>
+</section><section>
+
+<p>Get the object name in the Job Control Plane for a shared control variable.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>name</b>: Name of the control variable.
+   </sli>
+ </sl>
+</section>
+<section>
+<title>Returns</title>
+<sl><sli>
+<tt>rstring</tt>
+</sli></sl>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ public rstring getControlVariableObjectName(rstring name) {
+     return "com.ibm.streams.control:type=controlvariable,name=\""
+         + name + "\"";  
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

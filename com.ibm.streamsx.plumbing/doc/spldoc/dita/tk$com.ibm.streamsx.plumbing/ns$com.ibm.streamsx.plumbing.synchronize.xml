@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.synchronize</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; com.ibm.streamsx.plumbing.synchronize</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></b>: Synchronize is an operator for the IBM InfoSphere Streams product.
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Types: streamsx.plumbing</title>
+<refbody>
+<section>
+<p>
+<xref href="toolkits.xml">streamsx.plumbing</xref> &gt; Types</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Types</title>
+<dl>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/type__LeaderStatus">LeaderStatus</xref></dt>
+  <dd>Type of tuples submitted by <xref href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref> on its output port.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/type__T">T</xref></dt>
+  <dd>Type used in <xref href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref>.</dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

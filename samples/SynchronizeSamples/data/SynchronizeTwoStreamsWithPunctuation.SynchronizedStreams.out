@@ -1,0 +1,63 @@
+{time=1001,label="one thousand one"}
+{time=1002,label="one thousand two"}
+{time=1003,label="one thousand three"}
+{time=1004,label="one thousand four"}
+{time=1005,label="one thousand five"}
+{time=1006,label="one thousand six"}
+{time=1007,label="one thousand seven"}
+{time=1008,label="one thousand eight"}
+{time=1009,label="one thousand nine"}
+{time=1010,label="one thousand ten"}
+Punctuation received: WindowMarker
+Punctuation received: WindowMarker
+{time=1.1,label="one point one"}
+{time=2.2,label="two point two"}
+{time=3.3,label="three point three"}
+{time=4.4,label="four point four"}
+{time=5.5,label="five point five"}
+{time=6.6,label="six point six"}
+{time=7,label="seven point zero"}
+{time=7.1,label="seven point one"}
+{time=7.2,label="seven point two"}
+{time=7.3,label="seven point three"}
+{time=7.4,label="seven point four"}
+{time=7.5,label="seven point five"}
+{time=7.6,label="seven point six"}
+{time=7.7,label="seven point seven"}
+{time=7.8,label="seven point eight"}
+{time=7.9,label="seven point nine"}
+{time=8,label="eight point zero"}
+{time=8.2,label="eight point two"}
+{time=8.4,label="eight point four"}
+{time=8.6,label="eight point six"}
+{time=8.8,label="eight point eight"}
+{time=9.9,label="nine point nine"}
+{time=10,label="ten point zero"}
+Punctuation received: WindowMarker
+Punctuation received: WindowMarker
+{time=11111.1,label="one one one one one point one"}
+{time=11112.2,label="one one one one two point two"}
+{time=11113.3,label="one one one one three point three"}
+{time=11114.4,label="one one one one four point four"}
+{time=11115.5,label="one one one one five point five"}
+{time=11116.6,label="one one one one six point six"}
+{time=11117,label="one one one one seven point zero"}
+{time=11117.1,label="one one one one seven point one"}
+{time=11117.2,label="one one one one seven point two"}
+{time=11117.3,label="one one one one seven point three"}
+{time=11117.4,label="one one one one seven point four"}
+{time=11117.5,label="one one one one seven point five"}
+{time=11117.6,label="one one one one seven point six"}
+{time=11117.7,label="one one one one seven point seven"}
+{time=11117.8,label="one one one one seven point eight"}
+{time=11117.9,label="one one one one seven point nine"}
+{time=11118,label="one one one one eight point zero"}
+{time=11118.2,label="one one one one eight point two"}
+{time=11118.4,label="one one one one eight point four"}
+{time=11118.6,label="one one one one eight point six"}
+{time=11118.8,label="one one one one eight point eight"}
+{time=11119.9,label="one one one one nine point nine"}
+{time=11120,label="one one one two zero point zero"}
+Punctuation received: WindowMarker
+Punctuation received: WindowMarker
+Punctuation received: FinalMarker

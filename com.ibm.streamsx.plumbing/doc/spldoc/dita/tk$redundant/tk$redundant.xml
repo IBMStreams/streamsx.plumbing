@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_toolkit">
+<title outputclass="spltoolkitname">Toolkit <tt>redundant 1.0.0</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; redundant 1.0.0</p>
+</section>
+<section>
+<title outputclass="splhead-1">General Information</title>
+
+<p>Sample applications demonstrating redundant stream processing.
+</p>
+<dl>
+  <dlentry>
+  <dt>Version</dt>
+  <dd>1.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Required Product Version</dt>
+  <dd>4.0.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Author</dt>
+  <dd>IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/streamsx.plumbing</dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Indexes</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Namespace.xml">Namespaces</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Operator.xml">Operators</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Type.xml">Types</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Namespaces</title>
+  <dl>
+    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.sample.redundant.active.xml">com.ibm.streamsx.plumbing.sample.redundant.active</xref></dt>
+      <dd></dd>
+      <dd>
+Sample applications demonstrating redundant active flows.
+      </dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml#spldoc_compilationunit/composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.sample.redundant.flow.xml">com.ibm.streamsx.plumbing.sample.redundant.flow</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Analytics">Analytics</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__SendSMS">SendSMS</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Source">Source</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Types</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/type__T">T</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>  </dl>
+</section>
+</refbody>
+</reference>
+

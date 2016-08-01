@@ -1,0 +1,78 @@
+<%
+# Licensed Materials - Property of IBM
+# Synchronize toolkit for IBM InfoSphere Streams
+# (c) Copyright IBM Corp. 2013
+# All rights reserved.
+
+# US Government Users Restricted Rights - 
+# Use, duplication or disclosure restricted 
+# by GSA ADP Schedule Contract with IBM Corp.
+%>
+
+
+<%
+  use strict;
+  use warnings;
+%>
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+#include <vector>
+
+#include <SPL/Runtime/Utility/Mutex.h>
+#include <SPL/Runtime/Utility/CV.h>
+
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Notify port readiness
+  void allPortsReady(); 
+
+  // Notify pending shutdown
+  void prepareToShutdown(); 
+
+  // Processing for source and threaded operators   
+  void process(uint32_t idx);
+    
+  // Tuple processing for mutating ports 
+  void process(Tuple & tuple, uint32_t port);
+    
+  // Tuple processing for non-mutating ports
+  void process(Tuple const & tuple, uint32_t port);
+
+  // Punctuation processing
+  void process(Punctuation const & punct, uint32_t port);
+
+private:
+
+  // for synchronizing tuples
+  volatile double previousSubmitTime; // clock time, shared by all ports
+  volatile double previousTupleTimestamp; // tuple time, shared by all ports
+  volatile double nextTimestamp[<%=$model->getNumberOfInputPorts()%>]; // tuple time, per port
+
+  // for synchronizing threads at punctuation
+  uint32_t stopCount[<%=$model->getNumberOfInputPorts()%>];
+  SPL::Mutex mutexStopped; 
+  SPL::CV cvStopped; 
+  
+  // for synchronizing threads after punctuation
+  uint32_t clearCount[<%=$model->getNumberOfInputPorts()%>];
+  SPL::Mutex mutexCleared; 
+  SPL::CV cvCleared; 
+  
+  // private functions
+  bool itsOurTurn(uint32_t ourPort);
+  bool allCaughtUp(uint32_t* counters, uint32_t port);
+
+}; 
+
+
+<%SPL::CodeGen::headerEpilogue($model);%>
+

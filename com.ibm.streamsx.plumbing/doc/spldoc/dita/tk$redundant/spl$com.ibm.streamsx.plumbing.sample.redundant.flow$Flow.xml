@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>Flow.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$redundant.xml">redundant 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.redundant.flow.xml">com.ibm.streamsx.plumbing.sample.redundant.flow</xref> &gt; Flow.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Analytics">Analytics</xref></b>: The "analytics" portion of the application including the source.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref></b>: Simple flow to be executed multiple times to provide redundant copies.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__SendSMS">SendSMS</xref></b>: The sink of the application.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Source">Source</xref></b>
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Types</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/type__T">T</xref></b>: Type used in <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref>.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__Flow">
+  <title outputclass="splpart">composite Flow</title>
+</section>
+<section>
+
+<p>Simple flow to be executed multiple times to provide redundant copies. The actual functionality of the flow is basically nothing, it is just to demonstrate the execution of redundant copies.
+</p>
+<p>The premise is an application that reads from some data source (say a message broker), analyzes the streams and then sends SMS alerts based upon the analysis. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.svg" width="337" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite Flow
+ {
+     graph
+     stream<T> Messages = Source() {}
+     stream<T> Alerts = Analytics(Messages) {}
+     () as SMS = SendSMS(Alerts) {}
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__Source">
+  <title outputclass="splpart">composite Source(output Messages)</title>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>Messages</b>
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Source.svg" width="248" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Source.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite Source(output Messages)
+ {
+     graph
+         stream<T> Raw = Beacon()
+         {
+           param
+             period: 0.05;
+           output Raw:
+                id = IterationCount();
+         }
+         // Random value for v that will be consistent
+         // across multiple replicas
+         stream<T> Messages = Functor(Raw) {
+           logic
+              state: {
+                 mutable uint64 seed = 9221ul;
+                 mutable uint64 next = 0l;
+              }
+              onTuple Raw: {
+                seed = seed * 1103515245ul + 12345ul;
+                next = (seed / 65536ul) % 1000ul;
+              }
+           output Messages: v = ((float64) next) / 1000.0l;
+         }
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__Analytics">
+  <title outputclass="splpart">composite Analytics(output Alerts; input Messages)</title>
+</section>
+<section>
+
+<p>The "analytics" portion of the application including the source. 
+</p>
+</section>
+<section>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>Messages</b>
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>Alerts</b>
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Analytics.svg" width="362" height="152">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Analytics.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite Analytics(input Messages; output Alerts)
+ {
+     graph
+         stream<T> FA1 = Functor(Messages) { }
+         stream<T> FA2 = Filter(FA1) {
+           param filter: v <= 0.10;
+         }
+ 
+         stream<T> FB1 = Functor(Messages) { }
+         stream<T> FB2 = Functor(FB1) {
+           param filter: v >= 0.80;
+         }
+ 
+         stream<T> Alerts = Functor(FA2,FB2) { }
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__SendSMS">
+  <title outputclass="splpart">composite SendSMS(input Alerts)</title>
+</section>
+<section>
+
+<p>The sink of the application. This does nothing but consume the tuples. It it representing a hypothetical operator that sends a SMS (text message) alert for each tuple received. 
+</p>
+</section>
+<section>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>Alerts</b>
+</sli>
+</sl>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$SendSMS.svg" width="142" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$SendSMS.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite SendSMS(input Alerts)
+ {
+     graph
+      () as SMS = Custom(Alerts) { }
+ }
+]]>
+   </codeblock>
+</section>
+<section>
+  <title outputclass="splhead-1">Types</title>
+</section>
+<section id="type__T">
+  <title outputclass="splpart">T</title>
+</section><section>
+
+<p>Type used in <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref>. 
+</p>
+</section>
+<section>
+   <p>
+<tt>T = uint64 id, float64 v;</tt>
+   </p>
+</section>
+</refbody>
+</reference>
+

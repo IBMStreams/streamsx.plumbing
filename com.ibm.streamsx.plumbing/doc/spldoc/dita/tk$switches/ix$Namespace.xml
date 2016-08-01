@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Namespaces: switches 1.0.0</title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$switches.xml">switches 1.0.0</xref> &gt; Namespaces</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Namespaces</title>
+<dl>
+<dlentry>
+  <dt><xref href="ns$com.ibm.streamsx.plumbing.sample.switches.xml">com.ibm.streamsx.plumbing.sample.switches</xref></dt>
+  <dd></dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

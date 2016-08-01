@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Operators: SynchronizeSamples 1.0.0</title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$SynchronizeSamples.xml">SynchronizeSamples 1.0.0</xref> &gt; Operators</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<dl>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/composite_operator__SynchronizeThreeStreams">SynchronizeThreeStreams</xref></dt>
+  <dd>This sample application for the Synchronize operator reads three pre-recorded streams from three files.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.xml#spldoc_compilationunit/composite_operator__SynchronizeTwoStreams">SynchronizeTwoStreams</xref></dt>
+  <dd>This sample application for the Synchronize operator reads a pair of streams from files.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.xml#spldoc_compilationunit/composite_operator__SynchronizeTwoStreamsWithPunctuation">SynchronizeTwoStreamsWithPunctuation</xref></dt>
+  <dd>This sample application for the Synchronize operator reads a pair of streams from three pairs of files.</dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<peModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/pe" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <context>
+    <class>BeJwzNvTMS0nNK0lNCSjNSy4pTQSyggtSU5MzDINLilITc_0ONjHHJGBqj8Q0hfKPgzLzseCPT4Mq85Iyi_1LzMKgydBiFFiXnFyUWZBSXxAJ6_1DEU</class>
+    <avoidRuntimeYield>Auto</avoidRuntimeYield>
+  </context>
+
+  <operators>
+    <operator>
+      <class>IndentedPunctuatedSpeech1Stream</class>
+    </operator>
+    <operator>
+      <class>PunctuatedSpeech1Stream</class>
+    </operator>
+    <operator>
+      <class>Speech1Stream</class>
+    </operator>
+    <operator>
+      <class>Speech2Sink</class>
+    </operator>
+    <operator>
+      <class>SynchronizedSpeech1Stream</class>
+    </operator>
+    <operator>
+      <class>Transcript</class>
+    </operator>
+  </operators>
+
+</peModel>

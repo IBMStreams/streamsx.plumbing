@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<enumerationModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/enumeration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <class>BeJyrNIo3S0pNyy9KNU1MK0ktAgAw9gX7</class>
+
+  <enumerators>
+    <enumerator>
+      <name>before</name>
+    </enumerator>
+    <enumerator>
+      <name>after</name>
+    </enumerator>
+  </enumerators>
+
+</enumerationModel>

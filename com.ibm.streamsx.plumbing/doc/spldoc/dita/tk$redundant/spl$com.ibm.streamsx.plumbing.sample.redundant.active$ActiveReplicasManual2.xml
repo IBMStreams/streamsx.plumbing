@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>ActiveReplicasManual2.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$redundant.xml">redundant 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.redundant.active.xml">com.ibm.streamsx.plumbing.sample.redundant.active</xref> &gt; ActiveReplicasManual2.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</xref></b>: Execution of two copies of Flow() to provide a single level of redundancy.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ActiveReplicasManual2">
+  <title outputclass="splpart">composite ActiveReplicasManual2</title>
+</section>
+<section>
+
+<p>Execution of two copies of Flow() to provide a single level of redundancy. The flows are separated into two separate host pools (Rack_0 and Rack_1) to allow each flow to be executed on a different set of hosts. In this case the pools are defined by host tags, requiring two distinct sets of hosts, one with hosts tagged with <tt>rack_0</tt>, the other with hosts tagged with <tt>rack_1</tt>. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.svg" width="118" height="152">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ActiveReplicasManual2
+ {
+     graph
+       () as RedundantFlow_0 = Flow()
+       {
+         config placement: host(Rack_0);
+       }
+ 
+       () as RedundantFlow_1 = Flow()
+       {
+         config placement: host(Rack_1);
+       }
+ 
+     config
+        // Pools are created shared to allow
+        // other applications to use the same hosts.
+        hostPool:
+             Rack_0 = createPool({tags=["rack_0"]}, Sys.Shared),
+             Rack_1 = createPool({tags=["rack_1"]}, Sys.Shared);      
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

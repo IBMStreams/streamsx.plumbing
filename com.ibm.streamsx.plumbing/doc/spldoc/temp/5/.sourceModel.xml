@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<srcCode:sourceModel xmlns:srcCode="http://www.ibm.com/xmlns/prod/streams/spl/sourceCode" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.redundant.flow/Flow.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.redundant.flow"/>
+      <srcCode:definitions>
+        <srcCode:typeDefinition endColumn="30" endLine="12" name="T" startColumn="1" startLine="12" value="uint64 id, float64 v">
+          <srcCode:splDoc>
+            <srcCode:description>
+              <srcCode:description>Type used in [Flow].
+</srcCode:description>
+            </srcCode:description>
+          </srcCode:splDoc>
+        </srcCode:typeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="31" startColumn="1" startLine="14">
+          <srcCode:compositeHead column="1" line="25" name="Flow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Simple flow to be executed multiple times
+to provide redundant copies.
+The actual functionality of the flow
+is basically nothing, it is just to demonstrate
+the execution of redundant copies.
+
+The premise is an application that reads from
+some data source (say a message broker), analyzes the
+streams and then sends SMS alerts based upon the analysis.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="26" line="28" operatorName="Source">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="28" streamName="Messages" type="T"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="24" line="29" operatorName="Analytics">
+                  <srcCode:outputs>
+                    <srcCode:output column="15" index="0" line="29" streamName="Alerts" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="34" index="0" line="29">
+                      <srcCode:istream column="34" line="29" name="Messages"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="11" invocationAlias="SMS" line="30" operatorName="SendSMS">
+                  <srcCode:inputs>
+                    <srcCode:input column="25" index="0" line="30">
+                      <srcCode:istream column="25" line="30" name="Alerts"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="57" startColumn="1" startLine="33">
+          <srcCode:compositeHead column="1" line="33" name="Source">
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:outputs>
+              <srcCode:oport column="32" index="0" line="33" name="Messages"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="25" line="36" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="36" streamName="Raw" type="T"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="13" line="39" name="period">
+                      <srcCode:value expr="0.05"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="18" line="40" portName="Raw">
+                      <srcCode:attributeAssignment column="16" line="41" name="id" outputFunction="IterationCount"/>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="30" line="45" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="45" streamName="Messages" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="38" index="0" line="45">
+                      <srcCode:istream column="38" line="45" name="Raw"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="22" line="51" portName="Raw"/>
+                  </srcCode:logic>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="18" line="55" portName="Messages">
+                      <srcCode:attributeAssignment column="28" line="55" name="v">
+                        <srcCode:value expr="((float64)next) / 1000.0l"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="77" startColumn="1" startLine="59">
+          <srcCode:compositeHead column="1" line="63" name="Analytics">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The "analytics" portion of the application
+including the source.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="34" index="0" line="63" name="Messages"/>
+            </srcCode:inputs>
+            <srcCode:outputs>
+              <srcCode:oport column="51" index="0" line="63" name="Alerts"/>
+            </srcCode:outputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="25" line="66" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="66" streamName="FA1" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="66">
+                      <srcCode:istream column="33" line="66" name="Messages"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="25" line="67" operatorName="Filter">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="67" streamName="FA2" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="32" index="0" line="67">
+                      <srcCode:istream column="32" line="67" name="FA1"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="68" name="filter">
+                      <srcCode:value expr="v &lt;= 0.10"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="25" line="71" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="71" streamName="FB1" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="71">
+                      <srcCode:istream column="33" line="71" name="Messages"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="25" line="72" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="72" streamName="FB2" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="72">
+                      <srcCode:istream column="33" line="72" name="FB1"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="17" line="73" name="filter">
+                      <srcCode:value expr="v >= 0.80"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="28" line="76" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="76" streamName="Alerts" type="T"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="36" index="0" line="76">
+                      <srcCode:istream column="36" line="76" name="FA2"/>
+                      <srcCode:istream column="40" line="76" name="FB2"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="90" startColumn="1" startLine="79">
+          <srcCode:compositeHead column="1" line="86" name="SendSMS">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The sink of the application.
+This does nothing but consume the tuples.
+It it representing a hypothetical operator
+that sends a SMS (text message) alert for
+each tuple received.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+            <srcCode:inputs>
+              <srcCode:iport column="32" index="0" line="86" name="Alerts"/>
+            </srcCode:inputs>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="12" invocationAlias="SMS" line="89" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="25" index="0" line="89">
+                      <srcCode:istream column="25" line="89" name="Alerts"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.redundant.active/namespace-info.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splDoc>
+        <srcCode:description>
+          <srcCode:description>Sample applications demonstrating redundant active flows.
+
+An application submitted to an IBM® Streams instance represents a
+dataflow graph or flow, processing continuous data streams.
+Streams provides capabilities to restart processing elements that have
+failed due to host or process failure. However, while the processing
+element (PE) is restarting, the flow is not fully functional,
+and therefore may not be processing the streams correctly or with the
+required latency. Availability may be increased by executing multiple copies
+of the flow, called active replicas, so that with N active replicas,
+N-1 failures can be tolerated. For example with two flows, a single failure
+leaves one of the flows correctly processing the streams with the required
+latency. With the processing elements being restartable, then the failed
+flow can recover allowing the system to return to two active flows.
+Availability is increased by increasing the number of active replicas
+at the cost of duplicated processing and hardware.
+A flow (or active replica) is considered to be available when all PEs in the flow are healthy.
+
+This namespace contains applications demonstrating execution of
+active replicas. In each case N independent flows are executed
+on a different set of hosts so that a single host failure only
+affects a single flow. The application [com.ibm.streamsx.plumbing.sample.redundant.flow::Flow] is a simulation representing reading messages from
+a message broker, analyzing them to find faults and sending SMS
+alert messages based upon the analysis.
+
+With active replicas all N copies of the application are executing,
+each with its own independent connection to the message broker
+(simulated by a Beacon) and independent sink operator to send an
+SMS alert (simulated by a Custom that does nothing). This
+means that any receiver of the alerts will receive N copies of
+an alert, one for each replica. In some scenarios this may be acceptable,
+for example:
+* The alert is to turn off a system in case of imminent failure and receiving multiple off messages is not an issue. In this case multiple active replicas ensure the lowest latency for the alert by not having any recovery time since at least one replica is always active.
+* The external system receiving the output from the flow can itself deduplicate messages, for example a database using an UPDATE or UPSERT statement.
+
+The sample applications are:
+
+* [ActiveReplicasManual2] - Execution of two copies of a flow in a single job on different sets of hosts using host pool tags.
+* [ActiveReplicasManual3] - Execution of three copies of a flow in a single job on different sets of hosts using host pool tags.
+* [ActiveReplicasUDP] - Execution of N copies of a flow in a single job on different sets of hosts using host pool tag replication. N can be set by a submission time parameter, defaulting to three.
+</srcCode:description>
+        </srcCode:description>
+      </srcCode:splDoc>
+      <srcCode:splNamespace column="11" line="51" name="com.ibm.streamsx.plumbing.sample.redundant.active"/>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasManual2.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.redundant.active"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.sample.redundant.flow" tail="::Flow"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="38" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="19" name="ActiveReplicasManual2">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Execution of two copies of Flow() to provide a single level
+of redundancy. The flows are separated into two separate host
+pools (Rack_0 and Rack_1) to allow each flow to be executed
+on a different set of hosts. In this case the pools are defined
+by host tags, requiring two distinct sets of hosts, one
+with hosts tagged with `rack_0`, the other with hosts tagged with `rack_1`.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow_0" line="22" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="24" name="placement">
+                      <srcCode:option column="27" line="24" value="host">
+                        <srcCode:parameter value="Rack_0"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow_1" line="27" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="29" name="placement">
+                      <srcCode:option column="27" line="29" value="host">
+                        <srcCode:parameter value="Rack_1"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+            <srcCode:configs>
+              <srcCode:config column="8" line="35" name="hostPool">
+                <srcCode:option column="13" line="36" value="Rack_0">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack_0&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+                <srcCode:option column="13" line="37" value="Rack_1">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack_1&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+              </srcCode:config>
+            </srcCode:configs>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasManual3.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.redundant.active"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.sample.redundant.flow" tail="::Flow"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="44" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="19" name="ActiveReplicasManual3">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Execution of three copies of Flow() to provide two levels
+of redundancy. The flows are separated into three separate host
+pools (Rack_0, Rack_1, Rack2) to allow each flow to be executed
+on a different set of hosts. In this case the pools are defined
+by host tags, requiring three distinct sets of hosts, 
+tagged with `rack_0`, `rack_1` and `rack_2`.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow_0" line="22" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="24" name="placement">
+                      <srcCode:option column="27" line="24" value="host">
+                        <srcCode:parameter value="Rack_0"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow_1" line="27" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="29" name="placement">
+                      <srcCode:option column="27" line="29" value="host">
+                        <srcCode:parameter value="Rack_1"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow_2" line="32" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="34" name="placement">
+                      <srcCode:option column="27" line="34" value="host">
+                        <srcCode:parameter value="Rack_2"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+            <srcCode:configs>
+              <srcCode:config column="8" line="40" name="hostPool">
+                <srcCode:option column="13" line="41" value="Rack_0">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack_0&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+                <srcCode:option column="13" line="42" value="Rack_1">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack_1&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+                <srcCode:option column="13" line="43" value="Rack_2">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack_2&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+              </srcCode:config>
+            </srcCode:configs>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasUDP.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.redundant.active"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.sample.redundant.flow" tail="::Flow"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="56" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="39" name="ActiveReplicasUDP">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Execution of redundant copies of Flow() using `@parallel`.
+`Flow` is invoked once in the source code but replicated using
+`@parallel`. The number of replicas (parallel width) is set
+by the submission time paramater `replicas` defaulting to three.
+
+This technique only works for redundant flows if the
+composite `@parallel` is applied to has no inputs. If
+the composite had inputs then each replica (channel) would
+only receive a subset of the tuples, thus not acting as
+a redundant flow.
+
+Each replica flow will execute in its own hostpool defined
+by the host tag `rack_n` where n is the channel number.
+This is achieved by the `replicateHostTags` argument to
+`@parallel`. The host tag `rack` is replicated to N copies
+where N is the width of the parallel region, with the
+tags being `rack_0 ... rack_N`. 
+
+The replication of the host tags also drives the replication
+of host pools that use the tags, thus at runtime there
+are N host pools corresponding to the replicated host tags.
+
+In this case there is no host pool `Rack` that corresponds
+to the tag `rack`. It would only be created if there was an
+operator invocation that was placed on hostpool `Rack` without
+using replicated hsot tags.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:parameters>
+              <srcCode:parameter column="27" defaultValue="(int32)getSubmissionTimeValue(&quot;replicas&quot;, &quot;3&quot;);" line="42" name="$replicas">
+                <srcCode:expressionMode mode="expression" type="int32"/>
+              </srcCode:parameter>
+            </srcCode:parameters>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="13" invocationAlias="RedundantFlow" line="46" operatorName="Flow"/>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:configs>
+                    <srcCode:config column="16" line="48" name="placement">
+                      <srcCode:option column="27" line="48" value="host">
+                        <srcCode:parameter value="Rack"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+            <srcCode:configs>
+              <srcCode:config column="8" line="54" name="hostPool">
+                <srcCode:option column="13" line="55" value="Rack">
+                  <srcCode:parameter value="createPool({tags = [&quot;rack&quot;]}, Sys.Shared)"/>
+                </srcCode:option>
+              </srcCode:config>
+            </srcCode:configs>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+</srcCode:sourceModel>

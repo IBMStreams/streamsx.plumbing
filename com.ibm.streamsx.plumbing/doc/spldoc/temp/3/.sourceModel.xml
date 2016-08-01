@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<srcCode:sourceModel xmlns:srcCode="http://www.ibm.com/xmlns/prod/streams/spl/sourceCode" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeTwoStreams.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="6" name="com.ibm.streamsx.plumbing.sample.synchronize"/>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="48" startColumn="1" startLine="8">
+          <srcCode:compositeHead column="1" line="18" name="SynchronizeTwoStreams">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>This sample application for the Synchronize operator reads a pair of
+streams from files.  Each file contains synthentic timestamps and text labels,
+with even- and odd-numbered values in different files.
+
+The Synchronize operator synchronizes the streams according to the timestamps 
+and merges them into a single output file.
+
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:types column="2" line="20">
+              <srcCode:type endColumn="47" endLine="20" name="SampleType" startColumn="7" startLine="20" value="float64 time, rstring label"/>
+            </srcCode:types>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="34" line="26" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="26" streamName="EvenStream" type="SampleType"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="55" line="26" name="file">
+                      <srcCode:value expr="&quot;sync2.even.in&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="78" line="26" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="33" line="30" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="30" streamName="OddStream" type="SampleType"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="54" line="30" name="file">
+                      <srcCode:value expr="&quot;sync2.odd.in&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="76" line="30" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="49" line="35" operatorName="::">
+                  <srcCode:outputs>
+                    <srcCode:output column="23" index="0" line="34" streamName="SynchronizedEvenStream" type="SampleType"/>
+                    <srcCode:output column="23" index="1" line="35" streamName="SynchronizedOddStream" type="SampleType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="In1" column="70" index="0" line="36">
+                      <srcCode:istream column="56" line="36" name="EvenStream"/>
+                    </srcCode:input>
+                    <srcCode:input alias="In2" column="69" index="1" line="37">
+                      <srcCode:istream column="56" line="37" name="OddStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="3" line="39" name="timeAttributes">
+                      <srcCode:value expr="In1.time"/>
+                      <srcCode:value expr="In2.time"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="3" line="40" name="timeFactor">
+                      <srcCode:value expr="2.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="9" line="41" name="threadedPort">
+                      <srcCode:option column="3" line="42" value="queue">
+                        <srcCode:parameter value="In1"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="100"/>
+                      </srcCode:option>
+                      <srcCode:option column="3" line="43" value="queue">
+                        <srcCode:parameter value="In2"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="100"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="8" invocationAlias="SynchronizedSink" line="47" operatorName="FileSink">
+                  <srcCode:inputs>
+                    <srcCode:input column="36" index="0" line="47">
+                      <srcCode:istream column="36" line="47" name="SynchronizedEvenStream"/>
+                      <srcCode:istream column="60" line="47" name="SynchronizedOddStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="91" line="47" name="file">
+                      <srcCode:value expr="&quot;SynchronizeTwoStreams.SynchronizedStreams.out&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="146" line="47" name="format">
+                      <srcCode:value expr="txt"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="159" line="47" name="flush">
+                      <srcCode:value expr="1u"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="170" line="47" name="writePunctuations">
+                      <srcCode:value expr="true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeTwoStreamsWithPunctuation.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="6" name="com.ibm.streamsx.plumbing.sample.synchronize"/>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="72" startColumn="1" startLine="8">
+          <srcCode:compositeHead column="1" line="19" name="SynchronizeTwoStreamsWithPunctuation">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>This sample application for the Synchronize operator reads a pair of streams
+from three pairs of files.  Each file contains synthentic timestamps and text
+labels, with even- and odd-numbered values in each pair of files. Punctuation is
+automatically inserted into the streams at the end of each file.
+
+The Synchronize operator synchronizes the streams according to the timestamps 
+and merges them into a single output file. 
+
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:types column="2" line="21">
+              <srcCode:type endColumn="47" endLine="21" name="SampleType" startColumn="7" startLine="21" value="float64 time, rstring label"/>
+            </srcCode:types>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="40" line="27" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output alias="Out" column="34" index="0" line="27" streamName="NumberStream" type="int32 i"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="28" name="iterations">
+                      <srcCode:value expr="3"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="24" line="28" name="period">
+                      <srcCode:value expr="0.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="29" portName="Out">
+                      <srcCode:attributeAssignment column="14" line="29" name="i">
+                        <srcCode:value expr="(int32)IterationCount() + 1"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="55" line="33" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output alias="Out" column="49" index="0" line="33" streamName="EvenFilenameStream" type="rstring filename"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="In" column="79" index="0" line="33">
+                      <srcCode:istream column="63" line="33" name="NumberStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="34" portName="Out">
+                      <srcCode:attributeAssignment column="14" line="34" name="filename">
+                        <srcCode:value expr="&quot;sync&quot; + (rstring)i + &quot;.even.in&quot;"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                  <srcCode:configs>
+                    <srcCode:config column="9" line="35" name="threadedPort">
+                      <srcCode:option column="23" line="35" value="queue">
+                        <srcCode:parameter value="In"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="100"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="54" line="39" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output alias="Out" column="48" index="0" line="39" streamName="OddFilenameStream" type="rstring filename"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="In" column="78" index="0" line="39">
+                      <srcCode:istream column="62" line="39" name="NumberStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="40" portName="Out">
+                      <srcCode:attributeAssignment column="14" line="40" name="filename">
+                        <srcCode:value expr="&quot;sync&quot; + (rstring)i + &quot;.odd.in&quot;"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                  <srcCode:configs>
+                    <srcCode:config column="9" line="41" name="threadedPort">
+                      <srcCode:option column="24" line="41" value="queue">
+                        <srcCode:parameter value="In"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="100"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="34" line="45" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="45" streamName="EvenStream" type="SampleType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="45" index="0" line="45">
+                      <srcCode:istream column="45" line="45" name="EvenFilenameStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="73" line="45" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="86" line="45" name="initDelay">
+                      <srcCode:value expr="0.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="33" line="49" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="49" streamName="OddStream" type="SampleType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="44" index="0" line="49">
+                      <srcCode:istream column="44" line="49" name="OddFilenameStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="71" line="49" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="84" line="49" name="initDelay">
+                      <srcCode:value expr="0.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="49" line="54" operatorName="::">
+                  <srcCode:outputs>
+                    <srcCode:output column="23" index="0" line="53" streamName="SynchronizedEvenStream" type="SampleType"/>
+                    <srcCode:output column="23" index="1" line="54" streamName="SynchronizedOddStream" type="SampleType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="In1" column="68" index="0" line="55">
+                      <srcCode:istream column="54" line="55" name="EvenStream"/>
+                    </srcCode:input>
+                    <srcCode:input alias="In2" column="67" index="1" line="56">
+                      <srcCode:istream column="54" line="56" name="OddStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="3" line="58" name="timeAttributes">
+                      <srcCode:value expr="In1.time"/>
+                      <srcCode:value expr="In2.time"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="3" line="59" name="timeFactor">
+                      <srcCode:value expr="2.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="8" invocationAlias="SynchronizedSink" line="63" operatorName="FileSink">
+                  <srcCode:inputs>
+                    <srcCode:input column="36" index="0" line="63">
+                      <srcCode:istream column="36" line="63" name="SynchronizedEvenStream"/>
+                      <srcCode:istream column="60" line="63" name="SynchronizedOddStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="91" line="63" name="file">
+                      <srcCode:value expr="&quot;SynchronizeTwoStreamsWithPunctuation.SynchronizedStreams.out&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="161" line="63" name="format">
+                      <srcCode:value expr="txt"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="174" line="63" name="flush">
+                      <srcCode:value expr="1u"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="185" line="63" name="writePunctuations">
+                      <srcCode:value expr="true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="6" name="com.ibm.streamsx.plumbing.sample.synchronize"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="8" namespaceName="spl.file" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:functionDefinition endColumn="78" endLine="19" startColumn="1" startLine="10">
+          <srcCode:functionHead column="1" line="10" name="SecondsToTimestamp" returnType="rstring">
+            <srcCode:parameters>
+              <srcCode:parameter column="36" line="10" name="elapsed" type="float64"/>
+            </srcCode:parameters>
+          </srcCode:functionHead>
+          <srcCode:functionBody>{
+  int32 hours = (int32)(elapsed / 3600.0);
+  int32 minutes = (int32)((elapsed - (float64)hours * 3600.0) / 60.0);
+  int32 seconds = (int32)(fmod(elapsed, 60.0));
+  int32 milliseconds = (int32)(fmod(elapsed, 1.0) * 1000.0);
+  return (rstring)minutes + ":" + (seconds &lt; 10 ? "0" : "") + (rstring)seconds + "." + (milliseconds &lt; 100 ? "0" : "") + (milliseconds &lt; 10 ? "0" : "") + (rstring)milliseconds;
+}
+</srcCode:functionBody>
+        </srcCode:functionDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="139" startColumn="1" startLine="22">
+          <srcCode:compositeHead column="1" line="38" name="SynchronizeThreeStreams">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>This sample application for the Synchronize operator reads three pre-recorded
+streams from three files. Two files contain phrases of text from the audio
+tracks of several short videos, as transcribed by two speech recognition
+engines. The third file contains phrases of text from the subtitle track of one
+of the videos. Each tuple created from each line of each file includes the
+starting time of each phrase, relative to the beginning of its video, and
+duration of the phrase in the video. Punctuation is manually inserted into the
+streams at the end of each video's phrases.
+
+The Synchronize operator uses the starting times to synchronize the three
+streams, which are merged into a single transcript, with each stream's phrases
+in a separate column, annotated with their starting times and durations.
+
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:types column="2" line="40">
+              <srcCode:type endColumn="20" endLine="46" name="PhraseType" startColumn="7" startLine="40" value="rstring outputDirectory, rstring outputFilename, rstring indention, rstring phrase, float64 start, float64 duration"/>
+            </srcCode:types>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="37" line="52" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="52" streamName="Speech1Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="58" line="52" name="file">
+                      <srcCode:value expr="&quot;sync4.Speech1PhraseStream.in&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="96" line="52" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="47" line="54" operatorName="Punctor">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="54" streamName="PunctuatedSpeech1Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="55" index="0" line="54">
+                      <srcCode:istream column="55" line="54" name="Speech1Stream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="55" name="punctuate">
+                      <srcCode:value expr="outputDirectory == &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="52" line="55" name="position">
+                      <srcCode:value expr="after"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="63" line="57" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output alias="Out1" column="56" index="0" line="57" streamName="IndentedPunctuatedSpeech1Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="Out" column="98" index="0" line="57">
+                      <srcCode:istream column="71" line="57" name="PunctuatedSpeech1Stream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="58" name="filter">
+                      <srcCode:value expr="outputDirectory != &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="59" portName="Out1">
+                      <srcCode:attributeAssignment column="15" line="59" name="indention">
+                        <srcCode:value expr="&quot;&quot;"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="37" line="64" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="64" streamName="Speech2Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="58" line="64" name="file">
+                      <srcCode:value expr="&quot;sync4.Speech2PhraseStream.in&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="96" line="64" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="47" line="66" operatorName="Punctor">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="66" streamName="PunctuatedSpeech2Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="55" index="0" line="66">
+                      <srcCode:istream column="55" line="66" name="Speech2Stream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="67" name="punctuate">
+                      <srcCode:value expr="outputDirectory == &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="52" line="67" name="position">
+                      <srcCode:value expr="after"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="63" line="69" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output alias="Out2" column="56" index="0" line="69" streamName="IndentedPunctuatedSpeech2Stream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="71" index="0" line="69">
+                      <srcCode:istream column="71" line="69" name="PunctuatedSpeech2Stream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="70" name="filter">
+                      <srcCode:value expr="outputDirectory != &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="71" portName="Out2">
+                      <srcCode:attributeAssignment column="15" line="71" name="indention">
+                        <srcCode:value expr="&quot;\t\t\t\t&quot;"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="38" line="76" operatorName="FileSource">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="76" streamName="SubtitleStream" type="PhraseType"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="59" line="76" name="file">
+                      <srcCode:value expr="&quot;sync4.SubtitleStream.in&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="92" line="76" name="format">
+                      <srcCode:value expr="csv"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="48" line="78" operatorName="Punctor">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="78" streamName="PunctuatedSubtitleStream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="56" index="0" line="78">
+                      <srcCode:istream column="56" line="78" name="SubtitleStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="79" name="punctuate">
+                      <srcCode:value expr="outputDirectory == &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="52" line="79" name="position">
+                      <srcCode:value expr="after"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="64" line="81" operatorName="Functor">
+                  <srcCode:outputs>
+                    <srcCode:output alias="OutT" column="57" index="0" line="81" streamName="IndentedPunctuatedSubtitleStream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="72" index="0" line="81">
+                      <srcCode:istream column="72" line="81" name="PunctuatedSubtitleStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="82" name="filter">
+                      <srcCode:value expr="outputDirectory != &quot;WindowMarker&quot;"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="9" line="83" portName="OutT">
+                      <srcCode:attributeAssignment column="15" line="83" name="indention">
+                        <srcCode:value expr="&quot;\t\t\t\t\t\t\t\t&quot;"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="54" line="89" operatorName="::">
+                  <srcCode:outputs>
+                    <srcCode:output column="23" index="0" line="87" streamName="SynchronizedSpeech1Stream" type="PhraseType"/>
+                    <srcCode:output column="23" index="1" line="88" streamName="SynchronizedSpeech2Stream" type="PhraseType"/>
+                    <srcCode:output column="23" index="2" line="89" streamName="SynchronizedSubtitleStream" type="PhraseType"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input alias="In1" column="96" index="0" line="90">
+                      <srcCode:istream column="61" line="90" name="IndentedPunctuatedSpeech1Stream"/>
+                    </srcCode:input>
+                    <srcCode:input alias="In2" column="96" index="1" line="91">
+                      <srcCode:istream column="61" line="91" name="IndentedPunctuatedSpeech2Stream"/>
+                    </srcCode:input>
+                    <srcCode:input alias="InT" column="97" index="2" line="92">
+                      <srcCode:istream column="61" line="92" name="IndentedPunctuatedSubtitleStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="3" line="94" name="timeAttributes">
+                      <srcCode:value expr="In1.start"/>
+                      <srcCode:value expr="In2.start"/>
+                      <srcCode:value expr="InT.start"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="3" line="95" name="timeFactor">
+                      <srcCode:value expr="0.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="9" line="96" name="threadedPort">
+                      <srcCode:option column="3" line="97" value="queue">
+                        <srcCode:parameter value="In1"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="1000"/>
+                      </srcCode:option>
+                      <srcCode:option column="3" line="98" value="queue">
+                        <srcCode:parameter value="In2"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="1000"/>
+                      </srcCode:option>
+                      <srcCode:option column="3" line="99" value="queue">
+                        <srcCode:parameter value="InT"/>
+                        <srcCode:parameter value="Sys.DropFirst"/>
+                        <srcCode:parameter value="1000"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="8" invocationAlias="Transcript" line="103" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input alias="In" column="112" index="0" line="103">
+                      <srcCode:istream column="28" line="103" name="SynchronizedSpeech1Stream"/>
+                      <srcCode:istream column="55" line="103" name="SynchronizedSpeech2Stream"/>
+                      <srcCode:istream column="82" line="103" name="SynchronizedSubtitleStream"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="10" line="107" portName="In"/>
+                    <srcCode:onPunct column="10" line="117" portName="In"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+</srcCode:sourceModel>

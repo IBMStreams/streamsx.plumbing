@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<toolkitModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/toolkit" productVersion="4.1.1.0" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:ti="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <toolkit name="com.ibm.streamsx.plumbing" requiredProductVersion="4.0.0.0" version="0.3.0.__dev__">
+    <description>Plumbing operators manipulate the flow of tuples in a Streams application, but are not part of the logic of the application.
+   </description>
+    <uriTable>
+      <uri index="1" value="com.ibm.streamsx.plumbing.switches/changeover.spl"/>
+      <uri index="9" value="com.ibm.streamsx.plumbing.control/namespace-info.spl"/>
+      <uri index="12" value="com.ibm.streamsx.plumbing.synchronize/Synchronize"/>
+      <uri index="11" value="com.ibm.streamsx.plumbing.balancers/ElasticLoadBalance"/>
+      <uri index="7" value="com.ibm.streamsx.plumbing.replay/replay.spl"/>
+      <uri index="6" value="com.ibm.streamsx.plumbing.sampling/sampling.spl"/>
+      <uri index="3" value="com.ibm.streamsx.plumbing.shedders/randomshedder.spl"/>
+      <uri index="5" value="com.ibm.streamsx.plumbing.shedders/exprshedder.spl"/>
+      <uri index="8" value="com.ibm.streamsx.plumbing.leader/leader.spl"/>
+      <uri index="13" value="com.ibm.streamsx.plumbing.leader/LeadershipElection"/>
+      <uri index="2" value="com.ibm.streamsx.plumbing.switches/controlledswitch.spl"/>
+      <uri index="14" value="com.ibm.streamsx.plumbing.control/native.function/javaFunction.xml"/>
+      <uri index="4" value="com.ibm.streamsx.plumbing.shedders/namespace-info.spl"/>
+      <uri index="10" value="com.ibm.streamsx.plumbing.control/control.spl"/>
+    </uriTable>
+    <namespace name="com.ibm.streamsx.plumbing.replay">
+      <compositeOp column="18" line="19" name="ReplayBuffer" potentialMain="false" public="true" uriIndex="7">
+        <parameter metaType="Expression" name="period" optional="false" type="&lt;float64>"/>
+        <inputPort name="In" portIndex="0"/>
+        <inputPort name="Control" portIndex="1"/>
+        <outputPort name="Replayed" portIndex="0"/>
+      </compositeOp>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.balancers">
+      <primitiveOp language="Cpp" modelUriIndex="11" name="ElasticLoadBalance" public="true">
+        <description>This operator distributes tuples to the output ports that have the capacity to receive them. In addition, it will dynamically determine the number of output ports that should be active in order to maximize throughput.</description>
+        <parameter cardinality="1" expressionMode="AttributeFree" name="bufferSize" optional="false" type="uint32">
+          <description>Size of each buffer used to store the input tuples for each output port</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="congestionTolerance" optional="true" type="float64">
+          <description>Value between 0 and 1 which determines which level of congestion to consider "high congestion." The default is 0.5. Values near 0 tolerate less congestion; values near 1 tolerate more congestion.</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="throughputTolerance" optional="true" type="float64">
+          <description>Value between 0 and 1 which determines when we consider throughput to have improved. The default is 0.05. Values near 0 will respond to smaller changes in throughput more; values near 1 will require larger changes in throughput to respond.</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="measurePeriod" optional="true" type="int64">
+          <description>Period of time, in seconds, for how often to measure and adapt. The default is 5 seconds.</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="rapidScaling" optional="true" type="boolean">
+          <description>When turned on, rapid scaling will change many levels at once, rather than just one. The default is false, wich turns rapid scaling off.</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="elastic" optional="true" type="boolean">
+          <description>Controls whether or not elasticity is enabled. The default is true, which turns elasticity on. If set to false, elasticity is turned off, and all output ports will be active, unless an initial thread level was provided.</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Constant" name="initialActivePorts" optional="true" type="uint32">
+          <description>Number of active ports (which is the same as number of threads) to start with. The default is 1 with elasticity turned on; the default is the number of output ports if elasticity is turned off. If elasticity is turned off, this parameter's value will control the thread level for the lifetime of the operator.</description>
+        </parameter>
+        <inputPort maxNumPorts="1" minNumPorts="1" optional="false" windowPunctInputMode="Oblivious">
+          <description>Port that ingests tuples to be split amongst multiple threads</description>
+          <windowPolicy>NonWindowed</windowPolicy>
+        </inputPort>
+        <outputPort expressionMode="Nonexistent" maxNumPorts="1" minNumPorts="1" optional="false" windowPunctOutputMode="Preserving">
+          <description>Port (the first one) that produces split tuples</description>
+        </outputPort>
+        <outputPort expressionMode="Nonexistent" minNumPorts="0" optional="true" windowPunctOutputMode="Preserving">
+          <description>Additional ports that produce the split tuples</description>
+        </outputPort>
+        <codeTemplate name="ElasticLoadBalance" template="(stream&lt;${inputStream}> ${outputStream1};stream&lt;${inputStream}> ${outputStream2}) = ElasticLoadBalance(${inputStream}) {&#xA;            param&#xA;                bufferSize: ${bufferSize};&#xA;        }">
+          <description>Basic ElasticLoadBalance template</description>
+        </codeTemplate>
+      </primitiveOp>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.sampling">
+      <compositeOp column="18" line="27" name="RandomSample" potentialMain="false" public="true" uriIndex="6">
+        <parameter defaultValue="0.01fl" metaType="Expression" name="fraction" optional="true" type="&lt;float64>"/>
+        <inputPort name="IN" portIndex="0"/>
+        <outputPort name="OUT" portIndex="0"/>
+      </compositeOp>
+      <function column="1" line="12" name="percent" native="false" public="true" returnType="float64" uriIndex="6">
+        <prototype>public float64 percent(float64 percent)</prototype>
+        <parameter name="percent" type="float64"/>
+      </function>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.shedders">
+      <compositeOp column="18" line="119" name="RandomLoadShedder" potentialMain="false" public="true" uriIndex="3">
+        <parameter metaType="Expression" name="name" optional="false" type="&lt;rstring>"/>
+        <inputPort name="In" portIndex="0"/>
+        <outputPort name="Out" portIndex="0"/>
+      </compositeOp>
+      <compositeOp column="18" line="114" name="ExpressionLoadShedder" potentialMain="false" public="true" uriIndex="5">
+        <parameter metaType="Expression" name="name" optional="false" type="&lt;rstring>"/>
+        <parameter metaType="Expression" name="expr" optional="false" type="&lt;boolean>"/>
+        <inputPort name="In" portIndex="0"/>
+        <outputPort name="Out" portIndex="0"/>
+      </compositeOp>
+      <function column="1" line="11" name="__initRandomShedder" native="false" returnType="boolean" stateful="true" uriIndex="3">
+        <prototype>stateful boolean __initRandomShedder(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+      <function column="1" line="32" name="registerRandomShedder" native="false" public="true" returnType="boolean" stateful="true" uriIndex="3">
+        <prototype>public stateful boolean registerRandomShedder(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+      <function column="1" line="56" name="setRandomShedderFraction" native="false" public="true" returnType="void" stateful="true" uriIndex="3">
+        <prototype>public stateful void setRandomShedderFraction(rstring name, float64 fraction)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="fraction" type="float64"/>
+      </function>
+      <function column="1" line="70" name="getRandomShedderFraction" native="false" public="true" returnType="float64" uriIndex="3">
+        <prototype>public float64 getRandomShedderFraction(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+      <function column="1" line="11" name="__initExpressionShedder" native="false" returnType="boolean" stateful="true" uriIndex="5">
+        <prototype>stateful boolean __initExpressionShedder(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+      <function column="1" line="32" name="registerExpressionShedder" native="false" public="true" returnType="boolean" stateful="true" uriIndex="5">
+        <prototype>public stateful boolean registerExpressionShedder(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+      <function column="1" line="55" name="setExpressionShedderMode" native="false" public="true" returnType="void" stateful="true" uriIndex="5">
+        <prototype>public stateful void setExpressionShedderMode(rstring name, boolean shed)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="shed" type="boolean"/>
+      </function>
+      <function column="1" line="69" name="getExpressionShedderMode" native="false" public="true" returnType="boolean" uriIndex="5">
+        <prototype>public boolean getExpressionShedderMode(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.synchronize">
+      <primitiveOp language="Cpp" modelUriIndex="12" name="Synchronize" public="true">
+        <description>
+
+Synchronize is an operator for the IBM InfoSphere Streams product.  The operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
+
+The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
+
+The Synchronize operator synchronizes streams by receiving tuples in all of its input ports and forwarding them downstream in order according to their timestamps, temporarily holding tuples in faster streams until slower streams catch up.  Optionally, the operator can pace tuples by delaying them according to the differences between their timestamps, according to a time-scaling factor. 
+
+The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
+
+The Synchronize operator by default recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps. Or, the operator may be configured to ignore punctuation received from input streams.
+
+The Synchronize operator requires that each input port run on a different thread of execution:
+
+* One way to ensure this is for the tuples received on each input port to originate from different source operators, since each source operator runs on a seprate thread.  In this case, the Synchronize operator may block faster source operators, slowing them down to the pace of the slowest source operator.
+
+* Another way to ensure that each input port runs on a different thread is to configure the Synchronize operator with a 'threadedPort' for each input port.  The size of the queue specified for each input port determines how far ahead the faster sources can get, relative to the slowest source, and what happens if the fastest sources fill up an input port's queue.
+
+**Note:** The values of each stream's timestamps should have overlapping ranges.  If they do not, the operator will block indefinitely a stream whose first tuple has a timestamp larger than any of the other streams.
+
+      </description>
+        <parameter cardinality="-1" expressionMode="Attribute" name="timeAttributes" optional="false" type="">
+          <description>
+
+This required parameter specifies a list of input attributes that contain timestamps. The number of input attributes specified must be equal to the number of input ports, and each input attribute specified must be present in the corresponding input port. All attributes must be of a numeric type.
+
+        </description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Expression" name="timeFactor" optional="true" type="float64">
+          <description>
+
+This optional parameter specifies a time-scaling factor for forwarding the tuples.  If specified, tuples are delayed according to the differences between their timestamps, divided by this factor.  If its value is greater than 1.0, then tuples of each stream will be forwarded faster than they were originally produced, or, if less than 1.0, tuples will be forwarded slower. 
+
+For example, a factor of `2.0` will forward tuples at twice the rate indicated by their timestamps, and a factor of `0.5` will forward tuples  at half the rate indicated by their timestamps.
+
+If this parameter is not specified, or a value of zero is specified, then the operator will forward tuples as fast as downstream operators consume them.
+
+        </description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="Expression" name="ignorePunctuation" optional="true" type="boolean">
+          <description>
+
+This optional parameter specifies how the operator should handle punctuation received from input streams.
+
+If this parameter is specified with a value of `true`, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
+
+If this parameter is not specified, or a value of `false` is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
+
+        </description>
+        </parameter>
+        <inputPort minNumPorts="0" optional="true" windowPunctInputMode="Oblivious">
+          <description>
+
+The Synchronize operator may be configured with one or more input ports, each of which may have a different tuple type.  Each input port's type must have some numeric attribute that increases in value monotonically with each tuple.  This is most commonly a timestamp.
+
+Each input port must run on a different thread of execution.  This occurs implicitly when each port is fed by a different source operator.  This may also be specified explicitly by configuring the input ports with 'threaded queues'.
+
+        </description>
+          <windowPolicy>NonWindowed</windowPolicy>
+        </inputPort>
+        <outputPort expressionMode="Nonexistent" minNumPorts="0" optional="true" windowPunctOutputMode="Preserving">
+          <description>
+
+This operator must have the same number of output ports as input ports, and their types must match.  The operator forwards tuples and punctuation from each input port to the corresponding output port without altering or reordering them.
+
+        </description>
+        </outputPort>
+      </primitiveOp>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.switches">
+      <compositeOp column="18" line="32" name="Changeover" potentialMain="false" public="true" uriIndex="1">
+        <parameter defaultValue="false" metaType="Expression" name="initialState" optional="true" type="&lt;boolean>"/>
+        <parameter metaType="Expression" name="status" optional="false" type="&lt;boolean>"/>
+        <inputPort name="IN" portIndex="0"/>
+        <inputPort name="CONTROL" portIndex="1"/>
+        <outputPort name="CLOSE" portIndex="0"/>
+        <outputPort name="OPEN" portIndex="1"/>
+      </compositeOp>
+      <compositeOp column="18" line="82" name="ControlledChangeover" potentialMain="false" public="true" uriIndex="1">
+        <parameter metaType="Expression" name="name" optional="false" type="&lt;rstring>"/>
+        <parameter defaultValue="false" metaType="Expression" name="initialState" optional="true" type="&lt;boolean>"/>
+        <inputPort name="IN" portIndex="0"/>
+        <outputPort name="CLOSE" portIndex="0"/>
+        <outputPort name="OPEN" portIndex="1"/>
+      </compositeOp>
+      <compositeOp column="18" line="107" name="ControlledSwitch" potentialMain="false" public="true" uriIndex="2">
+        <parameter metaType="Expression" name="name" optional="false" type="&lt;rstring>"/>
+        <parameter defaultValue="false" metaType="Expression" name="initialState" optional="true" type="&lt;boolean>"/>
+        <inputPort name="IN" portIndex="0"/>
+        <outputPort name="OUT" portIndex="0"/>
+      </compositeOp>
+      <function column="1" line="107" name="__initChangeover" native="false" returnType="boolean" stateful="true" uriIndex="1">
+        <prototype>stateful boolean __initChangeover(rstring name, boolean initialState)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="initialState" type="boolean"/>
+      </function>
+      <function column="1" line="11" name="__initSwitch" native="false" returnType="boolean" stateful="true" uriIndex="2">
+        <prototype>stateful boolean __initSwitch(rstring name, boolean initialState)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="initialState" type="boolean"/>
+      </function>
+      <function column="1" line="28" name="registerSwitch" native="false" public="true" returnType="boolean" stateful="true" uriIndex="2">
+        <prototype>public stateful boolean registerSwitch(rstring name, boolean initialState)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="initialState" type="boolean"/>
+      </function>
+      <function column="1" line="47" name="setSwitchState" native="false" public="true" returnType="void" stateful="true" uriIndex="2">
+        <prototype>public stateful void setSwitchState(rstring name, boolean on)</prototype>
+        <parameter name="name" type="rstring"/>
+        <parameter name="on" type="boolean"/>
+      </function>
+      <function column="1" line="60" name="getSwitchState" native="false" public="true" returnType="boolean" uriIndex="2">
+        <prototype>public boolean getSwitchState(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.leader">
+      <primitiveOp language="Java" modelUriIndex="13" name="LeadershipElection" public="true">
+        <description>Performs a leadership election between other operator invocations with the same `group`. At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. Invocations must be exlocated into different PEs.
+
+The operator requires the application include an invocation of the `JobControlPlane` operator.
+
+Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service.The Zookeeper root node for the recipe is a sub-node `group` within job's storage node (`com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()`).</description>
+        <parameter expressionMode="Constant" name="vmArg" optional="true" type="rstring">
+          <description>
+Specifies command-line arguments that are passed to the Java virtual machine that the operator runs within.
+</description>
+        </parameter>
+        <parameter cardinality="1" expressionMode="AttributeFree" name="group" optional="false" type="rstring">
+          <description>Leadership group name. All instances of this operator within the same job and having the same `group` are participants in a single leadership election. Group name must not start with a slash (`/`).</description>
+        </parameter>
+        <outputPort expressionMode="Nonexistent" maxNumPorts="1" minNumPorts="1" optional="false" windowPunctOutputMode="Free">
+          <description/>
+        </outputPort>
+      </primitiveOp>
+      <compositeOp column="18" line="29" name="LeadershipChangeover" potentialMain="false" public="true" uriIndex="8">
+        <parameter metaType="Expression" name="group" optional="false" type="&lt;rstring>"/>
+        <inputPort name="In" portIndex="0"/>
+        <outputPort name="WhenLeader" portIndex="0"/>
+        <outputPort name="WhenNotLeader" portIndex="1"/>
+        <outputPort name="LeaderControl" portIndex="2" type="stream&lt;LeaderStatus>"/>
+      </compositeOp>
+      <compositeOp column="18" line="86" name="LeadershipSwitchWithReplay" potentialMain="false" public="true" uriIndex="8">
+        <parameter metaType="Expression" name="group" optional="false" type="&lt;rstring>"/>
+        <parameter defaultValue="10.0" metaType="Expression" name="period" optional="true" type="&lt;float64>"/>
+        <inputPort name="In" portIndex="0"/>
+        <outputPort name="Out" portIndex="0"/>
+      </compositeOp>
+      <type column="6" line="15" name="LeaderStatus" static="true" type="rstring group, rstring id, boolean leader, timestamp ts" uriIndex="8"/>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.control">
+      <compositeOp column="18" line="34" name="ControlVariableChange" potentialMain="false" public="true" uriIndex="10">
+        <parameter metaType="Expression" name="name" optional="false" type="&lt;rstring>"/>
+        <outputPort name="CVN" portIndex="0" type="stream&lt;MBeanNotificationBase>"/>
+      </compositeOp>
+      <function modelUriIndex="14" name="createBooleanControlVariable" native="true" public="true" returnType="boolean" uriIndex="0">
+        <description>Create a `boolean` control variable named `name`. If `shared` is `true` then the control variable is intended for use by multiple operators,if `false` then the control variable is intended for use for a single operator. A control variable may be created by multiple operators, the first will create the MXBeanrepresenting the control variable, subsequent creates will just reference the exisitng MXBean.</description>
+        <prototype>&lt;string T&gt; public stateful boolean createBooleanControlVariable(T name, boolean shared, boolean initialValue)</prototype>
+        <parameter name="name" type="T"/>
+        <parameter name="shared" type="boolean"/>
+        <parameter name="initialValue" type="boolean"/>
+      </function>
+      <function modelUriIndex="14" name="setBooleanControlVariable" native="true" public="true" returnType="void" uriIndex="0">
+        <description>Set the value of `name` `boolean` control variable to `value`. Any operator invoking this function must call `createBooleanControlVariable`, typically in its `logic state` clause, before invoking this function.</description>
+        <prototype>&lt;string T&gt; public stateful void setBooleanControlVariable(T name, boolean value)</prototype>
+        <parameter name="name" type="T"/>
+        <parameter name="value" type="boolean"/>
+      </function>
+      <function modelUriIndex="14" name="getBooleanControlVariable" native="true" public="true" returnType="boolean" uriIndex="0">
+        <description>Get the value of `name` `boolean` control variable. Any operator invoking this function must call `createBooleanControlVariable`, typically in its `logic state` clause, before invoking this function.</description>
+        <prototype>&lt;string T&gt; public boolean getBooleanControlVariable(T name)</prototype>
+        <parameter name="name" type="T"/>
+      </function>
+      <function modelUriIndex="14" name="createFloat64ControlVariable" native="true" public="true" returnType="boolean" uriIndex="0">
+        <description>Create a `float64` control variable named `name`. If `shared` is `true` then the control variable is intended for use by multiple operators,if `false` then the control variable is intended for use for a single operator. A control variable may be created by multiple operators, the first will create the MXBeanrepresenting the control variable, subsequent creates will just reference the exisitng MXBean.</description>
+        <prototype>&lt;string T&gt; public stateful boolean createFloat64ControlVariable(T name, boolean shared, float64 initialValue)</prototype>
+        <parameter name="name" type="T"/>
+        <parameter name="shared" type="boolean"/>
+        <parameter name="initialValue" type="float64"/>
+      </function>
+      <function modelUriIndex="14" name="setFloat64ControlVariable" native="true" public="true" returnType="void" uriIndex="0">
+        <description>Set the value of `name` `float64` control variable to `value`. Any operator invoking this function must call `createFloat64ControlVariable`, typically in its `logic state` clause, before invoking this function.</description>
+        <prototype>&lt;string T&gt; public stateful void setFloat64ControlVariable(T name, float64 value)</prototype>
+        <parameter name="name" type="T"/>
+        <parameter name="value" type="float64"/>
+      </function>
+      <function modelUriIndex="14" name="getFloat64ControlVariable" native="true" public="true" returnType="float64" uriIndex="0">
+        <description>Get the value of `name` `float64` control variable. Any operator invoking this function must call `createFloat64ControlVariable`, typically in its `logic state` clause, before invoking this function.</description>
+        <prototype>&lt;string T&gt; public float64 getFloat64ControlVariable(T name)</prototype>
+        <parameter name="name" type="T"/>
+      </function>
+      <function column="1" line="19" name="getControlVariableObjectName" native="false" public="true" returnType="rstring" uriIndex="10">
+        <prototype>public rstring getControlVariableObjectName(rstring name)</prototype>
+        <parameter name="name" type="rstring"/>
+      </function>
+    </namespace>
+    <sabFiles>
+      <ti:include path="toolkit.xml" root="toolkitDir"/>
+      <ti:include path="impl/java/lib/**" root="toolkitDir"/>
+      <ti:include path="impl/java/bin/**" root="toolkitDir"/>
+      <ti:include path="impl/bin/**" root="toolkitDir"/>
+      <ti:include path="impl/lib/**" root="toolkitDir"/>
+      <ti:include path="impl/nl/*.dat" root="toolkitDir"/>
+      <ti:include path="etc/**" root="toolkitDir"/>
+      <ti:include path="lib/**" root="toolkitDir"/>
+      <ti:include path="nl/**" root="toolkitDir"/>
+      <ti:include path="opt/**" root="toolkitDir"/>
+    </sabFiles>
+  </toolkit>
+
+</toolkitModel>

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File randomshedder.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File randomshedder.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">randomshedder.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.3.0.__dev__</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.shedders.html">com.ibm.streamsx.plumbing.shedders</a> &gt; randomshedder.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Operators</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a></strong>: Controllable load shedder that sheds (drops) tuples randomly.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+    
+      <dt class="dt dlterm splhead-2">Functions</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function____initRandomShedder.rstring">__initRandomShedder(rstring)</a></strong>
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</a></strong>: Get the fraction of tuples being shed for <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> operator invocations using control variable <tt class="ph tt">name</tt>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__registerRandomShedder.rstring">registerRandomShedder(rstring)</a></strong>: Register that an operator invocation will call <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</a> or <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</a>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</a></strong>: Set the fraction of tuples to be shed for <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> operator invocations  using control variable <tt class="ph tt">name</tt>.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__RandomLoadShedder"><h2 class="title sectiontitle splpart">composite RandomLoadShedder(output Out; input In)</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">Controllable load shedder that sheds (drops) tuples randomly. Tuple that are not shed are copied from the input port to the output port without modification. Punctuation marks are always forwarded from <tt class="ph tt">In</tt> to <tt class="ph tt">Out</tt>.
+</p>
+
+<p class="p">This operator creates a <tt class="ph tt">float64</tt> control variable named <tt class="ph tt">name</tt>. Initially the variable is set to 0.0 which means no tuples will be shed. If the variable is changed to a non-zero value between 0.0 and 1.0 then approximately that fraction of tuples will be shed. The selection of tuples to drop is random. If the variable is changed to 1.0 (or higher) than no tuples will be delivered to <tt class="ph tt">Out</tt>.
+</p>
+
+<p class="p">The control variable may be shared across multiple invocations of <tt class="ph tt">RandomLoadShedder</tt>, by invoking them with the same value for <tt class="ph tt">name</tt>. <tt class="ph tt">name</tt> is scoped to the job.
+</p>
+
+<p class="p">The shedding fraction is changed by calling the function <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</a> from any operator in same job. Thus the logic that determines the fraction to shed does not define a stream connection to this operator, instead the Job Control Plane, through the the control variable, provides the control mechanism. When the job is first submitted the fraction of tuples to shed is set to 0.0, so no tuples will be shed. Upon any failure, the fraction of tuples to shed is maintained by the control variable.
+</p>
+
+<p class="p">Java primitive operators may also change the shedding fraction by modifying the control variable using functionality in the <tt class="ph tt">com.ibm.streams.operator.control.variable</tt> package.
+</p>
+
+<p class="p">Multiple <tt class="ph tt">RandomLoadShedder</tt> operator may share the same control variable, by being invoked with the same value for the <tt class="ph tt">name</tt> parameter.
+</p>
+
+<p class="p">Any application that invokes this operator must include a single invocation of the <tt class="ph tt">JobControlPlane</tt> operator.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">name</strong>: Name of the control variable for this operator invocation. 
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Input Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">In</strong>: Port containing tuples that will be copied to the output if they not shed.
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Output Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">Out</strong>: Port containing tuples from <tt class="ph tt">In</tt> that were not shed.
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.shedders$RandomLoadShedder.svg" width="142" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite RandomLoadShedder(input In ; output Out)
+ {
+ 	param
+ 		expression&lt;rstring&gt; $name ;
+ 	graph
+ 
+ 		(stream&lt;In&gt; Out) as LoadShedder = Custom(In)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 				    rstring _name = $name;
+ 					boolean __unused = __initRandomShedder(_name) ;
+ 					mutable float64 currentShedFraction = -1.0;
+ 				}
+ 
+ 				onTuple In :
+ 				{
+ 				    float64 shedFraction = getRandomShedderFraction(_name);
+ 					if(shedFraction == 0.0)
+ 					{
+ 						submit(In, Out) ;
+ 					}
+ 
+ 					else if(shedFraction != 1.0)
+ 					{
+ 						if(random() &gt;= shedFraction) submit(In, Out) ;
+ 					}
+ 					
+ 					if (shedFraction != currentShedFraction) {
+ 					    setCustomMetricValue("sheddingFraction",(int64)(shedFraction * 1000000.0)) ;
+ 					    currentShedFraction = shedFraction;
+ 					}
+ 
+ 				}
+ 			}
+ }
+
+   </pre>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Functions</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__function____initRandomShedder.rstring"><h2 class="title sectiontitle splpart">boolean __initRandomShedder(rstring name)</h2>
+  
+</div>
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+ <ul class="sl simple">
+   <li class="sli">
+<strong class="ph b">name</strong>
+   </li>
+
+ </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Returns</h2>
+
+<ul class="sl simple"><li class="sli">
+<tt class="ph tt">boolean</tt>
+</li>
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ stateful boolean __initRandomShedder(rstring name)
+ {
+ 	registerRandomShedder(name) ;
+ 	createCustomMetric("sheddingFraction",
+ 		"Fraction of tuples shed (tuples per million), controlled by variable: " +
+ 		name, Sys.Gauge, 0l) ;
+ 	return false ;
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__function__registerRandomShedder.rstring"><h2 class="title sectiontitle splpart">boolean registerRandomShedder(rstring name)</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">Register that an operator invocation will call <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</a> or <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</a>. A  shared<tt class="ph tt">float64</tt> control variable is created with name <tt class="ph tt">name</tt>.
+</p>
+
+<p class="p">This function must be called in the <tt class="ph tt">logic state</tt> section of any operator invocation that calls <tt class="ph tt">setRandomShedderFraction</tt> or <tt class="ph tt">getRandomShedderFraction</tt>.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+ <ul class="sl simple">
+   <li class="sli">
+<strong class="ph b">name</strong>
+   </li>
+
+ </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Returns</h2>
+
+<ul class="sl simple"><li class="sli">
+<tt class="ph tt">true</tt></li>
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful boolean registerRandomShedder(rstring name)
+ {
+ 	createFloat64ControlVariable(name, true, - 1.0) ;
+ 	return true ;
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64"><h2 class="title sectiontitle splpart">void setRandomShedderFraction(rstring name, float64 fraction)</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">Set the fraction of tuples to be shed for <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> operator invocations  using control variable <tt class="ph tt">name</tt>. If <tt class="ph tt">fraction</tt> is less than or equal to 0.0, then no tuples will be shed. If <tt class="ph tt">fraction</tt> is greater than or equal to 1.0 then all tuples will be shed. Otherwise <tt class="ph tt">fraction</tt> represents the approximate fraction of tuples that will be shed by invocations of <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> using control variable <tt class="ph tt">name</tt>.
+</p>
+
+<p class="p">Any operator that invokes this must call <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__registerRandomShedder.rstring">registerRandomShedder(rstring)</a> in its <tt class="ph tt">logic state</tt> section, passing the same value for <tt class="ph tt">name</tt>. Any operator may invoke this method to control <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> operator invocations within the same job, that were invoked with their parameter <tt class="ph tt">name</tt> set to <tt class="ph tt">name</tt>.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+ <ul class="sl simple">
+   <li class="sli">
+<strong class="ph b">name</strong>: Name of the variable for the <tt class="ph tt">RandomLoadShedder</tt> operator invocation(s).
+   </li>
+
+   <li class="sli">
+<strong class="ph b">fraction</strong>: Fraction of tuples to shed.
+   </li>
+
+ </ul>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful void setRandomShedderFraction(rstring name, float64 fraction)
+ {
+ 	setFloat64ControlVariable(name, fraction) ;
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__function__getRandomShedderFraction.rstring"><h2 class="title sectiontitle splpart">float64 getRandomShedderFraction(rstring name)</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">Get the fraction of tuples being shed for <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a> operator invocations using control variable <tt class="ph tt">name</tt>.
+</p>
+
+<p class="p">Any operator that invokes this must call <a class="xref" href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__function__registerRandomShedder.rstring">registerRandomShedder(rstring)</a> in its <tt class="ph tt">logic state</tt> section, passing the same value for <tt class="ph tt">name</tt>.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+ <ul class="sl simple">
+   <li class="sli">
+<strong class="ph b">name</strong>: Name of the variable for the <tt class="ph tt">RandomLoadShedder</tt> operator invocation(s).
+   </li>
+
+ </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Returns</h2>
+
+<ul class="sl simple"><li class="sli">
+<tt class="ph tt">float64</tt>
+</li>
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public float64 getRandomShedderFraction(rstring name)
+ {
+ 	float64 value = getFloat64ControlVariable(name) ;
+ 	if(value &gt; 1.0) return 1.0 ;
+ 	if(value &lt;= 0.0) return 0.0 ;
+ 	return value ;
+ }
+
+   </pre>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

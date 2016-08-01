@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                                                                        -->
+<!-- Copyright (C) 2013, 2016 International Business Machines Corporation.  -->
+<!-- All Rights Reserved.                                                   -->
+<!--                                                                        -->
+<operatorModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common"
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+
+    <context>
+      <description>
+
+
+
+      </description>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <allowCustomLogic>false</allowCustomLogic>
+    </context>
+
+    <parameters>
+      <allowAny>false</allowAny>
+
+      <parameter>
+        <name>timeAttributes</name>
+        <description>
+
+
+
+        </description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>rstring</type>
+        <cardinality>-1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>timeFactor</name>
+        <description>
+
+
+
+        </description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>Constant</expressionMode>
+        <type>float64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+
+    </parameters>
+
+    <inputPorts>
+      <inputPortOpenSet>
+        <description>
+
+
+
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+      </inputPortOpenSet>
+    </inputPorts>
+
+    <outputPorts>
+      <outputPortOpenSet>
+        <description>
+
+
+
+        </description>
+        <expressionMode>Nonexistent</expressionMode>
+        <autoAssignment>true</autoAssignment>
+        <completeAssignment>true</completeAssignment>
+        <rewriteAllowed>false</rewriteAllowed>
+        <windowPunctuationOutputMode>Preserving</windowPunctuationOutputMode>
+        <windowPunctuationInputPort>0</windowPunctuationInputPort>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+      </outputPortOpenSet>
+    </outputPorts>
+
+  </cppOperatorModel>
+</operatorModel>

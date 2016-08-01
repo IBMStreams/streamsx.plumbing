@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<applicationSet xmlns="http://www.ibm.com/xmlns/prod/streams/application" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams.appset" productVersion="4.1.1.0" xmlns:tt="http://www.ibm.com/xmlns/prod/streams/spl/tupleType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <description>com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams application set</description>
+
+  <application adlPath="Standalone1/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeTwoStreams.adl" applicationDirectory="toolkits/SynchronizeSamples" applicationScope="Default" buildId="" bundle="./com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeTwoStreams.sab" checkpointDirectory="/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/data/ckpt" dataDirectory="/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/data" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams" outputDirectory="Standalone1" standaloneApplicationDirectory="toolkits/SynchronizeSamples" version="1.0.0">
+    <libraries/>
+    <hostpools>
+      <hostpool index="0" membershipMode="shared" name="$default"/>
+    </hostpools>
+    <tupleTypes>
+      <tupleType index="0">
+        <attribute name="time" type="float64"/>
+        <attribute name="label" type="rstring"/>
+        <tuple>
+          <tt:attr name="time" type="float64"/>
+          <tt:attr name="label" type="rstring"/>
+        </tuple>
+      </tupleType>
+    </tupleTypes>
+    <pes>
+      <pe class="BeJwzNHAtS80LLilKTcyNNzIKrsxLzijKz8usSk1BkjA0Q5YIzszLjgcAaLwVDT" index="0" language="C++" optimized="true" relocatable="true" restartable="true" version="4110">
+        <envVars/>
+        <executable digest="65X6cONNcrL+EIfhaSFWg7Vcuyc=" dynamicLoad="true">
+          <wrapper>none</wrapper>
+          <executableUri>bin/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeTwoStreams-a.dpe</executableUri>
+          <arguments/>
+          <dependencies/>
+        </executable>
+        <operInstances>
+          <operInstance class="EvenStream" definitionIndex="0" index="0" name="EvenStream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;sync2.even.in&quot;"/>
+            </runtimeConstants>
+            <inputPorts/>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="EvenStream" streamName="EvenStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="2"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="EvenStream" definitionIndex="0" index="1" name="OddStream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;sync2.odd.in&quot;"/>
+            </runtimeConstants>
+            <inputPorts/>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="OddStream" streamName="OddStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="1" operInstanceIndex="2"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="SynchronizedEvenStream" definitionIndex="1" index="2" name="SynchronizedEvenStream" relocatable="true" restartable="true" singleThreadedOnInputs="false" singleThreadedOnOutputs="false">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="2"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="In1" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="0" oportIndex="0"/>
+                <threadedPort congestionPolicy="dropFirst" queueSize="100" singleThreadedOnInput="true"/>
+              </inputPort>
+              <inputPort index="1" isMutable="false" name="In2" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="1" oportIndex="0"/>
+                <threadedPort congestionPolicy="dropFirst" queueSize="100" singleThreadedOnInput="true"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="false" name="SynchronizedEvenStream" streamName="SynchronizedEvenStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="3"/>
+              </outputPort>
+              <outputPort index="1" isMutable="false" name="SynchronizedOddStream" streamName="SynchronizedOddStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="3"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="SynchronizedSink" definitionIndex="2" index="3" name="SynchronizedSink" relocatable="true" restartable="true" singleThreadedOnInputs="false" singleThreadedOnOutputs="false">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;SynchronizeTwoStreams.SynchronizedStreams.out&quot;"/>
+              <runtimeConstant name="lit$1" value="1"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="SynchronizedEvenStream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="2" oportIndex="0"/>
+                <intraPeConnection operInstanceIndex="2" oportIndex="1"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts/>
+          </operInstance>
+        </operInstances>
+        <tracing level="error"/>
+        <inputPorts/>
+        <outputPorts/>
+      </pe>
+    </pes>
+    <operDefinitions>
+      <operDefinition index="0" kind="spl.adapter::FileSource" runtimeType="SPL_C++">
+        <customMetricIndicies>
+          <customMetricIndex>0</customMetricIndex>
+          <customMetricIndex>1</customMetricIndex>
+        </customMetricIndicies>
+      </operDefinition>
+      <operDefinition index="1" kind="com.ibm.streamsx.plumbing.synchronize::Synchronize" runtimeType="SPL_C++"/>
+      <operDefinition index="2" kind="spl.adapter::FileSink" runtimeType="SPL_C++">
+        <customMetricIndicies>
+          <customMetricIndex>2</customMetricIndex>
+          <customMetricIndex>3</customMetricIndex>
+        </customMetricIndicies>
+      </operDefinition>
+    </operDefinitions>
+    <composites>
+      <sourceUris>
+        <uri index="0" path="file:///home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeTwoStreams.spl"/>
+        <uri index="1" path="file:///home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl/spl/Sys.spl"/>
+      </sourceUris>
+      <compositeOpers>
+        <compositeOper endLine="48" index="0" kind="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="0" startLine="18" toolkitIndex="0">
+          <description>com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams Composite</description>
+        </compositeOper>
+        <compositeOper endLine="201" index="1" kind="spl::Sys" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="20" toolkitIndex="1">
+          <description>spl::Sys Composite</description>
+        </compositeOper>
+        <compositeOper endLine="217" index="2" kind="spl::Log" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="206" toolkitIndex="1">
+          <description>spl::Log Composite</description>
+        </compositeOper>
+        <compositeOper endLine="235" index="3" kind="spl::Trace" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="222" toolkitIndex="1">
+          <description>spl::Trace Composite</description>
+        </compositeOper>
+      </compositeOpers>
+      <compositeOperInstances>
+        <compositeOperInstance compositeOperIndex="0" endLine="48" index="4" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeTwoStreams" sourceIndex="0" startLine="18">
+          <primitiveOperInstance endLine="26" index="0" kind="spl.adapter::FileSource" name="EvenStream" sourceIndex="0" startLine="26" toolkitIndex="1">
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="2" operName="SynchronizedEvenStream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="30" index="1" kind="spl.adapter::FileSource" name="OddStream" sourceIndex="0" startLine="30" toolkitIndex="1">
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="2" operName="SynchronizedEvenStream" portIndex="1" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="43" index="2" kind="com.ibm.streamsx.plumbing.synchronize::Synchronize" name="SynchronizedEvenStream" sourceIndex="0" startLine="34" toolkitIndex="2">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="0" operName="EvenStream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+              <port index="1">
+                <connections>
+                  <connection operIndex="1" operName="OddStream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="3" operName="SynchronizedSink" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+              <port index="1">
+                <connections>
+                  <connection operIndex="3" operName="SynchronizedSink" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="47" index="3" kind="spl.adapter::FileSink" name="SynchronizedSink" sourceIndex="0" startLine="47" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="2" operName="SynchronizedEvenStream" portIndex="0" portKind="output"/>
+                  <connection operIndex="2" operName="SynchronizedEvenStream" portIndex="1" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+          </primitiveOperInstance>
+        </compositeOperInstance>
+      </compositeOperInstances>
+    </composites>
+    <toolkits>
+      <toolkit index="0" name="SynchronizeSamples" uri="file:///home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples" version="1.0.0"/>
+      <toolkit index="1" name="spl" uri="file:///home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl" version="1.2.1"/>
+      <toolkit index="2" name="com.ibm.streamsx.plumbing" uri="file:///home/streamsdev/git/streamsx.plumbing/com.ibm.streamsx.plumbing" version="0.3.0.__dev__"/>
+    </toolkits>
+    <customMetrics>
+      <customMetric index="0" kind="Counter" name="nFilesOpened">
+        <description>The number of files opened by the `FileSource` operator.</description>
+      </customMetric>
+      <customMetric index="1" kind="Counter" name="nInvalidTuples">
+        <description>The number of tuples that failed to read correctly in csv or txt format.</description>
+      </customMetric>
+      <customMetric index="2" kind="Counter" name="nFilesOpened">
+        <description>The number of files opened by the `FileSink` operator.</description>
+      </customMetric>
+      <customMetric index="3" kind="Counter" name="nTupleWriteErrors">
+        <description>
+ The number of tuple writes that had an error on the file stream after the write completed. 
+Due to buffering, write failures might not be detected immediately. 
+You can use `param flush : 1u;` to ensure quicker detection, but with a (possibly large) performance penalty. 
+After a failure is detected, all future writes fail unless the error condition is cleared or the file is closed. 
+
+For more information, see the **writeFailureAction** parameter.
+</description>
+      </customMetric>
+    </customMetrics>
+  </application>
+
+</applicationSet>

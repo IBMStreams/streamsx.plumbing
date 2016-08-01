@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<applicationSet xmlns="http://www.ibm.com/xmlns/prod/streams/application" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams.appset" productVersion="4.1.1.0" xmlns:tt="http://www.ibm.com/xmlns/prod/streams/spl/tupleType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <description>com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams application set</description>
+
+  <application adlPath="Standalone2/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeThreeStreams.adl" applicationDirectory="toolkits/SynchronizeSamples" applicationScope="Default" buildId="" bundle="./com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeThreeStreams.sab" checkpointDirectory="/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/data/ckpt" dataDirectory="/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/data" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams" outputDirectory="Standalone2" standaloneApplicationDirectory="toolkits/SynchronizeSamples" version="1.0.0">
+    <libraries/>
+    <hostpools>
+      <hostpool index="0" membershipMode="shared" name="$default"/>
+    </hostpools>
+    <tupleTypes>
+      <tupleType index="0">
+        <attribute name="outputDirectory" type="rstring"/>
+        <attribute name="outputFilename" type="rstring"/>
+        <attribute name="indention" type="rstring"/>
+        <attribute name="phrase" type="rstring"/>
+        <attribute name="start" type="float64"/>
+        <attribute name="duration" type="float64"/>
+        <tuple>
+          <tt:attr name="outputDirectory" type="rstring"/>
+          <tt:attr name="outputFilename" type="rstring"/>
+          <tt:attr name="indention" type="rstring"/>
+          <tt:attr name="phrase" type="rstring"/>
+          <tt:attr name="start" type="float64"/>
+          <tt:attr name="duration" type="float64"/>
+        </tuple>
+      </tupleType>
+    </tupleTypes>
+    <pes>
+      <pe class="BeJwzNvTMS0nNK0lNCSjNSy4pTQSyggtSU5MzDINLilITc_0ONjHHJGBqjqTQNrsxLzijKz8uswlBrEFKUmFecXJRZUBIPACSzCw0" index="0" language="C++" optimized="true" relocatable="true" restartable="true" version="4110">
+        <envVars/>
+        <executable digest="X5kIEk0cORQiDNnoPwvh5OPTSKE=" dynamicLoad="true">
+          <wrapper>none</wrapper>
+          <executableUri>bin/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeThreeStreams-a.dpe</executableUri>
+          <arguments/>
+          <dependencies/>
+        </executable>
+        <operInstances>
+          <operInstance class="Speech1Stream" definitionIndex="0" index="0" name="Speech1Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;sync4.Speech1PhraseStream.in&quot;"/>
+            </runtimeConstants>
+            <inputPorts/>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="Speech1Stream" streamName="Speech1Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="1"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="PunctuatedSpeech1Stream" definitionIndex="1" index="1" name="PunctuatedSpeech1Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="Speech1Stream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="0" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="PunctuatedSpeech1Stream" streamName="PunctuatedSpeech1Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="2"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="IndentedPunctuatedSpeech1Stream" definitionIndex="2" index="2" name="IndentedPunctuatedSpeech1Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+              <runtimeConstant name="lit$1" value="&quot;&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="Out" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="1" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="Out1" streamName="IndentedPunctuatedSpeech1Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="9"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="Speech1Stream" definitionIndex="0" index="3" name="Speech2Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;sync4.Speech2PhraseStream.in&quot;"/>
+            </runtimeConstants>
+            <inputPorts/>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="Speech2Stream" streamName="Speech2Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="4"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="PunctuatedSpeech1Stream" definitionIndex="1" index="4" name="PunctuatedSpeech2Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="Speech2Stream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="3" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="PunctuatedSpeech2Stream" streamName="PunctuatedSpeech2Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="5"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="IndentedPunctuatedSpeech1Stream" definitionIndex="2" index="5" name="IndentedPunctuatedSpeech2Stream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+              <runtimeConstant name="lit$1" value="&quot;\t\t\t\t&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="PunctuatedSpeech2Stream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="4" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="Out2" streamName="IndentedPunctuatedSpeech2Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="1" operInstanceIndex="9"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="Speech1Stream" definitionIndex="0" index="6" name="SubtitleStream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;sync4.SubtitleStream.in&quot;"/>
+            </runtimeConstants>
+            <inputPorts/>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="SubtitleStream" streamName="SubtitleStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="7"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="PunctuatedSpeech1Stream" definitionIndex="1" index="7" name="PunctuatedSubtitleStream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="SubtitleStream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="6" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="PunctuatedSubtitleStream" streamName="PunctuatedSubtitleStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="8"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="IndentedPunctuatedSpeech1Stream" definitionIndex="2" index="8" name="IndentedPunctuatedSubtitleStream" relocatable="true" restartable="true" singleThreadedOnInputs="true" singleThreadedOnOutputs="true">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="&quot;WindowMarker&quot;"/>
+              <runtimeConstant name="lit$1" value="&quot;\t\t\t\t\t\t\t\t&quot;"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="PunctuatedSubtitleStream" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="7" oportIndex="0"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="true" name="OutT" streamName="IndentedPunctuatedSubtitleStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="2" operInstanceIndex="9"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="SynchronizedSpeech1Stream" definitionIndex="3" index="9" name="SynchronizedSpeech1Stream" relocatable="true" restartable="true" singleThreadedOnInputs="false" singleThreadedOnOutputs="false">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="0"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isMutable="false" name="In1" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="2" oportIndex="0"/>
+                <threadedPort congestionPolicy="dropFirst" queueSize="1000" singleThreadedOnInput="true"/>
+              </inputPort>
+              <inputPort index="1" isMutable="false" name="In2" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="5" oportIndex="0"/>
+                <threadedPort congestionPolicy="dropFirst" queueSize="1000" singleThreadedOnInput="true"/>
+              </inputPort>
+              <inputPort index="2" isMutable="false" name="InT" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="8" oportIndex="0"/>
+                <threadedPort congestionPolicy="dropFirst" queueSize="1000" singleThreadedOnInput="true"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts>
+              <outputPort index="0" isMutable="false" name="SynchronizedSpeech1Stream" streamName="SynchronizedSpeech1Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="10"/>
+              </outputPort>
+              <outputPort index="1" isMutable="false" name="SynchronizedSpeech2Stream" streamName="SynchronizedSpeech2Stream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="10"/>
+              </outputPort>
+              <outputPort index="2" isMutable="false" name="SynchronizedSubtitleStream" streamName="SynchronizedSubtitleStream" tupleTypeIndex="0" viewable="true">
+                <intraPeConnection iportIndex="0" operInstanceIndex="10"/>
+              </outputPort>
+            </outputPorts>
+          </operInstance>
+          <operInstance class="Transcript" definitionIndex="4" index="10" name="Transcript" relocatable="true" restartable="true" singleThreadedOnInputs="false" singleThreadedOnOutputs="false">
+            <resources>
+              <poolLocation poolIndex="0"/>
+            </resources>
+            <runtimeConstants>
+              <runtimeConstant name="lit$0" value="0"/>
+              <runtimeConstant name="lit$1" value="0"/>
+              <runtimeConstant name="lit$2" value="&quot;w&quot;"/>
+              <runtimeConstant name="lit$3" value="0"/>
+              <runtimeConstant name="lit$4" value="&quot;', &quot;"/>
+              <runtimeConstant name="lit$5" value="&quot;sorry, could not open '&quot;"/>
+              <runtimeConstant name="lit$6" value="&quot;com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl&quot;"/>
+              <runtimeConstant name="lit$7" value="111"/>
+              <runtimeConstant name="lit$8" value="0"/>
+              <runtimeConstant name="lit$9" value="&quot; seconds:\n&quot;"/>
+              <runtimeConstant name="lit$10" value="1"/>
+              <runtimeConstant name="lit$11" value="3"/>
+              <runtimeConstant name="lit$12" value="false"/>
+              <runtimeConstant name="lit$13" value="&quot; for &quot;"/>
+              <runtimeConstant name="lit$14" value="&quot;at &quot;"/>
+              <runtimeConstant name="lit$15" value="&quot;\n\n&quot;"/>
+              <runtimeConstant name="lit$16" value="0"/>
+              <runtimeConstant name="lit$17" value="&quot;', &quot;"/>
+              <runtimeConstant name="lit$18" value="&quot;sorry, could not write to '&quot;"/>
+              <runtimeConstant name="lit$19" value="&quot;com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl&quot;"/>
+              <runtimeConstant name="lit$20" value="116"/>
+              <runtimeConstant name="lit$21" value="0"/>
+              <runtimeConstant name="lit$22" value="0"/>
+              <runtimeConstant name="lit$23" value="&quot;------------------------\t------------------------\t------------------------\n&quot;"/>
+              <runtimeConstant name="lit$24" value="&quot;/SynchronizeThreeStreams.transcript.out&quot;"/>
+              <runtimeConstant name="lit$25" value="0"/>
+            </runtimeConstants>
+            <inputPorts>
+              <inputPort index="0" isControl="true" isMutable="false" name="In" tupleTypeIndex="0">
+                <intraPeConnection operInstanceIndex="9" oportIndex="0"/>
+                <intraPeConnection operInstanceIndex="9" oportIndex="1"/>
+                <intraPeConnection operInstanceIndex="9" oportIndex="2"/>
+              </inputPort>
+            </inputPorts>
+            <outputPorts/>
+          </operInstance>
+        </operInstances>
+        <tracing level="error"/>
+        <inputPorts/>
+        <outputPorts/>
+      </pe>
+    </pes>
+    <operDefinitions>
+      <operDefinition index="0" kind="spl.adapter::FileSource" runtimeType="SPL_C++">
+        <customMetricIndicies>
+          <customMetricIndex>0</customMetricIndex>
+          <customMetricIndex>1</customMetricIndex>
+        </customMetricIndicies>
+      </operDefinition>
+      <operDefinition index="1" kind="spl.relational::Punctor" runtimeType="SPL_C++"/>
+      <operDefinition index="2" kind="spl.relational::Functor" runtimeType="SPL_C++"/>
+      <operDefinition index="3" kind="com.ibm.streamsx.plumbing.synchronize::Synchronize" runtimeType="SPL_C++"/>
+      <operDefinition index="4" kind="spl.utility::Custom" runtimeType="SPL_C++"/>
+    </operDefinitions>
+    <composites>
+      <sourceUris>
+        <uri index="0" path="file:///home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl"/>
+        <uri index="1" path="file:///home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl/spl/Sys.spl"/>
+      </sourceUris>
+      <compositeOpers>
+        <compositeOper endLine="139" index="0" kind="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="0" startLine="38" toolkitIndex="0">
+          <description>com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams Composite</description>
+        </compositeOper>
+        <compositeOper endLine="201" index="1" kind="spl::Sys" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="20" toolkitIndex="1">
+          <description>spl::Sys Composite</description>
+        </compositeOper>
+        <compositeOper endLine="217" index="2" kind="spl::Log" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="206" toolkitIndex="1">
+          <description>spl::Log Composite</description>
+        </compositeOper>
+        <compositeOper endLine="235" index="3" kind="spl::Trace" numberOfInputPorts="0" numberOfOutputPorts="0" sourceIndex="1" startLine="222" toolkitIndex="1">
+          <description>spl::Trace Composite</description>
+        </compositeOper>
+      </compositeOpers>
+      <compositeOperInstances>
+        <compositeOperInstance compositeOperIndex="0" endLine="139" index="11" name="com.ibm.streamsx.plumbing.sample.synchronize::SynchronizeThreeStreams" sourceIndex="0" startLine="38">
+          <primitiveOperInstance endLine="52" index="0" kind="spl.adapter::FileSource" name="Speech1Stream" sourceIndex="0" startLine="52" toolkitIndex="1">
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="1" operName="PunctuatedSpeech1Stream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="55" index="1" kind="spl.relational::Punctor" name="PunctuatedSpeech1Stream" sourceIndex="0" startLine="54" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="0" operName="Speech1Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="2" operName="IndentedPunctuatedSpeech1Stream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="59" index="2" kind="spl.relational::Functor" name="IndentedPunctuatedSpeech1Stream" sourceIndex="0" startLine="57" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="1" operName="PunctuatedSpeech1Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="64" index="3" kind="spl.adapter::FileSource" name="Speech2Stream" sourceIndex="0" startLine="64" toolkitIndex="1">
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="4" operName="PunctuatedSpeech2Stream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="67" index="4" kind="spl.relational::Punctor" name="PunctuatedSpeech2Stream" sourceIndex="0" startLine="66" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="3" operName="Speech2Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="5" operName="IndentedPunctuatedSpeech2Stream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="71" index="5" kind="spl.relational::Functor" name="IndentedPunctuatedSpeech2Stream" sourceIndex="0" startLine="69" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="4" operName="PunctuatedSpeech2Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="1" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="76" index="6" kind="spl.adapter::FileSource" name="SubtitleStream" sourceIndex="0" startLine="76" toolkitIndex="1">
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="7" operName="PunctuatedSubtitleStream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="79" index="7" kind="spl.relational::Punctor" name="PunctuatedSubtitleStream" sourceIndex="0" startLine="78" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="6" operName="SubtitleStream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="8" operName="IndentedPunctuatedSubtitleStream" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="83" index="8" kind="spl.relational::Functor" name="IndentedPunctuatedSubtitleStream" sourceIndex="0" startLine="81" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="7" operName="PunctuatedSubtitleStream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="2" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="99" index="9" kind="com.ibm.streamsx.plumbing.synchronize::Synchronize" name="SynchronizedSpeech1Stream" sourceIndex="0" startLine="87" toolkitIndex="2">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="2" operName="IndentedPunctuatedSpeech1Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+              <port index="1">
+                <connections>
+                  <connection operIndex="5" operName="IndentedPunctuatedSpeech2Stream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+              <port index="2">
+                <connections>
+                  <connection operIndex="8" operName="IndentedPunctuatedSubtitleStream" portIndex="0" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <outputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="10" operName="Transcript" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+              <port index="1">
+                <connections>
+                  <connection operIndex="10" operName="Transcript" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+              <port index="2">
+                <connections>
+                  <connection operIndex="10" operName="Transcript" portIndex="0" portKind="input"/>
+                </connections>
+              </port>
+            </outputPorts>
+          </primitiveOperInstance>
+          <primitiveOperInstance endLine="122" index="10" kind="spl.utility::Custom" name="Transcript" sourceIndex="0" startLine="103" toolkitIndex="1">
+            <inputPorts>
+              <port index="0">
+                <connections>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="0" portKind="output"/>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="1" portKind="output"/>
+                  <connection operIndex="9" operName="SynchronizedSpeech1Stream" portIndex="2" portKind="output"/>
+                </connections>
+              </port>
+            </inputPorts>
+            <splAnnotation tag="logicClause">
+              <value key="hasState" type="boolean">true</value>
+              <value key="hasOnProcess" type="boolean">false</value>
+              <value key="hasOnTuple" type="boolean">true</value>
+              <value key="hasOnPunct" type="boolean">true</value>
+            </splAnnotation>
+          </primitiveOperInstance>
+        </compositeOperInstance>
+      </compositeOperInstances>
+    </composites>
+    <toolkits>
+      <toolkit index="0" name="SynchronizeSamples" uri="file:///home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples" version="1.0.0"/>
+      <toolkit index="1" name="spl" uri="file:///home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl" version="1.2.1"/>
+      <toolkit index="2" name="com.ibm.streamsx.plumbing" uri="file:///home/streamsdev/git/streamsx.plumbing/com.ibm.streamsx.plumbing" version="0.3.0.__dev__"/>
+    </toolkits>
+    <customMetrics>
+      <customMetric index="0" kind="Counter" name="nFilesOpened">
+        <description>The number of files opened by the `FileSource` operator.</description>
+      </customMetric>
+      <customMetric index="1" kind="Counter" name="nInvalidTuples">
+        <description>The number of tuples that failed to read correctly in csv or txt format.</description>
+      </customMetric>
+    </customMetrics>
+  </application>
+
+</applicationSet>

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<operatorInstanceModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator/instance" xmlns:an="http://www.ibm.com/xmlns/prod/streams/spl/annotation" xmlns:tt="http://www.ibm.com/xmlns/prod/streams/spl/tupleType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <context>
+    <kind>spl.utility::Custom</kind>
+    <class>Transcript</class>
+    <operatorModelDirectory>/home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl/spl/utility/Custom</operatorModelDirectory>
+    <applicationDirectory>/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples</applicationDirectory>
+    <dataDirectory>/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/data</dataDirectory>
+    <outputDirectory>/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples/output/com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeThreeStreams/Standalone2</outputDirectory>
+    <toolkits>
+      <toolkit isCurrentToolkit="false">
+        <name>SynchronizeSamples</name>
+        <rootDirectory>/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples</rootDirectory>
+        <index>0</index>
+      </toolkit>
+      <toolkit isCurrentToolkit="true">
+        <name>spl</name>
+        <rootDirectory>/home/streamsdev/InfoSphere_Streams/4.1.1.0/toolkits/spl</rootDirectory>
+        <index>1</index>
+      </toolkit>
+      <toolkit isCurrentToolkit="false">
+        <name>com.ibm.streamsx.plumbing</name>
+        <rootDirectory>/home/streamsdev/git/streamsx.plumbing/com.ibm.streamsx.plumbing</rootDirectory>
+        <index>2</index>
+      </toolkit>
+    </toolkits>
+    <optimized>true</optimized>
+    <verbose>false</verbose>
+    <networkByteOrdering>false</networkByteOrdering>
+    <codeBeautification>false</codeBeautification>
+    <includes>
+      <include>"../function/com/ibm/streamsx/plumbing/sample/synchronize/SecondsToTimestamp.h"</include>
+      <include>"../type/BeJwlyUEKgDAMBMA3FWzRu_0QfwQYMaFKS7cHfi3idQctSfWJM7BpywOPJsvxCeonxLbmpdTGoW7ZxBqdQTXCA1j6Dv3gBIi4cDB.h"</include>
+      <include>"../type/BeJyrNIo3NArPzEvJL_1dNLMpOLTI0dMvMS8yBcACkegr2.h"</include>
+    </includes>
+    <stateVariables>
+      <stateVariable>
+        <name>state$filename</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>
+          <cppType>SPL::rstring</cppType>
+          <splType>rstring</splType>
+          <hasRuntimeConstant>true</hasRuntimeConstant>
+          <cppExpression>(::SPL::Functions::Utility::dataDirectory() + lit$24)</cppExpression>
+          <splExpression>dataDirectory() + "/SynchronizeThreeStreams.transcript.out"</splExpression>
+          <hasFunctions>true</hasFunctions>
+          <hasSideEffects>false</hasSideEffects>
+          <readsState>false</readsState>
+          <hasStreamAttributes>false</hasStreamAttributes>
+          <sourceLocation>
+            <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+            <line>106</line>
+            <column>22</column>
+          </sourceLocation>
+        </value>
+        <sourceLocation>
+          <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+          <line>106</line>
+          <column>11</column>
+        </sourceLocation>
+      </stateVariable>
+      <stateVariable>
+        <name>state$file</name>
+        <cppType>SPL::uint64</cppType>
+        <splType>uint64</splType>
+        <value>
+          <cppType>SPL::uint64</cppType>
+          <splType>uint64</splType>
+          <hasRuntimeConstant>true</hasRuntimeConstant>
+          <cppExpression>lit$25</cppExpression>
+          <splExpression>(uint64)(0)</splExpression>
+          <hasFunctions>false</hasFunctions>
+          <hasSideEffects>false</hasSideEffects>
+          <readsState>false</readsState>
+          <hasStreamAttributes>false</hasStreamAttributes>
+          <sourceLocation>
+            <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+            <line>107</line>
+            <column>25</column>
+          </sourceLocation>
+        </value>
+        <sourceLocation>
+          <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+          <line>107</line>
+          <column>18</column>
+        </sourceLocation>
+      </stateVariable>
+    </stateVariables>
+    <runtimeConstants>
+      <runtimeConstant>
+        <name>lit$0</name>
+        <cppType>SPL::int32</cppType>
+        <splType>int32</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$1</name>
+        <cppType>SPL::uint64</cppType>
+        <splType>uint64</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$2</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"w"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$3</name>
+        <cppType>SPL::int32</cppType>
+        <splType>int32</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$4</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"', "</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$5</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"sorry, could not open '"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$6</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$7</name>
+        <cppType>SPL::uint32</cppType>
+        <splType>uint32</splType>
+        <value>112</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$8</name>
+        <cppType>SPL::int32</cppType>
+        <splType>int32</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$9</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>" seconds:\n"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$10</name>
+        <cppType>SPL::uint32</cppType>
+        <splType>uint32</splType>
+        <value>1</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$11</name>
+        <cppType>SPL::uint32</cppType>
+        <splType>uint32</splType>
+        <value>3</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$12</name>
+        <cppType>SPL::boolean</cppType>
+        <splType>boolean</splType>
+        <value>false</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$13</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>" for "</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$14</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"at "</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$15</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"\n\n"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$16</name>
+        <cppType>SPL::int32</cppType>
+        <splType>int32</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$17</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"', "</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$18</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"sorry, could not write to '"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$19</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$20</name>
+        <cppType>SPL::uint32</cppType>
+        <splType>uint32</splType>
+        <value>117</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$21</name>
+        <cppType>SPL::int32</cppType>
+        <splType>int32</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$22</name>
+        <cppType>SPL::uint64</cppType>
+        <splType>uint64</splType>
+        <value>0</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$23</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"------------------------\t------------------------\t------------------------\n"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$24</name>
+        <cppType>SPL::rstring</cppType>
+        <splType>rstring</splType>
+        <value>"/SynchronizeThreeStreams.transcript.out"</value>
+      </runtimeConstant>
+      <runtimeConstant>
+        <name>lit$25</name>
+        <cppType>SPL::uint64</cppType>
+        <splType>uint64</splType>
+        <value>0</value>
+      </runtimeConstant>
+    </runtimeConstants>
+    <sourceLocation>
+      <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+      <line>104</line>
+      <column>2</column>
+    </sourceLocation>
+    <productVersion>4.1.1.0</productVersion>
+    <checkpointKind>none</checkpointKind>
+  </context>
+
+  <parameters/>
+
+  <inputPorts>
+    <inputPort isControlPort="true">
+      <index>0</index>
+      <tupleCppName>iport$0</tupleCppName>
+      <tupleCppType>SPL::BeJwlyUEKgDAMBMA3FWzRu_0QfwQYMaFKS7cHfi3idQctSfWJM7BpywOPJsvxCeonxLbmpdTGoW7ZxBqdQTXCA1j6Dv3gBIi4cDB</tupleCppType>
+      <tupleSPLType>tuple&lt;rstring outputDirectory,rstring outputFilename,rstring indention,rstring phrase,float64 start,float64 duration&gt;</tupleSPLType>
+      <facade>false</facade>
+      <mutationAllowed>false</mutationAllowed>
+      <sourceLocation>
+        <file>com.ibm.streamsx.plumbing.sample.synchronize/SynchronizeThreeStreams.spl</file>
+        <line>104</line>
+        <column>28</column>
+      </sourceLocation>
+      <tupleLogic>{
+    SPL::int32 id$error = lit$0;
+    if ((state$file == lit$1)) 
+        {
+            state$file = ::SPL::Functions::File::fopen(state$filename, lit$2, id$error);
+            ::SPL::Functions::Utility::Assert((SPL::boolean)(id$error == lit$3), (((lit$5 + state$filename) + lit$4) + ::SPL::Functions::Utility::strerror(id$error)), lit$6, lit$7);
+        }
+    if ((::SPL::Functions::String::length(iport$0.get_phrase()) &gt; lit$8)) 
+        {
+            const SPL::rstring id$timeline = (((((iport$0.get_indention() + lit$14) + ::com::ibm::streamsx::plumbing::sample::synchronize::SecondsToTimestamp(iport$0.get_start())) + lit$13) + ::SPL::Functions::Utility::formatNumber(iport$0.get_duration(), lit$10, lit$11, (SPL::boolean)lit$12)) + lit$9);
+            const SPL::rstring id$textline = ((iport$0.get_indention() + iport$0.get_phrase()) + lit$15);
+            ::SPL::Functions::File::fwriteString((id$timeline + id$textline), state$file, id$error);
+            ::SPL::Functions::Utility::Assert((SPL::boolean)(id$error == lit$16), (((lit$18 + state$filename) + lit$17) + ::SPL::Functions::Utility::strerror(id$error)), lit$19, lit$20);
+        }
+}
+</tupleLogic>
+      <punctLogic>{
+    SPL::int32 id$error = lit$21;
+    if ((state$file != lit$22)) 
+        {
+            ::SPL::Functions::File::fwriteString(lit$23, state$file, id$error);
+            if ((SPL::BeJyrNIo3NArPzEvJL_1dNLMpOLTI0dMvMS8yBcACkegr2(punct-1) == SPL::BeJyrNIo3NArPzEvJL_1dNLMpOLTI0dMvMS8yBcACkegr2::FinalMarker)) 
+                {
+                    ::SPL::Functions::File::fclose(state$file, id$error);
+                }
+        }
+}
+</punctLogic>
+      <attributes>
+        <attribute>
+          <name>outputDirectory</name>
+          <cppType>SPL::rstring</cppType>
+          <splType>rstring</splType>
+        </attribute>
+        <attribute>
+          <name>outputFilename</name>
+          <cppType>SPL::rstring</cppType>
+          <splType>rstring</splType>
+        </attribute>
+        <attribute>
+          <name>indention</name>
+          <cppType>SPL::rstring</cppType>
+          <splType>rstring</splType>
+        </attribute>
+        <attribute>
+          <name>phrase</name>
+          <cppType>SPL::rstring</cppType>
+          <splType>rstring</splType>
+        </attribute>
+        <attribute>
+          <name>start</name>
+          <cppType>SPL::float64</cppType>
+          <splType>float64</splType>
+        </attribute>
+        <attribute>
+          <name>duration</name>
+          <cppType>SPL::float64</cppType>
+          <splType>float64</splType>
+        </attribute>
+      </attributes>
+      <tuple>
+        <tt:attr name="outputDirectory" type="rstring"/>
+        <tt:attr name="outputFilename" type="rstring"/>
+        <tt:attr name="indention" type="rstring"/>
+        <tt:attr name="phrase" type="rstring"/>
+        <tt:attr name="start" type="float64"/>
+        <tt:attr name="duration" type="float64"/>
+      </tuple>
+    </inputPort>
+  </inputPorts>
+
+  <outputPorts/>
+
+</operatorInstanceModel>

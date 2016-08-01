@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>ControlledChangeover.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$switches.xml">switches 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.switches.xml">com.ibm.streamsx.plumbing.sample.switches</xref> &gt; ControlledChangeover.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ChangeoverDataFlow">ChangeoverDataFlow</xref></b>: The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeoverSample">ControlledChangeoverSample</xref></b>
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ControlledChangeoverSample">
+  <title outputclass="splpart">composite ControlledChangeoverSample</title>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeoverSample.svg" width="118" height="197">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeoverSample.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ControlledChangeoverSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled switch
+ 		@spl_category(name = "data")
+ 		() as DF = ChangeoverDataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by opening and closing the switch.")
+ 		@spl_category(name = "control")
+ 		() as CF = ControlFlow()
+ 		{
+ 		}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__ChangeoverDataFlow">
+  <title outputclass="splpart">public composite ChangeoverDataFlow</title>
+</section>
+<section>
+
+<p>The data flow that will demonstrate use of <tt>ControlledSwitch</tt>. A Beacon operator submits tuples around 100 per second through a <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</xref> and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref> composite. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ChangeoverDataFlow.svg" width="337" height="152">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ChangeoverDataFlow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ composite ChangeoverDataFlow
+ {
+ 	graph
+ 		stream<int64 a> Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+ 		}
+ 
+ 		(stream<Data> MDClose; stream<Data> MDOpen) as MD = ControlledChangeover(Data)
+ 		{
+ 			param
+ 				name : "sampleSwitch" ;
+                                 initialState : true;
+ 		}
+ 
+ 		() as ChangeoverClosed = Custom(MDClose) { }
+ 		() as ChangeoverOpened = Custom(MDOpen) { }
+ 
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+
