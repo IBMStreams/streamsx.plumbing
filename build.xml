@@ -110,6 +110,8 @@
         <arg value="${toolkit}:samples"/>
         <arg value="--output-directory"/>
         <arg value="${toolkit}/doc/spldoc"/>
+        <arg value="--check-tags"/>
+        <arg value="--include-all"/>
      </exec>
   </target>
 
