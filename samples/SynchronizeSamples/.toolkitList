@@ -1,9 +1,0 @@
-SynchronizeSamples/1.0.0
-spl/1.2.1
-DummyApplication/1.0.0
-com.ibm.streamsx.file/1.0.0
-com.ibm.streamsx.inet/2.8.1
-com.ibm.streamsx.json/1.2.1.__dev__
-com.ibm.streamsx.messaging/5.0.0
-com.ibm.streamsx.plumbing/0.3.0.__dev__
-com.ibm.streamsx.topology/1.4.0.beta

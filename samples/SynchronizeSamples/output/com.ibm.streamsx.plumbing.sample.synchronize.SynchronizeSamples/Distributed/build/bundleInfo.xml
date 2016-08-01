@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<bundleInfoModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/bundleInfoModel" adlFile="com.ibm.streamsx.plumbing.sample.synchronize.SynchronizeSamples.adl" applicationDirectory="SynchronizeSamples" buildDate="" buildId="" bundleVersion="4100" executionMode="distributed" outputDirectory="Distributed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-  <toolkit compileRoot="/home/streamsdev/git/streamsx.plumbing/samples/SynchronizeSamples" name="SynchronizeSamples" version="1.0.0">
-    <file name="toolkit.xml"/>
-  </toolkit>
-
-</bundleInfoModel>
