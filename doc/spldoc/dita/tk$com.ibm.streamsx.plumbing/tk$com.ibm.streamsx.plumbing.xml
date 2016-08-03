@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_toolkit">
+<title outputclass="spltoolkitname">Toolkit <tt>com.ibm.streamsx.plumbing 0.3.0.__dev__</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; com.ibm.streamsx.plumbing 0.3.0.__dev__</p>
+</section>
+<section>
+<title outputclass="splhead-1">General Information</title>
+
+<p>Plumbing operators manipulate the flow of tuples in a Streams application, but are not part of the logic of the application.
+</p>
+<dl>
+  <dlentry>
+  <dt>Version</dt>
+  <dd>0.3.0.__dev__</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Required Product Version</dt>
+  <dd>4.0.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Author</dt>
+  <dd>IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/streamsx.plumbing</dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Indexes</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Namespace.xml">Namespaces</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Operator.xml">Operators</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Function.xml">Functions</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Type.xml">Types</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Namespaces</title>
+  <dl>
+    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.balancers.xml">com.ibm.streamsx.plumbing.balancers</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.xml">ElasticLoadBalance</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.control.xml">com.ibm.streamsx.plumbing.control</xref></dt>
+      <dd></dd>
+      <dd>
+Functionality that utilizes the <tt>JobControlPlane</tt> operator to provide intra-job control mechanisms.
+      </dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/composite_operator__ControlVariableChange">ControlVariableChange</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Functions</dt>
+        <dd>
+<sl>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createBooleanControlVariable.T.boolean.boolean">createBooleanControlVariable(T, boolean, boolean)</xref></sli>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createFloat64ControlVariable.T.boolean.float64">createFloat64ControlVariable(T, boolean, float64)</xref></sli>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getBooleanControlVariable.T">getBooleanControlVariable(T)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/function__getControlVariableObjectName.rstring">getControlVariableObjectName(rstring)</xref></sli>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getFloat64ControlVariable.T">getFloat64ControlVariable(T)</xref></sli>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setBooleanControlVariable.T.boolean">setBooleanControlVariable(T, boolean)</xref></sli>
+<sli><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setFloat64ControlVariable.T.float64">setFloat64ControlVariable(T, float64)</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.leader.xml">com.ibm.streamsx.plumbing.leader</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipChangeover">LeadershipChangeover</xref></sli>
+<sli><xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Types</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/type__LeaderStatus">LeaderStatus</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.replay.xml">com.ibm.streamsx.plumbing.replay</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.replay$replay.xml#spldoc_compilationunit/composite_operator__ReplayBuffer">ReplayBuffer</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.sampling.xml">com.ibm.streamsx.plumbing.sampling</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/composite_operator__RandomSample">RandomSample</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Functions</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/function__percent.float64">percent(float64)</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.shedders.xml">com.ibm.streamsx.plumbing.shedders</xref></dt>
+      <dd></dd>
+      <dd>
+Load shedding operators provide the ability for SPL applications to temporarily discard tuples to reduce workload, for example an application may shed tuples in a low priority analytic flow to ensure high priority analytics have access to required cluster resources, during a peak in activity.
+      </dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">RandomLoadShedder</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Functions</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function____initExpressionShedder.rstring">__initExpressionShedder(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function____initRandomShedder.rstring">__initRandomShedder(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__registerExpressionShedder.rstring">registerExpressionShedder(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__registerRandomShedder.rstring">registerRandomShedder(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.switches.xml">com.ibm.streamsx.plumbing.switches</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/composite_operator__Changeover">Changeover</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeover">ControlledChangeover</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/composite_operator__ControlledSwitch">ControlledSwitch</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Functions</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/function____initChangeover.rstring.boolean">__initChangeover(rstring, boolean)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function____initSwitch.rstring.boolean">__initSwitch(rstring, boolean)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__getSwitchState.rstring">getSwitchState(rstring)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__registerSwitch.rstring.boolean">registerSwitch(rstring, boolean)</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__setSwitchState.rstring.boolean">setSwitchState(rstring, boolean)</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.synchronize.xml">com.ibm.streamsx.plumbing.synchronize</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>  </dl>
+</section>
+</refbody>
+</reference>
+

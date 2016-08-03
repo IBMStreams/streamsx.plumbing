@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>ControlledSwitchSample.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$switches.xml">switches 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.switches.xml">com.ibm.streamsx.plumbing.sample.switches</xref> &gt; ControlledSwitchSample.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref></b>: The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref></b>
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref></b>: The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ControlledSwitchSample">
+  <title outputclass="splpart">composite ControlledSwitchSample</title>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.svg" width="118" height="197">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ControlledSwitchSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled switch
+ 		@spl_category(name = "data")
+ 		() as DF = DataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by opening and closing the switch.")
+ 		@spl_category(name = "control")
+ 		() as CF = ControlFlow()
+ 		{
+ 		}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__DataFlow">
+  <title outputclass="splpart">public composite DataFlow</title>
+</section>
+<section>
+
+<p>The data flow that will demonstrate use of <tt>ControlledSwitch</tt>. A Beacon operator submits tuples around 100 per second through a <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</xref> and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref> composite. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$DataFlow.svg" width="337" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$DataFlow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ composite DataFlow
+ {
+ 	graph
+ 		stream<int64 a> Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+ 		}
+ 
+ 		stream<Data> ManagedData = ControlledSwitch(Data)
+ 		{
+ 			param
+ 				name : "sampleSwitch" ;
+                                 initialState : true;
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__ControlFlow">
+  <title outputclass="splpart">public composite ControlFlow</title>
+</section>
+<section>
+
+<p>The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref>. Every twenty seconds a random value between 0.0 and 1.0 is submitted by a <tt>Beacon</tt>. If it is less that 0.3 the switch is closed otherwise it is opened. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlFlow.svg" width="232" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlFlow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ composite ControlFlow()
+ {
+ 	graph
+ 		stream<float64 rv> Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 10.0 ;
+ 				period : 20.0 ;
+ 			output
+ 				Control : rv = random() ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerSwitch("sampleSwitch", true ) ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					setSwitchState("sampleSwitch", rv >= 0.3) ;
+ 				}
+ 			}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

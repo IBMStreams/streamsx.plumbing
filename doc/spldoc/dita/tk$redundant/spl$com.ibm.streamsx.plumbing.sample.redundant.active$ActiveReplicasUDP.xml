@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>ActiveReplicasUDP.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$redundant.xml">redundant 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.redundant.active.xml">com.ibm.streamsx.plumbing.sample.redundant.active</xref> &gt; ActiveReplicasUDP.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml#spldoc_compilationunit/composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</xref></b>: Execution of redundant copies of Flow() using <tt>@parallel</tt>.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ActiveReplicasUDP">
+  <title outputclass="splpart">composite ActiveReplicasUDP</title>
+</section>
+<section>
+
+<p>Execution of redundant copies of Flow() using <tt>@parallel</tt>. <tt>Flow</tt> is invoked once in the source code but replicated using <tt>@parallel</tt>. The number of replicas (parallel width) is set by the submission time paramater <tt>replicas</tt> defaulting to three.
+</p>
+<p>This technique only works for redundant flows if the composite <tt>@parallel</tt> is applied to has no inputs. If the composite had inputs then each replica (channel) would only receive a subset of the tuples, thus not acting as a redundant flow.
+</p>
+<p>Each replica flow will execute in its own hostpool defined by the host tag <tt>rack_n</tt> where n is the channel number. This is achieved by the <tt>replicateHostTags</tt> argument to <tt>@parallel</tt>. The host tag <tt>rack</tt> is replicated to N copies where N is the width of the parallel region, with the tags being <tt>rack_0 ... rack_N</tt>. 
+</p>
+<p>The replication of the host tags also drives the replication of host pools that use the tags, thus at runtime there are N host pools corresponding to the replicated host tags.
+</p>
+<p>In this case there is no host pool <tt>Rack</tt> that corresponds to the tag <tt>rack</tt>. It would only be created if there was an operator invocation that was placed on hostpool <tt>Rack</tt> without using replicated hsot tags. 
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>replicas</b>
+</sli>
+</sl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.svg" width="118" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ActiveReplicasUDP
+ {
+     param
+         expression<int32> $replicas : (int32) getSubmissionTimeValue("replicas", "3");
+          
+     graph
+       @parallel(width=$replicas, replicateHostTags=["rack"])
+       () as RedundantFlow = Flow()
+       {
+         config placement: host(Rack);
+       }
+ 
+     config
+        // Pools are created shared to allow
+        // other applications to use the same hosts.
+        hostPool:
+             Rack = createPool({tags=["rack"]}, Sys.Shared);
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

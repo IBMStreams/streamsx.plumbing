@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_toolkit">
+<title outputclass="spltoolkitname">Toolkit <tt>switches 1.0.0</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; switches 1.0.0</p>
+</section>
+<section>
+<title outputclass="splhead-1">General Information</title>
+
+<p>Sample applications that use switch operators
+</p>
+<dl>
+  <dlentry>
+  <dt>Version</dt>
+  <dd>1.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Required Product Version</dt>
+  <dd>4.0.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Author</dt>
+  <dd>IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/streamsx.plumbing</dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Indexes</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Namespace.xml">Namespaces</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Operator.xml">Operators</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Namespaces</title>
+  <dl>
+    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.sample.switches.xml">com.ibm.streamsx.plumbing.sample.switches</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ChangeoverDataFlow">ChangeoverDataFlow</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeoverSample">ControlledChangeoverSample</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>  </dl>
+</section>
+</refbody>
+</reference>
+
