@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>sampling.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sampling.xml">com.ibm.streamsx.plumbing.sampling</xref> &gt; sampling.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/composite_operator__RandomSample">RandomSample</xref></b>: Randomly sample a stream.
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Functions</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/function__percent.float64">percent(float64)</xref></b>: Convert a percent to a fraction by dividing by 100.0. 
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__RandomSample">
+  <title outputclass="splpart">composite RandomSample(output OUT; input IN)</title>
+</section>
+<section>
+
+<p>Randomly sample a stream. Fraction of tuples to pass through is specified by parameter <tt>fraction</tt>, defaults to 0.01 (1%) . I.e. random selection of 1% of tuples are passed through.
+</p>
+<p>The output stream's schema must be the same as the input schema.
+</p>
+</section>
+<section>
+<title>Parameters</title>
+<sl>
+<sli><b>fraction</b>: Fraction of the stream to pass through
+</sli>
+</sl>
+</section>
+<section>
+<title>Input Ports</title>
+<sl>
+<sli><b>IN</b>: Stream to be sampled
+</sli>
+</sl>
+</section>
+<section>
+<title>Output Ports</title>
+<sl>
+<sli><b>OUT</b>: Sampled stream with the tuples randomly selected
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.sampling$RandomSample.svg" width="142" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.sampling$RandomSample.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite RandomSample(input IN; output OUT)
+ {
+ 	param
+ 	  expression<float64> $fraction : 0.01fl;
+ 	graph
+ 	  (stream<IN> OUT) as Sample = Functor(IN) {
+            logic state: float64 _fraction = $fraction;
+            
+ 	  	param
+ 	  	filter : random() < _fraction;
+ 	  }
+ }
+]]>
+   </codeblock>
+</section>
+<section>
+  <title outputclass="splhead-1">Functions</title>
+</section>
+<section id="function__percent.float64">
+  <title outputclass="splpart">float64 percent(float64 percent)</title>
+</section><section>
+
+<p>Convert a percent to a fraction by dividing by 100.0. 
+</p>
+</section>
+<section>
+<title>Parameters</title>
+ <sl>
+   <sli>
+<b>percent</b>
+   </sli>
+ </sl>
+</section>
+<section>
+<title>Returns</title>
+<sl><sli>
+<tt>float64</tt>
+</sli></sl>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+<section>
+   <codeblock>
+<![CDATA[
+ public float64 percent(float64 percent) {
+     return percent / 100.0fl;
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+

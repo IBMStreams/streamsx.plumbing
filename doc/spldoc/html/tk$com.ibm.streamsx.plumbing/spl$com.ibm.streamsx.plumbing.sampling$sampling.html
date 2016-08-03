@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sampling.html">com.ibm.streamsx.plumbing.sampling</a> &gt; sampling.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.3.0.__dev__</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sampling.html">com.ibm.streamsx.plumbing.sampling</a> &gt; sampling.spl</p>
 
 </div>
 
@@ -115,7 +115,32 @@
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.sampling$RandomSample.svg" width="142" height="109"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.sampling$RandomSample.svg" width="142" height="107"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite RandomSample(input IN; output OUT)
+ {
+ 	param
+ 	  expression&lt;float64&gt; $fraction : 0.01fl;
+ 	graph
+ 	  (stream&lt;IN&gt; OUT) as Sample = Functor(IN) {
+            logic state: float64 _fraction = $fraction;
+            
+ 	  	param
+ 	  	filter : random() &lt; _fraction;
+ 	  }
+ }
+
+   </pre>
+
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">Functions</h2>
@@ -149,6 +174,21 @@
 <tt class="ph tt">float64</tt>
 </li>
 </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public float64 percent(float64 percent) {
+     return percent / 100.0fl;
+ }
+
+   </pre>
 
 </div>
 

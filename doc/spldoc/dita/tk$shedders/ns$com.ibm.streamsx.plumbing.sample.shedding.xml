@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.sample.shedding</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$shedders.xml">shedders 1.0.0</xref> &gt; com.ibm.streamsx.plumbing.sample.shedding</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref></b>: The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__RandomShedderSample">RandomShedderSample</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref></b>: The data flow that will demonstrate load shedding using <tt>RandomLoadShedder</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__EControlFlow">EControlFlow</xref></b>: The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__ExpressionShedderSample">ExpressionShedderSample</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__EDataFlow">EDataFlow</xref></b>: The data flow that will demonstrate load shedding using <tt>RandomLoadShedder</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__ExpressionShedderSample">ExpressionShedderSample</xref></b>
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__RandomShedderFailureSample">RandomShedderFailureSample</xref></b>: Sample application that can be used to demonstrate recovery from failure for <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</xref>. A single change is made to shed tuples in the data flow after 30 seconds to some random fraction &gt;= 0.2. The failure modes that can be manually tested are:  Killing or restarting the PE containing <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</xref>. Killing or restarting the PE containing <tt>JobControlPlane</tt> and <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</xref>. Stopping the PE containing <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</xref> before the shedding fraction is changedand then restarting it.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__RandomShedderSample">RandomShedderSample</xref></b>
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Operators: com.ibm.streamsx.plumbing 0.3.0.__dev__</title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; Operators</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<dl>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/composite_operator__Changeover">Changeover</xref></dt>
+  <dd>Changeover switch.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/composite_operator__ControlVariableChange">ControlVariableChange</xref></dt>
+  <dd>Control variable change notifications.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeover">ControlledChangeover</xref></dt>
+  <dd>Controlled changeover switch.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/composite_operator__ControlledSwitch">ControlledSwitch</xref></dt>
+  <dd>Controlled switch.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.xml">ElasticLoadBalance</xref></dt>
+  <dd>This operator distributes tuples to the output ports that have the capacity to receive them.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref></dt>
+  <dd>Controllable load shedder that sheds (drops) tuples based upon evaluating an expression.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipChangeover">LeadershipChangeover</xref></dt>
+  <dd>Changeover switch that changes state based upon if the PE is marked as the leader of <tt>group</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.xml">LeadershipElection</xref></dt>
+  <dd>Performs a leadership election between other operator invocations with the same <tt>group</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.leader$leader.xml#spldoc_compilationunit/composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</xref></dt>
+  <dd>Switch operator that only generates output when its PE is the leader of the group.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">RandomLoadShedder</xref></dt>
+  <dd>Controllable load shedder that sheds (drops) tuples randomly.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/composite_operator__RandomSample">RandomSample</xref></dt>
+  <dd>Randomly sample a stream.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.replay$replay.xml#spldoc_compilationunit/composite_operator__ReplayBuffer">ReplayBuffer</xref></dt>
+  <dd>Replay tuple buffer.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="op$com.ibm.streamsx.plumbing.synchronize$Synchronize.xml">Synchronize</xref></dt>
+  <dd>The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.</dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

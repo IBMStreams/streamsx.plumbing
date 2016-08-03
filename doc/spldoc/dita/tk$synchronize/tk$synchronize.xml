@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_toolkit">
+<title outputclass="spltoolkitname">Toolkit <tt>synchronize 1.0.0</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; synchronize 1.0.0</p>
+</section>
+<section>
+<title outputclass="splhead-1">General Information</title>
+
+<dl>
+  <dlentry>
+  <dt>Version</dt>
+  <dd>1.0.0</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Required Product Version</dt>
+  <dd>4.1.1.1</dd>
+  </dlentry>
+  <dlentry>
+  <dt>Author</dt>
+  <dd>IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/streamsx.plumbing</dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Indexes</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Namespace.xml">Namespaces</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Operator.xml">Operators</xref></dt><dd></dd></dlentry>
+    <dlentry><dt><xref href="ix$Function.xml">Functions</xref></dt><dd></dd></dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Namespaces</title>
+  <dl>
+    <dlentry>
+      <dt outputclass="splpart"><xref href="ns$com.ibm.streamsx.plumbing.sample.synchronize.xml">com.ibm.streamsx.plumbing.sample.synchronize</xref></dt>
+      <dd></dd>
+      <dd><dl><dlentry>
+        <dt>Operators</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/composite_operator__SynchronizeThreeStreams">SynchronizeThreeStreams</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.xml#spldoc_compilationunit/composite_operator__SynchronizeTwoStreams">SynchronizeTwoStreams</xref></sli>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.xml#spldoc_compilationunit/composite_operator__SynchronizeTwoStreamsWithPunctuation">SynchronizeTwoStreamsWithPunctuation</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+      <dd><dl><dlentry>
+        <dt>Functions</dt>
+        <dd>
+<sl>
+<sli><xref href="spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/function__SecondsToTimestamp.float64">SecondsToTimestamp(float64)</xref></sli>
+</sl>
+        </dd>
+      </dlentry></dl></dd>
+     </dlentry>  </dl>
+</section>
+</refbody>
+</reference>
+

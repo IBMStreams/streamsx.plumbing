@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_operator">
+<title>Operator <tt>LeadershipElection</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.leader.xml">com.ibm.streamsx.plumbing.leader</xref> &gt; LeadershipElection</p>
+</section>
+<section outputclass="splprimop">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.svg" width="672" height="112">
+    <alt>Primitive operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.svg
+</alt>
+  </image>
+</section>
+<section>
+
+<p>Performs a leadership election between other operator invocations with the same <tt>group</tt>. At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. Invocations must be exlocated into different PEs.
+</p>
+<p>The operator requires the application include an invocation of the <tt>JobControlPlane</tt> operator.
+</p>
+<p>Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service.The Zookeeper root node for the recipe is a sub-node <tt>group</tt> within job's storage node (<tt>com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()</tt>).
+</p>
+</section>
+<section>
+<title outputclass="splhead-1">Summary</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Ports</dt>
+  <dd>This operator has 0 input port and 1 output port.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Windowing</dt>
+  <dd>This operator does not accept any windowing configurations.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Parameters</dt>
+  <dd>This operator supports 1 parameter. (<tt>group</tt>)
+</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Metrics</dt>
+  <dd>This operator reports 1 metrics.</dd>
+ </dlentry>
+</dl></section>
+<section>
+<title outputclass="splhead-1">Properties</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Implementation</dt>
+  <dd>Java</dd>
+ </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set">Output Ports</xref></b></p><dl>
+  <dlentry>
+     <dt>Assignments</dt>
+       <dd>Java operators do not support output assignments.
+       </dd>
+  </dlentry>
+</dl>
+<dl>
+  <dlentry>
+   <dt>Ports (0)</dt>
+   <dd>
+
+<p></p>
+   <dl>
+    <dlentry>
+      <dt>Properties</dt>
+      <dd>
+   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__optional">Optional</xref>: false
+     </sli>
+   </sl>
+   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</xref>: Free
+     </sli>
+   </sl>
+      </dd>
+    </dlentry>
+   </dl>
+   <p></p>
+   </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters">Parameters</xref></b></p>This operator supports 1 parameter.<dl>
+<dlentry>
+<dt id="parameter_group"><tt>group</tt></dt>
+<dd>
+<p>Leadership group name. All instances of this operator within the same job and having the same <tt>group</tt> are participants in a single leadership election. Group name must not start with a slash (<tt>/</tt>).
+</p><dl>
+<dlentry>
+ <dt>Properties </dt>
+ <dd>
+  <sl>
+  <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: rstring
+  </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: false
+     </sli>
+  </sl>
+ </dd>
+</dlentry>
+</dl>
+</dd>
+</dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__metrics">Metrics</xref></b></p><dl>
+  <dlentry>
+    <dt><tt>isLeader</tt> - <xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__metrics_kind_gauge">Gauge</xref></dt>
+    <dd>
+
+<p>Is this invocation the leader. 1 this operator invocation is the leader for the group, 0 is it not the leader.
+</p>
+     <p></p>
+     </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__dependencies">Libraries</xref></b></p>
+ <dl>
+ <dlentry>
+  <dt>Operator class library
+  </dt>
+  <dd/>
+  <dd><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__dependencies__managedlibrary__libpath">Library Path</xref>: <tt>../../impl/lib/com.ibm.streamsx.plumbing.jar, ../../opt/apache-curator-2.7.1/*</tt></dd>
+ </dlentry>
+ </dl>
+</section>
+</refbody>
+</reference>
+

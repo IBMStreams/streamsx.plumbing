@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<srcCode:sourceModel xmlns:srcCode="http://www.ibm.com/xmlns/prod/streams/spl/sourceCode" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.shedding/ExprShedderSample.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.shedding"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.shedders" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="35" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="11" name="ExpressionShedderSample">
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="JCP" line="14" operatorName="JobControlPlane"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="DF" line="20" operatorName="EDataFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="CF" line="31" operatorName="EControlFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="70" startColumn="1" startLine="37">
+          <srcCode:compositeHead column="1" line="47" name="EDataFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The data flow that will demonstrate load
+shedding using `RandomLoadShedder`. A Beacon
+operator submits tuples around 100 per second
+through a [RandomLoadShedder] and out to a sink operator.
+Using Streams Studio or the Streams Console you can
+watch the rate of tuples into the sink operator change
+based upon the control signals from the separate
+[ControlFlow] composite.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="28" line="50" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="21" index="0" line="50" streamName="Data" type="float64 a"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="53" name="period">
+                      <srcCode:value expr="0.01"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="32" line="54" portName="Data">
+                      <srcCode:attributeAssignment column="38" line="54" name="a">
+                        <srcCode:value expr="random()"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                  <srcCode:configs>
+                    <srcCode:config column="14" line="55" name="placement">
+                      <srcCode:option column="25" line="55" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="30" line="58" operatorName="ExpressionLoadShedder">
+                  <srcCode:outputs>
+                    <srcCode:output column="16" index="0" line="58" streamName="ManagedData" type="Data"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="52" index="0" line="58">
+                      <srcCode:istream column="52" line="58" name="Data"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="61" name="name">
+                      <srcCode:value expr="&quot;sampleShedder&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="5" line="62" name="expr">
+                      <srcCode:value expr="a &lt; 0.7"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="14" line="63" name="placement">
+                      <srcCode:option column="25" line="63" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="Sink" line="66" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="23" index="0" line="66">
+                      <srcCode:istream column="23" line="66" name="ManagedData"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="106" startColumn="1" startLine="72">
+          <srcCode:compositeHead column="1" line="77" name="EControlFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The flow that controls [DataFlow] in [ExpressionShedderSample]. Every thirty seconds
+the fraction of tuples to shed increases by 0.25, cycling
+back to 0.0 (no drops) after reaching 1.0 (everything dropped).
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="32" line="80" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="22" index="0" line="80" streamName="Control" type="boolean cd"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="83" name="initDelay">
+                      <srcCode:value expr="30.0"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="5" line="84" name="period">
+                      <srcCode:value expr="30.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeShedding" line="87" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="87">
+                      <srcCode:istream column="33" line="87" name="Control"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="96" portName="Control"/>
+                  </srcCode:logic>
+                  <srcCode:configs>
+                    <srcCode:config column="6" line="103" name="tracing">
+                      <srcCode:option column="0" line="0" value="debug"/>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.shedding/RandomShedderSample.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.shedding"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.shedders" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="35" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="11" name="RandomShedderSample">
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="JCP" line="14" operatorName="JobControlPlane"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="DF" line="20" operatorName="DataFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="CF" line="31" operatorName="ControlFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="68" startColumn="1" startLine="37">
+          <srcCode:compositeHead column="1" line="47" name="DataFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The data flow that will demonstrate load
+shedding using `RandomLoadShedder`. A Beacon
+operator submits tuples around 100 per second
+through a [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] and out to a sink operator.
+Using Streams Studio or the Streams Console you can
+watch the rate of tuples into the sink operator change
+based upon the control signals from the separate
+[ControlFlow] composite.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="26" line="50" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="50" streamName="Data" type="int64 a"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="53" name="period">
+                      <srcCode:value expr="0.01"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="14" line="54" name="placement">
+                      <srcCode:option column="25" line="54" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="30" line="57" operatorName="RandomLoadShedder">
+                  <srcCode:outputs>
+                    <srcCode:output column="16" index="0" line="57" streamName="ManagedData" type="Data"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="48" index="0" line="57">
+                      <srcCode:istream column="48" line="57" name="Data"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="60" name="name">
+                      <srcCode:value expr="&quot;sampleShedder&quot;"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:configs>
+                    <srcCode:config column="14" line="61" name="placement">
+                      <srcCode:option column="25" line="61" value="partitionColocation">
+                        <srcCode:parameter value="getThisCompositeInstanceName()"/>
+                      </srcCode:option>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="Sink" line="64" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="23" index="0" line="64">
+                      <srcCode:istream column="23" line="64" name="ManagedData"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="107" startColumn="1" startLine="70">
+          <srcCode:compositeHead column="1" line="75" name="ControlFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The flow that controls [DataFlow] in [RandomShedderSample]. Every thirty seconds
+the fraction of tuples to shed increases by 0.25, cycling
+back to 0.0 (no drops) after reaching 1.0 (everything dropped).
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="43" line="78" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="33" index="0" line="78" streamName="Control" type="float64 fractionDelta"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="81" name="initDelay">
+                      <srcCode:value expr="30.0"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="5" line="82" name="period">
+                      <srcCode:value expr="30.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="5" line="84" portName="Control">
+                      <srcCode:attributeAssignment column="15" line="84" name="fractionDelta">
+                        <srcCode:value expr="0.25"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeShedding" line="87" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="87">
+                      <srcCode:istream column="33" line="87" name="Control"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="96" portName="Control"/>
+                  </srcCode:logic>
+                  <srcCode:configs>
+                    <srcCode:config column="6" line="104" name="tracing">
+                      <srcCode:option column="0" line="0" value="debug"/>
+                    </srcCode:config>
+                  </srcCode:configs>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="159" startColumn="1" startLine="109">
+          <srcCode:compositeHead column="1" line="127" name="RandomShedderFailureSample">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>Sample application that can be used to demonstrate
+recovery from failure for [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+
+A single change is made to shed tuples in the
+data flow after 30 seconds to some random fraction &gt;= 0.2.
+
+The failure modes that can be manually tested are:
+
+* Killing or restarting the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+* Killing or restarting the PE containing `JobControlPlane` and [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder].
+* Stopping the PE containing [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] before the shedding fraction is changed
+and then restarting it.
+
+In each case [com.ibm.streamsx.plumbing.shedders::RandomLoadShedder] reverts to the shedding fraction set by the control flow,
+and the current fraction can be seen through the `sheddingFraction` metric, in tuples
+per million shed.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="12" invocationAlias="JCP" line="129" operatorName="JobControlPlane"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="DF" line="133" operatorName="DataFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="38" line="137" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="28" index="0" line="137" streamName="Control" type="float64 fraction"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="8" line="140" name="initDelay">
+                      <srcCode:value expr="30.0"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="5" line="141" name="iterations">
+                      <srcCode:value expr="1u"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="5" line="143" portName="Control">
+                      <srcCode:attributeAssignment column="15" line="143" name="fraction">
+                        <srcCode:value expr="random() + 0.2"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeShedding" line="146" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="146">
+                      <srcCode:istream column="33" line="146" name="Control"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="154" portName="Control"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+</srcCode:sourceModel>

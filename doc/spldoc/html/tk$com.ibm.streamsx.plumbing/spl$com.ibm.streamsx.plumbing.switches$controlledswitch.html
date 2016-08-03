@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.switches.html">com.ibm.streamsx.plumbing.switches</a> &gt; controlledswitch.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.3.0.__dev__</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.switches.html">com.ibm.streamsx.plumbing.switches</a> &gt; controlledswitch.spl</p>
 
 </div>
 
@@ -50,6 +50,9 @@
 
       <dd class="dd">
 <ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function____initSwitch.rstring.boolean">__initSwitch(rstring, boolean)</a></strong>
+</li>
+
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function__getSwitchState.rstring">getSwitchState(rstring)</a></strong>: Get the state of a switch with control variable <tt class="ph tt">name</tt>.
 </li>
 
@@ -142,11 +145,92 @@
 </div>
 
 <div class="section splgraph">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.switches$ControlledSwitch.svg" width="252" height="116"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.switches$ControlledSwitch.svg" width="252" height="114"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ControlledSwitch(input IN; output OUT)
+ {
+    param
+         expression&lt;rstring&gt; $name;
+         expression&lt;boolean&gt; $initialState : false;
+     graph
+ 
+         stream&lt;IN&gt; OUT = Switch(IN ; SwitchControl)
+         {
+             logic state: {boolean _dummy = __initSwitch($name, $initialState);}
+             param
+                 status : getSwitchState($name) ;
+                 initialStatus: getSwitchState($name);
+             config placement: partitionColocation(getThisCompositeInstanceName());
+         }
+         // this issues an attribute change notification which is then
+         // sent to the Switch's control port. This will then call
+         // getSwitchState() to set the switch to its correct state.
+         stream&lt;MBeanNotificationBase&gt; SwitchControl = ControlVariableChange()
+         {
+             param
+                 name : $name;
+             config placement: partitionColocation(getThisCompositeInstanceName());
+         }
+ }
+
+   </pre>
+
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">Functions</h2>
   
+</div>
+
+<div class="section" id="spldoc_compilationunit__function____initSwitch.rstring.boolean"><h2 class="title sectiontitle splpart">boolean __initSwitch(rstring name, boolean initialState)</h2>
+  
+</div>
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+ <ul class="sl simple">
+   <li class="sli">
+<strong class="ph b">name</strong>
+   </li>
+
+   <li class="sli">
+<strong class="ph b">initialState</strong>
+   </li>
+
+ </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Returns</h2>
+
+<ul class="sl simple"><li class="sli">
+<tt class="ph tt">boolean</tt>
+</li>
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ stateful boolean __initSwitch(rstring name, boolean initialState)
+ {
+ 	return registerSwitch(name, initialState) ;
+ }
+
+   </pre>
+
 </div>
 
 <div class="section" id="spldoc_compilationunit__function__registerSwitch.rstring.boolean"><h2 class="title sectiontitle splpart">boolean registerSwitch(rstring name, boolean initialState)</h2>
@@ -185,6 +269,22 @@
 
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful boolean registerSwitch(rstring name, boolean initialState)
+ {
+ 	return createBooleanControlVariable(name, true, initialState) ;
+ }
+
+   </pre>
+
+</div>
+
 <div class="section" id="spldoc_compilationunit__function__setSwitchState.rstring.boolean"><h2 class="title sectiontitle splpart">void setSwitchState(rstring name, boolean on)</h2>
   
 </div>
@@ -219,6 +319,22 @@
 <div class="section">
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful void setSwitchState(rstring name, boolean  on)
+ {
+ 	setBooleanControlVariable(name, on) ;
+ }
+
+   </pre>
+
+</div>
+
 <div class="section" id="spldoc_compilationunit__function__getSwitchState.rstring"><h2 class="title sectiontitle splpart">boolean getSwitchState(rstring name)</h2>
   
 </div>
@@ -249,6 +365,22 @@
 <tt class="ph tt">boolean</tt>
 </li>
 </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public boolean getSwitchState(rstring name)
+ {
+ 	return getBooleanControlVariable(name) ;
+ }
+
+   </pre>
 
 </div>
 

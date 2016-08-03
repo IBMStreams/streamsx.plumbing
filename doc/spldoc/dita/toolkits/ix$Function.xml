@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Functions: streamsx.plumbing</title>
+<refbody>
+<section>
+<p>
+<xref href="toolkits.xml">streamsx.plumbing</xref> &gt; Functions</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Functions</title>
+<dl>
+<dlentry>
+  <dt><xref href="../tk$synchronize/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/function__SecondsToTimestamp.float64">SecondsToTimestamp(float64)</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$changeover.xml#spldoc_compilationunit/function____initChangeover.rstring.boolean">__initChangeover(rstring, boolean)</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function____initExpressionShedder.rstring">__initExpressionShedder(rstring)</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function____initRandomShedder.rstring">__initRandomShedder(rstring)</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function____initSwitch.rstring.boolean">__initSwitch(rstring, boolean)</xref></dt>
+  <dd></dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createBooleanControlVariable.T.boolean.boolean">createBooleanControlVariable(T, boolean, boolean)</xref></dt>
+  <dd>Create a <tt>boolean</tt> control variable named <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createFloat64ControlVariable.T.boolean.float64">createFloat64ControlVariable(T, boolean, float64)</xref></dt>
+  <dd>Create a <tt>float64</tt> control variable named <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getBooleanControlVariable.T">getBooleanControlVariable(T)</xref></dt>
+  <dd>Get the value of <tt>name</tt> <tt>boolean</tt> control variable.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/function__getControlVariableObjectName.rstring">getControlVariableObjectName(rstring)</xref></dt>
+  <dd>Get the object name in the Job Control Plane for a shared control variable.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref></dt>
+  <dd>Get the shedding mode for <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations using control variable <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getFloat64ControlVariable.T">getFloat64ControlVariable(T)</xref></dt>
+  <dd>Get the value of <tt>name</tt> <tt>float64</tt> control variable.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</xref></dt>
+  <dd>Get the fraction of tuples being shed for <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">RandomLoadShedder</xref> operator invocations using control variable <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__getSwitchState.rstring">getSwitchState(rstring)</xref></dt>
+  <dd>Get the state of a switch with control variable <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.sampling$sampling.xml#spldoc_compilationunit/function__percent.float64">percent(float64)</xref></dt>
+  <dd>Convert a percent to a fraction by dividing by 100.0. </dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__registerExpressionShedder.rstring">registerExpressionShedder(rstring)</xref></dt>
+  <dd>Register that an operator invocation will call <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref> or <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__getExpressionShedderMode.rstring">getExpressionShedderMode(rstring)</xref>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__registerRandomShedder.rstring">registerRandomShedder(rstring)</xref></dt>
+  <dd>Register that an operator invocation will call <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</xref> or <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__getRandomShedderFraction.rstring">getRandomShedderFraction(rstring)</xref>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__registerSwitch.rstring.boolean">registerSwitch(rstring, boolean)</xref></dt>
+  <dd>Register that an operator invocation will call <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__setSwitchState.rstring.boolean">setSwitchState(rstring, boolean)</xref> or <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__getSwitchState.rstring">getSwitchState(rstring)</xref>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setBooleanControlVariable.T.boolean">setBooleanControlVariable(T, boolean)</xref></dt>
+  <dd>Set the value of <tt>name</tt> <tt>boolean</tt> control variable to <tt>value</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/function__setExpressionShedderMode.rstring.boolean">setExpressionShedderMode(rstring, boolean)</xref></dt>
+  <dd>Set the shedding mode for <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$exprshedder.xml#spldoc_compilationunit/composite_operator__ExpressionLoadShedder">ExpressionLoadShedder</xref> operator invocations  using control variable <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setFloat64ControlVariable.T.float64">setFloat64ControlVariable(T, float64)</xref></dt>
+  <dd>Set the value of <tt>name</tt> <tt>float64</tt> control variable to <tt>value</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/function__setRandomShedderFraction.rstring.float64">setRandomShedderFraction(rstring, float64)</xref></dt>
+  <dd>Set the fraction of tuples to be shed for <xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.xml#spldoc_compilationunit/composite_operator__RandomLoadShedder">RandomLoadShedder</xref> operator invocations  using control variable <tt>name</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.xml#spldoc_compilationunit/function__setSwitchState.rstring.boolean">setSwitchState(rstring, boolean)</xref></dt>
+  <dd>Set the state of switches with control variable <tt>name</tt>.</dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

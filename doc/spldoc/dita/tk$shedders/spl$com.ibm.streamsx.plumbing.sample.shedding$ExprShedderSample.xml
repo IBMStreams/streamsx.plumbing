@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_compilationunit">
+<title>SPL File <tt>ExprShedderSample.spl</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$shedders.xml">shedders 1.0.0</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.sample.shedding.xml">com.ibm.streamsx.plumbing.sample.shedding</xref> &gt; ExprShedderSample.spl</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Content</title>
+  <dl>
+    <dlentry><dt></dt><dd></dd></dlentry>
+    <dlentry>
+      <dt outputclass="splhead-2">Operators</dt>
+      <dd>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__EControlFlow">EControlFlow</xref></b>: The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__ExpressionShedderSample">ExpressionShedderSample</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__EDataFlow">EDataFlow</xref></b>: The data flow that will demonstrate load shedding using <tt>RandomLoadShedder</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__ExpressionShedderSample">ExpressionShedderSample</xref></b>
+</sli>
+</sl>
+      </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+  <title outputclass="splhead-1">Composites</title>
+</section>
+<section id="composite_operator__ExpressionShedderSample">
+  <title outputclass="splpart">composite ExpressionShedderSample</title>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ExpressionShedderSample.svg" width="118" height="197">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ExpressionShedderSample.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ public composite ExpressionShedderSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled load shedding
+ 		@spl_category(name = "data")
+ 		() as DF = EDataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+ 		@spl_category(name = "control")
+ 		() as CF = EControlFlow()
+ 		{
+ 		}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__EDataFlow">
+  <title outputclass="splpart">public composite EDataFlow</title>
+</section>
+<section>
+
+<p>The data flow that will demonstrate load shedding using <tt>RandomLoadShedder</tt>. A Beacon operator submits tuples around 100 per second through a [RandomLoadShedder] and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref> composite. 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EDataFlow.svg" width="337" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EDataFlow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ composite EDataFlow
+ {
+ 	graph
+ 		stream<float64 a> Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+                         output Data: a = random();
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		stream<Data> ManagedData = ExpressionLoadShedder(Data)
+ 		{
+ 			param
+ 				name : "sampleShedder" ;
+ 				expr : a < 0.7;
+ 		    config placement: partitionColocation(getThisCompositeInstanceName());
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+<section id="composite_operator__EControlFlow">
+  <title outputclass="splpart">public composite EControlFlow</title>
+</section>
+<section>
+
+<p>The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.shedding$ExprShedderSample.xml#spldoc_compilationunit/composite_operator__ExpressionShedderSample">ExpressionShedderSample</xref>. Every thirty seconds the fraction of tuples to shed increases by 0.25, cycling back to 0.0 (no drops) after reaching 1.0 (everything dropped). 
+</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+  <title outputclass="splhead-2">Composite Operator Graph</title>
+</section>
+<section outputclass="splgraph">
+  <image href="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EControlFlow.svg" width="232" height="107">
+    <alt>SPL composite operator image not displayed. Problem loading file: ../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$EControlFlow.svg
+</alt>
+  </image>
+</section>
+<section>
+  <title outputclass="splhead-2">SPL Source Code</title>
+</section>
+
+<section>
+   <codeblock>
+<![CDATA[
+ composite EControlFlow()
+ {
+ 	graph
+ 		stream<boolean cd> Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 30.0 ;
+ 				period : 30.0 ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerExpressionShedder("sampleShedder") ;
+ 					mutable boolean _shed = false ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					_shed = !_shed ;
+ 					setExpressionShedderMode("sampleShedder", _shed) ;
+ 				}
+ 
+ 				config
+ 					tracing : debug ;
+ 			}
+ 
+ }
+]]>
+   </codeblock>
+</section>
+</refbody>
+</reference>
+
