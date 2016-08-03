@@ -11,7 +11,7 @@
   <title outputclass="splhead-1">Functions</title>
 <dl>
 <dlentry>
-  <dt><xref href="../tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/function__SecondsToTimestamp.float64">SecondsToTimestamp(float64)</xref></dt>
+  <dt><xref href="../tk$synchronize/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml#spldoc_compilationunit/function__SecondsToTimestamp.float64">SecondsToTimestamp(float64)</xref></dt>
   <dd></dd>
 </dlentry>
 <dlentry>

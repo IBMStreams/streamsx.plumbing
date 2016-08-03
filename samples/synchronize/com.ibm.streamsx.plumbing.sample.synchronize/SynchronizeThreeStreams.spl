@@ -62,7 +62,6 @@ composite SynchronizeThreeStreams {
     // read stream of phrases from second speech recognition engine, add indention, and insert punctuation between videos
 	
 	stream<PhraseType> Speech2Stream = FileSource() { param file: "sync4.Speech2PhraseStream.in"; format: csv; }
-	() as Speech2Sink = FileSink(Speech2Stream) { param file: "debug.SynchronizeThreeStreams.Speech2Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 	
 	stream<PhraseType> PunctuatedSpeech2Stream = Punctor(Speech2Stream) {
 	param punctuate: outputDirectory=="WindowMarker"; position: after; }
@@ -92,7 +91,7 @@ composite SynchronizeThreeStreams {
                                                             IndentedPunctuatedSpeech2Stream as In2; 
                                                             IndentedPunctuatedSubtitleStream as InT) {
 	param 
-		timeAttributes: "start"; 
+		timeAttributes: In1.start, In2.start, InT.start; 
 		timeFactor: 0.0; // replay as fast as possible
 	config threadedPort: 
 		queue(In1, Sys.DropFirst, 1000),
@@ -122,11 +121,13 @@ composite SynchronizeThreeStreams {
 		if (currentPunct()==Sys.FinalMarker) { fclose(file, error); } } }
 	} 
 
+
     // log intermediate streams when debugging
 
 //  () as Speech1Sink = FileSink(Speech1Stream) { param file: "debug.SynchronizeThreeStreams.Speech1Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 //  () as PunctuatedSpeech1Sink = FileSink(PunctuatedSpeech1Stream) { param file: "debug.SynchronizeThreeStreams.PunctuatedSpeech1Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 //  () as IndentedPunctuatedSpeech1Sink = FileSink(IndentedPunctuatedSpeech1Stream) { param file: "debug.SynchronizeThreeStreams.IndentedPunctuatedSpeech1Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
+//	() as Speech2Sink = FileSink(Speech2Stream) { param file: "debug.SynchronizeThreeStreams.Speech2Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 //  () as PunctuatedSpeech2Sink = FileSink(PunctuatedSpeech2Stream) { param file: "debug.SynchronizeThreeStreams.PunctuatedSpeech2Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 //  () as IndentedPunctuatedSpeech2Sink = FileSink(IndentedPunctuatedSpeech2Stream) { param file: "debug.SynchronizeThreeStreams.IndentedPunctuatedSpeech2Stream.out"; format: txt; flush: 1u; writePunctuations: true; }
 //  () as SubtitleSink = FileSink(SubtitleStream) { param file: "debug.SynchronizeThreeStreams.SubtitleStream.out"; format: txt; flush: 1u; writePunctuations: true; }

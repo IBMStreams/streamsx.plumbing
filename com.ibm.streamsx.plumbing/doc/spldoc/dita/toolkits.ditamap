@@ -11,22 +11,6 @@
 </topicref>
 <topicref navtitle="Types" locktitle="yes" href="toolkits/ix$Type.xml" toc="yes" linking="none">
 </topicref>
-<topicref navtitle="SynchronizeSamples 1.0.0" locktitle="yes" href="tk$SynchronizeSamples/tk$SynchronizeSamples.xml" toc="yes" linking="none">
-<topicref navtitle="Namespaces" locktitle="yes" href="tk$SynchronizeSamples/ix$Namespace.xml" toc="yes" linking="none">
-</topicref>
-<topicref navtitle="Operators" locktitle="yes" href="tk$SynchronizeSamples/ix$Operator.xml" toc="yes" linking="none">
-</topicref>
-<topicref navtitle="Functions" locktitle="yes" href="tk$SynchronizeSamples/ix$Function.xml" toc="yes" linking="none">
-</topicref>
-<topicref navtitle="com.ibm.streamsx.plumbing.sample.synchronize" locktitle="yes" href="tk$SynchronizeSamples/ns$com.ibm.streamsx.plumbing.sample.synchronize.xml" toc="yes" linking="none">
-<topicref navtitle="SynchronizeThreeStreams.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml" toc="yes" linking="none">
-</topicref>
-<topicref navtitle="SynchronizeTwoStreams.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.xml" toc="yes" linking="none">
-</topicref>
-<topicref navtitle="SynchronizeTwoStreamsWithPunctuation.spl" locktitle="yes" href="tk$SynchronizeSamples/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.xml" toc="yes" linking="none">
-</topicref>
-</topicref>
-</topicref>
 <topicref navtitle="com.ibm.streamsx.plumbing 0.3.0.__dev__" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/tk$com.ibm.streamsx.plumbing.xml" toc="yes" linking="none">
 <topicref navtitle="Namespaces" locktitle="yes" href="tk$com.ibm.streamsx.plumbing/ix$Namespace.xml" toc="yes" linking="none">
 </topicref>
@@ -118,6 +102,22 @@
 <topicref navtitle="ControlledChangeover.spl" locktitle="yes" href="tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml" toc="yes" linking="none">
 </topicref>
 <topicref navtitle="ControlledSwitchSample.spl" locktitle="yes" href="tk$switches/spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml" toc="yes" linking="none">
+</topicref>
+</topicref>
+</topicref>
+<topicref navtitle="synchronize 1.0.0" locktitle="yes" href="tk$synchronize/tk$synchronize.xml" toc="yes" linking="none">
+<topicref navtitle="Namespaces" locktitle="yes" href="tk$synchronize/ix$Namespace.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Operators" locktitle="yes" href="tk$synchronize/ix$Operator.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="Functions" locktitle="yes" href="tk$synchronize/ix$Function.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="com.ibm.streamsx.plumbing.sample.synchronize" locktitle="yes" href="tk$synchronize/ns$com.ibm.streamsx.plumbing.sample.synchronize.xml" toc="yes" linking="none">
+<topicref navtitle="SynchronizeThreeStreams.spl" locktitle="yes" href="tk$synchronize/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="SynchronizeTwoStreams.spl" locktitle="yes" href="tk$synchronize/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreams.xml" toc="yes" linking="none">
+</topicref>
+<topicref navtitle="SynchronizeTwoStreamsWithPunctuation.spl" locktitle="yes" href="tk$synchronize/spl$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeTwoStreamsWithPunctuation.xml" toc="yes" linking="none">
 </topicref>
 </topicref>
 </topicref>

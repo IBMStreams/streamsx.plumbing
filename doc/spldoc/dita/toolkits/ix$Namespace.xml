@@ -43,7 +43,7 @@
   <dd></dd>
 </dlentry>
 <dlentry>
-  <dt><xref href="../tk$SynchronizeSamples/ns$com.ibm.streamsx.plumbing.sample.synchronize.xml">com.ibm.streamsx.plumbing.sample.synchronize</xref></dt>
+  <dt><xref href="../tk$synchronize/ns$com.ibm.streamsx.plumbing.sample.synchronize.xml">com.ibm.streamsx.plumbing.sample.synchronize</xref></dt>
   <dd></dd>
 </dlentry>
 <dlentry>
