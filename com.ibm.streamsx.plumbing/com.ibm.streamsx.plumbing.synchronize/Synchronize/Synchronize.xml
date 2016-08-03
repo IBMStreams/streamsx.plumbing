@@ -15,21 +15,23 @@
 
 The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.  It can be configured with one or more input ports, and must have the same number of output ports.  Optionally, it can pace tuples faster or slower than they were produced, according to their timestamps.
 
-The Synchronize operator does not alter tuples that pass through it. All tuples are forwarded as received to the output port corresponding to their input port.
-
 The Synchronize operator synchronizes streams by receiving tuples in all of its input ports and forwarding them downstream in order according to their timestamps, temporarily holding tuples in faster streams until slower streams catch up.  Optionally, the operator can pace tuples by delaying them according to the differences between their timestamps, according to a time-scaling factor. 
 
-The Synchronize operator does not reorder tuples within a stream.  If a tuple is received whose timestamp value is smaller than its prececssor (that is, if the tuples do not always have monotonically increasing values), that tuple is forwarded immediately.
+The Synchronize operator maintains the order of tuples within each stream.  If a tuple is received whose timestamp value is smaller than its predecssor (that is, if the tuple does not have a monotonically increasing value, relative to the previous tuple in the same stream), that tuple is forwarded immediately.
 
 The Synchronize operator by default recognizes punctuation on input ports, synchronizes it, and forwards it to output ports.  That is, when punctuation is received on any input port, that port is blocked until punctuation is received on all input ports. Then punctuation is forwarded to all output ports simultaneously.  The operator then resumes synchronizing subsequent tuples according to their timestamps. Or, the operator may be configured to ignore punctuation received from input streams.
+
+The Synchronize operator forwards tuples from each input port to the corresponding output port without altering them. 
 
 The Synchronize operator requires that each input port run on a different thread of execution:
 
 * One way to ensure this is for the tuples received on each input port to originate from different source operators, since each source operator runs on a seprate thread.  In this case, the Synchronize operator may block faster source operators, slowing them down to the pace of the slowest source operator.
 
-* Another way to ensure that each input port runs on a different thread is to configure the Synchronize operator with a 'threadedPort' for each input port.  The size of the queue specified for each input port determines how far ahead the faster sources can get, relative to the slowest source, and what happens if the fastest sources fill up an input port's queue.
+* Another way to ensure that each input port runs on a different thread is to configure the Synchronize operator with a 'threadedPort' for each input port.  The size of the queue specified for each input port determines how far ahead the faster sources can get, relative to the slowest source, and what happens if the fastest sources fill up an input port's queue. See the `SynchronizeThreeStreams` sample application for an example of this.
 
 **Note:** The values of each stream's timestamps should have overlapping ranges.  If they do not, the operator will block indefinitely a stream whose first tuple has a timestamp larger than any of the other streams.
+
+By default, the operator forwards tuples as fast as they are recieved, holding them only long enough to ensure that they are fowarded in order according to their timestamps. If the optional `timeFactor` parameter is specified and its value is not zero, the operator will pace the tuples by temporarily delaying them. The delay is the difference between the timestamp values of the next and previous tuples, divided by the `timeFactor`. So a `timeFactor` value of `2.0` will replay tuples at twice their original rate, and a `timeFactor` value of `0.5` will replay them at half their original rate.
 
       </description>
       <providesSingleThreadedContext>Never</providesSingleThreadedContext>
@@ -43,7 +45,7 @@ The Synchronize operator requires that each input port run on a different thread
         <name>timeAttributes</name>
         <description>
 
-This required parameter specifies a list of input attributes that contain timestamps. The number of input attributes specified must be equal to the number of input ports, and each input attribute specified must be present in the corresponding input port. All attributes must be of a numeric type.
+This required parameter specifies a list of input attributes that contain timestamps. The number of input attributes specified must be equal to the number of input ports, and each input attribute specified must be present in the corresponding input port. All attributes must be of a numeric type 
 
         </description>
         <optional>false</optional>
