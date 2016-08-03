@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<toolkitModel xmlns="http://www.ibm.com/xmlns/prod/streams/spl/toolkit" productVersion="4.1.1.0" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:ti="http://www.ibm.com/xmlns/prod/streams/spl/toolkitInfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <toolkit name="redundant" requiredProductVersion="4.0.0.0" version="1.0.0">
+    <description>Sample applications demonstrating redundant stream processing.
+   </description>
+    <uriTable>
+      <uri index="4" value="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasManual3.spl"/>
+      <uri index="3" value="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasManual2.spl"/>
+      <uri index="2" value="com.ibm.streamsx.plumbing.sample.redundant.active/namespace-info.spl"/>
+      <uri index="5" value="com.ibm.streamsx.plumbing.sample.redundant.active/ActiveReplicasUDP.spl"/>
+      <uri index="1" value="com.ibm.streamsx.plumbing.sample.redundant.flow/Flow.spl"/>
+    </uriTable>
+    <namespace name="com.ibm.streamsx.plumbing.sample.redundant.active">
+      <compositeOp column="18" line="19" name="ActiveReplicasManual2" potentialMain="true" public="true" uriIndex="3"/>
+      <compositeOp column="18" line="19" name="ActiveReplicasManual3" potentialMain="true" public="true" uriIndex="4"/>
+      <compositeOp column="18" line="39" name="ActiveReplicasUDP" potentialMain="true" public="true" uriIndex="5">
+        <parameter defaultValue="(int32)getSubmissionTimeValue(&quot;replicas&quot;, &quot;3&quot;)" metaType="Expression" name="replicas" optional="true" type="&lt;int32>"/>
+      </compositeOp>
+    </namespace>
+    <namespace name="com.ibm.streamsx.plumbing.sample.redundant.flow">
+      <compositeOp column="18" line="25" name="Flow" potentialMain="true" public="true" uriIndex="1"/>
+      <compositeOp column="18" line="33" name="Source" potentialMain="false" public="true" uriIndex="1">
+        <outputPort name="Messages" portIndex="0"/>
+      </compositeOp>
+      <compositeOp column="18" line="63" name="Analytics" potentialMain="false" public="true" uriIndex="1">
+        <inputPort name="Messages" portIndex="0"/>
+        <outputPort name="Alerts" portIndex="0"/>
+      </compositeOp>
+      <compositeOp column="18" line="86" name="SendSMS" potentialMain="false" public="true" uriIndex="1">
+        <inputPort name="Alerts" portIndex="0"/>
+      </compositeOp>
+      <type column="6" line="12" name="T" static="true" type="uint64 id, float64 v" uriIndex="1"/>
+    </namespace>
+    <sabFiles>
+      <ti:include path="toolkit.xml" root="toolkitDir"/>
+      <ti:include path="impl/java/lib/**" root="toolkitDir"/>
+      <ti:include path="impl/java/bin/**" root="toolkitDir"/>
+      <ti:include path="impl/bin/**" root="toolkitDir"/>
+      <ti:include path="impl/lib/**" root="toolkitDir"/>
+      <ti:include path="impl/nl/*.dat" root="toolkitDir"/>
+      <ti:include path="etc/**" root="toolkitDir"/>
+      <ti:include path="lib/**" root="toolkitDir"/>
+      <ti:include path="nl/**" root="toolkitDir"/>
+      <ti:include path="opt/**" root="toolkitDir"/>
+    </sabFiles>
+  </toolkit>
+
+</toolkitModel>

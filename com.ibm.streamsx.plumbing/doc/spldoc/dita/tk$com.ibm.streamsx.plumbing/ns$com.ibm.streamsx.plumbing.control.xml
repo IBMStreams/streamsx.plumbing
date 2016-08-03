@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.control</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; com.ibm.streamsx.plumbing.control</p>
+</section>
+<section>
+
+<p>Functionality that utilizes the <tt>JobControlPlane</tt> operator to provide intra-job control mechanisms. 
+</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/composite_operator__ControlVariableChange">ControlVariableChange</xref></b>: Control variable change notifications.
+</sli>
+</sl>
+</section>
+<section>
+  <title outputclass="splhead-1">Functions</title>
+<sl>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createBooleanControlVariable.T.boolean.boolean">createBooleanControlVariable(T, boolean, boolean)</xref></b>: Create a <tt>boolean</tt> control variable named <tt>name</tt>.
+</sli>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/createFloat64ControlVariable.T.boolean.float64">createFloat64ControlVariable(T, boolean, float64)</xref></b>: Create a <tt>float64</tt> control variable named <tt>name</tt>.
+</sli>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getBooleanControlVariable.T">getBooleanControlVariable(T)</xref></b>: Get the value of <tt>name</tt> <tt>boolean</tt> control variable.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.control$control.xml#spldoc_compilationunit/function__getControlVariableObjectName.rstring">getControlVariableObjectName(rstring)</xref></b>: Get the object name in the Job Control Plane for a shared control variable.
+</sli>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/getFloat64ControlVariable.T">getFloat64ControlVariable(T)</xref></b>: Get the value of <tt>name</tt> <tt>float64</tt> control variable.
+</sli>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setBooleanControlVariable.T.boolean">setBooleanControlVariable(T, boolean)</xref></b>: Set the value of <tt>name</tt> <tt>boolean</tt> control variable to <tt>value</tt>.
+</sli>
+<sli><b><xref href="fj$com.ibm.streamsx.plumbing.control.xml#spldoc_functions/setFloat64ControlVariable.T.float64">setFloat64ControlVariable(T, float64)</xref></b>: Set the value of <tt>name</tt> <tt>float64</tt> control variable to <tt>value</tt>.
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

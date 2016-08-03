@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.sample.redundant.active</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$redundant.xml">redundant 1.0.0</xref> &gt; com.ibm.streamsx.plumbing.sample.redundant.active</p>
+</section>
+<section>
+
+<p>Sample applications demonstrating redundant active flows.
+</p>
+<p>An application submitted to an IBM&#x00ae; Streams instance represents a dataflow graph or flow, processing continuous data streams. Streams provides capabilities to restart processing elements that have failed due to host or process failure. However, while the processing element (PE) is restarting, the flow is not fully functional, and therefore may not be processing the streams correctly or with the required latency. Availability may be increased by executing multiple copies of the flow, called active replicas, so that with N active replicas, N-1 failures can be tolerated. For example with two flows, a single failure leaves one of the flows correctly processing the streams with the required latency. With the processing elements being restartable, then the failed flow can recover allowing the system to return to two active flows. Availability is increased by increasing the number of active replicas at the cost of duplicated processing and hardware. A flow (or active replica) is considered to be available when all PEs in the flow are healthy.
+</p>
+<p>This namespace contains applications demonstrating execution of active replicas. In each case N independent flows are executed on a different set of hosts so that a single host failure only affects a single flow. The application <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">com.ibm.streamsx.plumbing.sample.redundant.flow::Flow</xref> is a simulation representing reading messages from a message broker, analyzing them to find faults and sending SMS alert messages based upon the analysis.
+</p>
+<p>With active replicas all N copies of the application are executing, each with its own independent connection to the message broker (simulated by a Beacon) and independent sink operator to send an SMS alert (simulated by a Custom that does nothing). This means that any receiver of the alerts will receive N copies of an alert, one for each replica. In some scenarios this may be acceptable, for example:
+<ul>
+<li> The alert is to turn off a system in case of imminent failure and receiving multiple off messages is not an issue. In this case multiple active replicas ensure the lowest latency for the alert by not having any recovery time since at least one replica is always active.</li>
+<li> The external system receiving the output from the flow can itself deduplicate messages, for example a database using an UPDATE or UPSERT statement.</li>
+</ul>
+</p>
+<p>The sample applications are:
+</p>
+<p>
+<ul>
+<li> <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</xref> - Execution of two copies of a flow in a single job on different sets of hosts using host pool tags.</li>
+<li> <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</xref> - Execution of three copies of a flow in a single job on different sets of hosts using host pool tags.</li>
+<li> <xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml#spldoc_compilationunit/composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</xref> - Execution of N copies of a flow in a single job on different sets of hosts using host pool tag replication. N can be set by a submission time parameter, defaulting to three. </li>
+</ul>
+</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</xref></b>: Execution of two copies of Flow() to provide a single level of redundancy.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</xref></b>: Execution of three copies of Flow() to provide two levels of redundancy.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml#spldoc_compilationunit/composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</xref></b>: Execution of redundant copies of Flow() using <tt>@parallel</tt>.
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_operator">
+<title>Operator <tt>ElasticLoadBalance</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$com.ibm.streamsx.plumbing.xml">com.ibm.streamsx.plumbing 0.3.0.__dev__</xref> &gt; <xref href="ns$com.ibm.streamsx.plumbing.balancers.xml">com.ibm.streamsx.plumbing.balancers</xref> &gt; ElasticLoadBalance</p>
+</section>
+<section outputclass="splprimop">
+  <image href="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.svg" width="672" height="112">
+    <alt>Primitive operator image not displayed. Problem loading file: ../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.svg
+</alt>
+  </image>
+</section>
+<section>
+
+<p>This operator distributes tuples to the output ports that have the capacity to receive them. In addition, it will dynamically determine the number of output ports that should be active in order to maximize throughput.
+</p>
+</section>
+<section>
+<title outputclass="splhead-1">Summary</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Ports</dt>
+  <dd>This operator has 1 input port and 2 or more output ports.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Windowing</dt>
+  <dd>This operator does not accept any windowing configurations.</dd>
+ </dlentry>
+ <dlentry>
+  <dt>Parameters</dt>
+  <dd>This operator supports 7 parameters.
+<p> Required: 
+<xref href="#spldoc_operator/parameter__bufferSize">bufferSize</xref>
+
+</p>
+<p> Optional: 
+<xref href="#spldoc_operator/parameter__congestionTolerance">congestionTolerance</xref>, <xref href="#spldoc_operator/parameter__throughputTolerance">throughputTolerance</xref>, <xref href="#spldoc_operator/parameter__measurePeriod">measurePeriod</xref>, <xref href="#spldoc_operator/parameter__rapidScaling">rapidScaling</xref>, <xref href="#spldoc_operator/parameter__elastic">elastic</xref>, <xref href="#spldoc_operator/parameter__initialActivePorts">initialActivePorts</xref>
+
+</p></dd>
+ </dlentry>
+ <dlentry>
+  <dt>Metrics</dt>
+  <dd>This operator does not report any metrics.</dd>
+ </dlentry>
+</dl></section>
+<section>
+<title outputclass="splhead-1">Properties</title>
+<dl compact="yes">
+ <dlentry>
+  <dt>Implementation</dt>
+  <dd>C++</dd>
+ </dlentry>
+ <dlentry>
+  <dt><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__providessinglethreadedexecutioncontext">Threading</xref></dt>
+  <dd><tt>Never</tt> - Operator never provides a single threaded execution context.</dd>
+ </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set">Input Ports</xref></b></p><dl>
+  <dlentry>
+   <dt>Ports (0)</dt>
+   <dd>
+<p>Port that ingests tuples to be split amongst multiple threads
+</p>
+   <dl>
+    <dlentry>
+      <dt>Properties</dt>
+      <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__optional">Optional</xref>: false
+     </sli>
+   </sl>
+   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__controlport">ControlPort</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__tuplemutationallowed">TupleMutationAllowed</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__windowingmode">WindowingMode</xref>: NonWindowed
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</xref>: Oblivious
+     </sli>
+   </sl>
+      </dd>    </dlentry>
+   </dl>
+   <p></p>   </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set">Output Ports</xref></b></p><dl>
+  <dlentry>
+     <dt>Assignments</dt>
+     <dd>This operator does not allow assignments to output attributes.</dd>
+  </dlentry>
+</dl>
+ <dl>
+  <dlentry>
+   <dt>Ports (0)</dt>
+   <dd>
+
+<p>Port (the first one) that produces split tuples
+</p>
+    <p></p>
+    <dl>
+     <dlentry>
+      <dt>Properties</dt>
+      <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__optional">Optional</xref>: false
+     </sli>
+   </sl>
+   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__tuplemutationallowed">TupleMutationAllowed</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</xref>: Preserving
+     </sli>
+   </sl>
+</dd>     </dlentry>
+    </dl>
+    <p></p>
+   </dd>
+  </dlentry>
+  <dlentry>
+   <dt>Ports (1...)</dt>
+   <dd>
+
+<p>Additional ports that produce the split tuples
+</p>
+   <p></p>
+    <p></p>
+   <dl>
+    <dlentry>
+      <dt>Properties</dt>
+      <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__tuplemutationallowed">TupleMutationAllowed</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</xref>: Preserving
+     </sli>
+   </sl>
+</dd>    </dlentry>
+   </dl>
+   <p></p>
+   </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters">Parameters</xref></b></p>This operator supports 7 parameters.<dl>
+  <dlentry id="parameter__bufferSize">
+     <dt><tt>bufferSize</tt></dt>
+     <dd>
+<p>Size of each buffer used to store the input tuples for each output port
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: uint32
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: false
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: AttributeFree
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__congestionTolerance">
+     <dt><tt>congestionTolerance</tt></dt>
+     <dd>
+<p>Value between 0 and 1 which determines which level of congestion to consider "high congestion." The default is 0.5. Values near 0 tolerate less congestion; values near 1 tolerate more congestion.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: float64
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__throughputTolerance">
+     <dt><tt>throughputTolerance</tt></dt>
+     <dd>
+<p>Value between 0 and 1 which determines when we consider throughput to have improved. The default is 0.05. Values near 0 will respond to smaller changes in throughput more; values near 1 will require larger changes in throughput to respond.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: float64
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__measurePeriod">
+     <dt><tt>measurePeriod</tt></dt>
+     <dd>
+<p>Period of time, in seconds, for how often to measure and adapt. The default is 5 seconds.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: int64
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__rapidScaling">
+     <dt><tt>rapidScaling</tt></dt>
+     <dd>
+<p>When turned on, rapid scaling will change many levels at once, rather than just one. The default is false, wich turns rapid scaling off.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: boolean
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__elastic">
+     <dt><tt>elastic</tt></dt>
+     <dd>
+<p>Controls whether or not elasticity is enabled. The default is true, which turns elasticity on. If set to false, elasticity is turned off, and all output ports will be active, unless an initial thread level was provided.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: boolean
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+  <dlentry id="parameter__initialActivePorts">
+     <dt><tt>initialActivePorts</tt></dt>
+     <dd>
+<p>Number of active ports (which is the same as number of threads) to start with. The default is 1 with elasticity turned on; the default is the number of output ports if elasticity is turned off. If elasticity is turned off, this parameter's value will control the thread level for the lifetime of the operator.
+</p>
+  <dl>
+    <dlentry>
+     <dt>Properties</dt>
+     <dd>   <sl>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__type">Type</xref>: uint32
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__cardinality">Cardinality</xref>: 1
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__optional">Optional</xref>: true
+     </sli>
+     <sli><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/parameters__parameter__expressionmode">ExpressionMode</xref>: Constant
+     </sli>
+   </sl>
+     <p></p>     </dd>
+    </dlentry>
+  </dl>
+     </dd>
+  </dlentry>
+</dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__codetemplate">Code Templates</xref></b></p>  <dl>
+    <dlentry>
+     <dt>ElasticLoadBalance</dt>
+     <dd>
+       <codeblock>
+<![CDATA[(stream<${inputStream}> ${outputStream1};stream<${inputStream}> ${outputStream2}) = ElasticLoadBalance(${inputStream}) {
+            param
+                bufferSize: ${bufferSize};
+        }]]>
+      </codeblock>
+     <p></p>
+     </dd>
+    </dlentry>
+  </dl>
+</section>
+<section>
+<p outputclass="splhead-1"><b><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__dependencies">Libraries</xref></b></p><dl>
+ <dlentry>
+  <dt><tt>spl-std-tk-lib</tt>  </dt>
+<dd/>  <dd><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__dependencies__managedlibrary__lib">Library Name</xref>: <tt>streams-stdtk-runtime</tt></dd>
+  <dd><xref href="../references/OperatorModel.xml#spldoc_reference_operator_model/context__dependencies__managedlibrary__includepath">Include Path</xref>: <tt>../../impl/include</tt></dd>
+ </dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+

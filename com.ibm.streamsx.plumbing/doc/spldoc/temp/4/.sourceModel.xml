@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<srcCode:sourceModel xmlns:srcCode="http://www.ibm.com/xmlns/prod/streams/spl/sourceCode" xmlns:common="http://www.ibm.com/xmlns/prod/streams/spl/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.switches/ControlledChangeover.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.switches"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.switches" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="35" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="11" name="ControlledChangeoverSample">
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="JCP" line="14" operatorName="JobControlPlane"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="DF" line="20" operatorName="ChangeoverDataFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="CF" line="31" operatorName="ControlFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="66" startColumn="1" startLine="37">
+          <srcCode:compositeHead column="1" line="47" name="ChangeoverDataFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The data flow that will demonstrate use
+of `ControlledSwitch`. A Beacon
+operator submits tuples around 100 per second
+through a [com.ibm.streamsx.plumbing.switches::ControlledSwitch] and out to a sink operator.
+Using Streams Studio or the Streams Console you can
+watch the rate of tuples into the sink operator change
+based upon the control signals from the separate
+[ControlFlow] composite.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="26" line="50" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="50" streamName="Data" type="int64 a"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="53" name="period">
+                      <srcCode:value expr="0.01"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="50" invocationAlias="MD" line="56" operatorName="ControlledChangeover">
+                  <srcCode:outputs>
+                    <srcCode:output column="17" index="0" line="56" streamName="MDClose" type="Data"/>
+                    <srcCode:output column="39" index="1" line="56" streamName="MDOpen" type="Data"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="76" index="0" line="56">
+                      <srcCode:istream column="76" line="56" name="Data"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="59" name="name">
+                      <srcCode:value expr="&quot;sampleSwitch&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="33" line="60" name="initialState">
+                      <srcCode:value expr="true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeoverClosed" line="63" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="35" index="0" line="63">
+                      <srcCode:istream column="35" line="63" name="MDClose"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeoverOpened" line="64" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="35" index="0" line="64">
+                      <srcCode:istream column="35" line="64" name="MDOpen"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+  <srcCode:sourceFile uri="com.ibm.streamsx.plumbing.sample.switches/ControlledSwitchSample.spl">
+    <srcCode:compilationUnit>
+      <srcCode:splNamespace column="11" line="7" name="com.ibm.streamsx.plumbing.sample.switches"/>
+      <srcCode:useDirectives>
+        <srcCode:useDirective column="5" line="9" namespaceName="com.ibm.streamsx.plumbing.switches" tail="::*"/>
+      </srcCode:useDirectives>
+      <srcCode:definitions>
+        <srcCode:compositeDefinition endColumn="1" endLine="35" startColumn="1" startLine="11">
+          <srcCode:compositeHead column="1" line="11" name="ControlledSwitchSample">
+            <srcCode:modifiers>
+              <srcCode:modifier name="public"/>
+            </srcCode:modifiers>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="JCP" line="14" operatorName="JobControlPlane"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="DF" line="20" operatorName="DataFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="CF" line="31" operatorName="ControlFlow"/>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="67" startColumn="1" startLine="37">
+          <srcCode:compositeHead column="1" line="47" name="DataFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The data flow that will demonstrate use
+of `ControlledSwitch`. A Beacon
+operator submits tuples around 100 per second
+through a [com.ibm.streamsx.plumbing.switches::ControlledSwitch] and out to a sink operator.
+Using Streams Studio or the Streams Console you can
+watch the rate of tuples into the sink operator change
+based upon the control signals from the separate
+[ControlFlow] composite.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="26" line="50" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="19" index="0" line="50" streamName="Data" type="int64 a"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="53" name="period">
+                      <srcCode:value expr="0.01"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="30" line="56" operatorName="ControlledSwitch">
+                  <srcCode:outputs>
+                    <srcCode:output column="16" index="0" line="56" streamName="ManagedData" type="Data"/>
+                  </srcCode:outputs>
+                  <srcCode:inputs>
+                    <srcCode:input column="47" index="0" line="56">
+                      <srcCode:istream column="47" line="56" name="Data"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="59" name="name">
+                      <srcCode:value expr="&quot;sampleSwitch&quot;"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="33" line="60" name="initialState">
+                      <srcCode:value expr="true"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="Sink" line="63" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="23" index="0" line="63">
+                      <srcCode:istream column="23" line="63" name="ManagedData"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody/>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+        <srcCode:compositeDefinition endColumn="1" endLine="101" startColumn="1" startLine="69">
+          <srcCode:compositeHead column="1" line="75" name="ControlFlow">
+            <srcCode:splDoc>
+              <srcCode:description>
+                <srcCode:description>The flow that controls [DataFlow] in [ControlledSwitchSample].
+Every twenty seconds a random value between 0.0 and 1.0
+is submitted by a `Beacon`. If it is less that 0.3 the switch
+is closed otherwise it is opened.
+</srcCode:description>
+              </srcCode:description>
+            </srcCode:splDoc>
+          </srcCode:compositeHead>
+          <srcCode:compositeBody>
+            <srcCode:graph>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="32" line="78" operatorName="Beacon">
+                  <srcCode:outputs>
+                    <srcCode:output column="22" index="0" line="78" streamName="Control" type="float64 rv"/>
+                  </srcCode:outputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:parameters>
+                    <srcCode:parameter column="5" line="81" name="initDelay">
+                      <srcCode:value expr="10.0"/>
+                    </srcCode:parameter>
+                    <srcCode:parameter column="5" line="82" name="period">
+                      <srcCode:value expr="20.0"/>
+                    </srcCode:parameter>
+                  </srcCode:parameters>
+                  <srcCode:outputAssignments>
+                    <srcCode:outputAssignment column="5" line="84" portName="Control">
+                      <srcCode:attributeAssignment column="15" line="84" name="rv">
+                        <srcCode:value expr="random()"/>
+                      </srcCode:attributeAssignment>
+                    </srcCode:outputAssignment>
+                  </srcCode:outputAssignments>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+              <srcCode:operatorInvocation>
+                <srcCode:operatorInvocationHead column="9" invocationAlias="ChangeShedding" line="87" operatorName="Custom">
+                  <srcCode:inputs>
+                    <srcCode:input column="33" index="0" line="87">
+                      <srcCode:istream column="33" line="87" name="Control"/>
+                    </srcCode:input>
+                  </srcCode:inputs>
+                </srcCode:operatorInvocationHead>
+                <srcCode:operatorInvocationBody>
+                  <srcCode:logic hasState="true">
+                    <srcCode:onTuple column="13" line="95" portName="Control"/>
+                  </srcCode:logic>
+                </srcCode:operatorInvocationBody>
+              </srcCode:operatorInvocation>
+            </srcCode:graph>
+          </srcCode:compositeBody>
+        </srcCode:compositeDefinition>
+      </srcCode:definitions>
+    </srcCode:compilationUnit>
+  </srcCode:sourceFile>
+
+</srcCode:sourceModel>

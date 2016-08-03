@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_namespace">
+<title>Namespace <tt>com.ibm.streamsx.plumbing.sample.switches</tt></title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$switches.xml">switches 1.0.0</xref> &gt; com.ibm.streamsx.plumbing.sample.switches</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<sl>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ChangeoverDataFlow">ChangeoverDataFlow</xref></b>: The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlFlow">ControlFlow</xref></b>: The flow that controls <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref> in <xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref>.
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledChangeover.xml#spldoc_compilationunit/composite_operator__ControlledChangeoverSample">ControlledChangeoverSample</xref></b>
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__ControlledSwitchSample">ControlledSwitchSample</xref></b>
+</sli>
+<sli><b><xref href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.xml#spldoc_compilationunit/composite_operator__DataFlow">DataFlow</xref></b>: The data flow that will demonstrate use of <tt>ControlledSwitch</tt>.
+</sli>
+</sl>
+</section>
+</refbody>
+</reference>
+

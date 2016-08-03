@@ -1,0 +1,16 @@
+shedders/1.0.0
+spl/1.2.1
+BlekkoBTNIngester/1.0.0
+DummyApplication/1.0.0
+IngestFunctions/1.0.0
+IngestTypes/1.0.0
+RssAtomBTNIngesters/1.0.0
+SynchronizeSamples/1.0.0
+TwitterBTNIngester/1.0.0
+com.ibm.streamsx.file/1.0.0
+com.ibm.streamsx.inet/2.8.1
+com.ibm.streamsx.json/1.2.1.__dev__
+com.ibm.streamsx.messaging/5.0.0
+com.ibm.streamsx.plumbing/0.3.0.__dev__
+com.ibm.streamsx.topology/1.4.0.beta
+switches/1.0.0

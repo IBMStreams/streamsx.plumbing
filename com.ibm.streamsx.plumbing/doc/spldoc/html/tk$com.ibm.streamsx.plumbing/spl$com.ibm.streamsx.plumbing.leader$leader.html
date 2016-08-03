@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="SPL File leader.spl"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_compilationunit"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>SPL File leader.spl</title>
+</head>
+<body id="spldoc_compilationunit">
+
+
+<h1 class="title topictitle1">SPL File <tt class="ph tt">leader.spl</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.3.0.__dev__</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a> &gt; leader.spl</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Content</h2>
+  
+  <dl class="dl">
+    <dt class="dt dlterm"/>
+<dd class="dd"/>
+
+    
+      <dt class="dt dlterm splhead-2">Operators</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipChangeover">LeadershipChangeover</a></strong>: Changeover switch that changes state based upon if the PE is marked as the leader of <tt class="ph tt">group</tt>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</a></strong>: Switch operator that only generates output when its PE is the leader of the group.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+    
+      <dt class="dt dlterm splhead-2">Types</dt>
+
+      <dd class="dd">
+<ul class="sl simple">
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__type__LeaderStatus">LeaderStatus</a></strong>: Type of tuples submitted by <a class="xref" href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a> on its output port.
+</li>
+
+</ul>
+
+      </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Composites</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__LeadershipChangeover"><h2 class="title sectiontitle splpart">composite LeadershipChangeover(output WhenLeader, WhenNotLeader, LeaderControl; input In)</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">Changeover switch that changes state based upon if the PE is marked as the leader of <tt class="ph tt">group</tt>. Requires the application contains a <tt class="ph tt">JobControlPlane</tt> operator invocation.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">group</strong>: Group identifier for the leadership election. 
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Input Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">In</strong>: Stream to be switched
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Output Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">WhenLeader</strong>: Output stream tuples are submitted to when this PE is the leader in <tt class="ph tt">group</tt>.
+</li>
+
+<li class="sli"><strong class="ph b">WhenNotLeader</strong>: Output stream tuples are submitted to when this PE is not the leader in <tt class="ph tt">group</tt>.
+</li>
+
+<li class="sli"><strong class="ph b">LeaderControl</strong>: Output stream that submits a tuple when the leadership state of this operator's PE changes. Schema is required to be <a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__type__LeaderStatus">LeaderStatus</a>.
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipChangeover.svg" width="252" height="114"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite LeadershipChangeover(input In ; output WhenLeader, WhenNotLeader, stream&lt;LeaderStatus&gt; LeaderControl)
+ {
+     param
+         expression&lt;rstring&gt; $group ;
+     graph
+       stream&lt;LeaderStatus&gt; LeaderControl = LeadershipElection()
+       {
+         param
+           group : $group ;
+       }
+ 
+       (stream&lt;In&gt; WhenLeader ; stream&lt;In&gt; WhenNotLeader) as LCS = Changeover(In ; LeaderControl)
+       {
+         param
+            status : leader ;
+            initialState : false ; // start off open, only close when become the leader
+       }
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay"><h2 class="title sectiontitle splpart">composite LeadershipSwitchWithReplay(output Out; input In)</h2>
+  
+</div>
+
+<div class="section">
+
+<p class="p">Switch operator that only generates output when its PE is the leader of the group.
+</p>
+
+<p class="p"><a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipChangeover">LeadershipChangeover</a> is used to elect the leader which in turn uses <a class="xref" href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a>.
+</p>
+
+<p class="p">When this operator's PE is the leader, all tuples from <tt class="ph tt">In</tt> are submitted to <tt class="ph tt">Out</tt>.
+</p>
+
+<p class="p">When this operator's PE is not the leader, the last <tt class="ph tt">period</tt> seconds of tuples from <tt class="ph tt">In</tt> are maintained in a replay buffer.
+</p>
+
+<p class="p">When this operator's PE is elected the leader after a failure of the previous leader, all the tuples in the replay buffer are submitted to <tt class="ph tt">Out</tt> in addition to tuples arriving on <tt class="ph tt">In</tt>.
+</p>
+
+<p class="p">For correct behavior all operators in this composite must be fused into a single processing element using partition colocation. This composite does not itself colocate as it is likely it will be fused with additional operators specific to the application.
+</p>
+
+<div class="p">
+<pre class="pre codeblock">
+stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
+  param
+    group : "lg" ;
+  config
+    placement: partitionColocation("lg1");
+}
+</pre>
+
+
+</div>
+
+<p class="p">Note that instances of LeadershipSwitchWithReplay within the same group must not be partition colocated.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Parameters</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">group</strong>: Group identifier for the leadership election.
+</li>
+
+<li class="sli"><strong class="ph b">period</strong>: Time window for replay buffer in seconds, defaults to 10.0. 
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Input Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">In</strong>: Tuples to be switched 
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Output Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">Out</strong>: Tuples when this PE is the leader in <tt class="ph tt">group</tt>.
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipSwitchWithReplay.svg" width="477" height="148"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite LeadershipSwitchWithReplay(input In ; output Out)
+ {
+ param
+         expression&lt;rstring&gt; $group ;        
+         expression&lt;float64&gt; $period : 10.0;
+ 
+    graph
+ 
+ 		(stream&lt;In&gt; WhenLeader ; stream&lt;In&gt; WhenNotLeader; stream&lt;LeaderStatus&gt; LeaderControl ) as Switch =
+ 			LeadershipChangeover(In)
+ 		{
+ 			param
+ 				group : $group ;
+ 		}
+ 		
+ 		// Stream that will drive the replay when this PE becomes the leader.
+ 		stream&lt;LeaderControl&gt; IsLeader = Filter(LeaderControl) {
+ 		param
+ 		filter: leader == true;
+ 		}
+ 
+ 		stream&lt;In&gt; Replay = ReplayBuffer(WhenNotLeader ; IsLeader)
+ 		{
+ 			param
+ 				period : $period ;
+ 		}
+ 		
+ 		stream&lt;In&gt; Out = Functor(WhenLeader,Replay) {
+ 		}
+ }
+
+   </pre>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Types</h2>
+  
+</div>
+
+<div class="section" id="spldoc_compilationunit__type__LeaderStatus"><h2 class="title sectiontitle splpart">LeaderStatus</h2>
+  
+</div>
+<div class="section">
+
+<p class="p">Type of tuples submitted by <a class="xref" href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a> on its output port. If <tt class="ph tt">leader</tt> is true then the <a class="xref" href="op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a> operator that submitted it is the leader of the group. 
+</p>
+
+</div>
+
+<div class="section">
+   <p class="p">
+<tt class="ph tt">LeaderStatus = rstring group, rstring id, boolean leader, timestamp ts;</tt>
+   </p>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="spldoc_index">
+<title>Operators: redundant 1.0.0</title>
+<refbody>
+<section>
+<p>
+<xref href="../toolkits/toolkits.xml">streamsx.plumbing</xref> &gt; <xref href="tk$redundant.xml">redundant 1.0.0</xref> &gt; Operators</p>
+</section>
+<section>
+  <title outputclass="splhead-1">Operators</title>
+<dl>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</xref></dt>
+  <dd>Execution of two copies of Flow() to provide a single level of redundancy.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.xml#spldoc_compilationunit/composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</xref></dt>
+  <dd>Execution of three copies of Flow() to provide two levels of redundancy.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.xml#spldoc_compilationunit/composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</xref></dt>
+  <dd>Execution of redundant copies of Flow() using <tt>@parallel</tt>.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Analytics">Analytics</xref></dt>
+  <dd>The "analytics" portion of the application including the source.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Flow">Flow</xref></dt>
+  <dd>Simple flow to be executed multiple times to provide redundant copies.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__SendSMS">SendSMS</xref></dt>
+  <dd>The sink of the application.</dd>
+</dlentry>
+<dlentry>
+  <dt><xref href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.xml#spldoc_compilationunit/composite_operator__Source">Source</xref></dt>
+  <dd></dd>
+</dlentry>
+</dl>
+</section>
+</refbody>
+</reference>
+
