@@ -70,7 +70,7 @@ artifacts were left around and caused issues with the ant build.
 	</target>
 
 	<target name="compile" depends="init">
-		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="no" source="1.7">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="no">
 			<classpath>
 				<path refid="cp.compile" />
 			</classpath>

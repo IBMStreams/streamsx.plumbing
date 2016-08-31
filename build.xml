@@ -106,7 +106,7 @@
         <arg value="--author"/>
         <arg value="IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/${ant.project.name}"/>
         <arg value="--doc-title"/>
-        <arg value="streamsx.plumbing"/>
+        <arg value="com.ibm.streamsx.plumbing"/>
         <arg value="--toolkit-path"/>
         <arg value="${toolkit}:samples"/>
         <arg value="--output-directory"/>
