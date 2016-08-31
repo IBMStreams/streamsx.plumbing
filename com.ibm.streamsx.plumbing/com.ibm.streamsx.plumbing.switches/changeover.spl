@@ -104,6 +104,9 @@ public composite ControlledChangeover(input IN; output CLOSE, OPEN)
         }
 }
 
+/**
+ * @exclude
+ */
 stateful boolean __initChangeover(rstring name, boolean initialState)
 {
         __initSwitch(name, initialState);

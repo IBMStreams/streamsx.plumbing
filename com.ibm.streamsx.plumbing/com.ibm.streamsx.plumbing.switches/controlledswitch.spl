@@ -8,6 +8,9 @@ namespace com.ibm.streamsx.plumbing.switches ;
 use spl.control::MBeanNotificationBase;
 use com.ibm.streamsx.plumbing.control::* ;
 
+/**
+ * @exclude
+ */
 stateful boolean __initSwitch(rstring name, boolean initialState)
 {
 	return registerSwitch(name, initialState) ;

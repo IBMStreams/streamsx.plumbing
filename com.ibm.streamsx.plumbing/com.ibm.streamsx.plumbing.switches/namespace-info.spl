@@ -1,0 +1,24 @@
+/*
+*******************************************************************************
+* Copyright (C) 2016, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Switch operators.
+ * Operators that provide switches for streams
+ * including a [Changeover] that submits tuples to
+ * one of two output ports depending if the switch
+ * is on or off.
+ *
+ * [ControlledSwitch] and [ControlledChangeover] are
+ * switches whose state can be changed through control variables.
+ * This allows disconnected operators within the same application
+ * to control the state of switches. For example downstream
+ * processing can change an upstream flow through a controlled switch.
+ */
+
+namespace com.ibm.streamsx.plumbing.switches;
+
+
