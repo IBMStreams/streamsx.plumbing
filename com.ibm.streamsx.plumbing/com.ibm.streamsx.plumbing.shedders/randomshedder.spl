@@ -7,6 +7,9 @@
 
 namespace com.ibm.streamsx.plumbing.shedders ;
 
+/**
+ * @exclude
+ */
 use com.ibm.streamsx.plumbing.control::* ;
 stateful boolean __initRandomShedder(rstring name)
 {

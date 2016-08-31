@@ -102,7 +102,7 @@
   <target name="spldoctoolkits">
      <exec executable="${streams.install}/bin/spl-make-doc">
         <arg value="--include-composite-operator-diagram"/>
-        <arg value="--include-all"/>
+        <arg value="--include-source"/>
         <arg value="--author"/>
         <arg value="IBMStreams Open Source Community at GitHub - https://github.com/IBMStreams/${ant.project.name}"/>
         <arg value="--doc-title"/>

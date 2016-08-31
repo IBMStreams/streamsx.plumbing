@@ -1,0 +1,14 @@
+/*
+*******************************************************************************
+* Copyright (C) 2016, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Random sampling of a stream.
+ */
+
+namespace com.ibm.streamsx.plumbing.sampling;
+
+

@@ -1,0 +1,23 @@
+/*
+*******************************************************************************
+* Copyright (C) 2016, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Leadership election functionality.
+ *
+ * Leadership election allows one of a number of operators
+ * to be nominated as the leader. Upon failure of the leader
+ * a new leader is nominated automatically from the remaining
+ * operators.
+ *
+ * Leadership election can be used with redundant flows
+ * to ensure that only a single flow is producing output,
+ * such as sending SMS alerts.
+ */
+
+namespace com.ibm.streamsx.plumbing.leader;
+
+

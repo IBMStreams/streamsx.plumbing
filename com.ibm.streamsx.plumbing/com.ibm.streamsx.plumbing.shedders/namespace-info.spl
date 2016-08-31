@@ -6,6 +6,7 @@
 */
 
 /**
+ * Load shedding operators.
  * Load shedding operators provide the ability for
  * SPL applications to temporarily discard tuples to reduce
  * workload, for example an application may shed
