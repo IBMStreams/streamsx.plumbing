@@ -35,7 +35,7 @@ streams, which are merged into a single transcript, with each stream's phrases
 in a separate column, annotated with their starting times and durations.
 
  */
-composite SynchronizeThreeStreams {
+public composite SynchronizeThreeStreams {
 
 	type PhraseType =  
 		rstring outputDirectory, 

@@ -15,7 +15,7 @@ The Synchronize operator synchronizes the streams according to the timestamps
 and merges them into a single output file.
 
  */
-composite SynchronizeTwoStreams {
+public composite SynchronizeTwoStreams {
 
 	type SampleType = float64 time, rstring label;
 	

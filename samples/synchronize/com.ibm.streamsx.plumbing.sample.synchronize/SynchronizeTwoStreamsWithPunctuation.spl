@@ -16,7 +16,7 @@ The Synchronize operator synchronizes the streams according to the timestamps
 and merges them into a single output file. 
 
  */
-composite SynchronizeTwoStreamsWithPunctuation {
+public composite SynchronizeTwoStreamsWithPunctuation {
 
 	type SampleType = float64 time, rstring label;
 	
