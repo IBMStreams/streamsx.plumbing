@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.shedders.html">com.ibm.streamsx.plumbing.shedders</a> &gt; exprshedder.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_802c2ff</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.shedders.html">com.ibm.streamsx.plumbing.shedders</a> &gt; exprshedder.spl</p>
 
 </div>
 
@@ -142,6 +142,56 @@
   <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.shedders$ExpressionLoadShedder.svg" width="142" height="109"/>
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ExpressionLoadShedder(input In ; output Out)
+ {
+ 	param
+ 		expression&lt;rstring&gt; $name ;
+ 		expression&lt;boolean&gt; $expr ;
+ 	graph
+ 
+ 		(stream&lt;In&gt; Out) as LoadShedder = Custom(In)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 				    rstring _name = $name;
+ 					boolean __unused = __initExpressionShedder(_name) ;
+ 					mutable boolean currentShed = false;
+ 				}
+ 
+ 				onTuple In :
+ 				{
+ 				    boolean shed = getExpressionShedderMode(_name);
+ 					if(!shed)
+ 					{
+ 						submit(In, Out) ;
+ 					}
+ 					else if (!($expr))
+ 					{
+ 					   submit(In, Out) ;
+ 					}
+ 					
+ 					if (shed != currentShed) {
+ 					    setCustomMetricValue("shedding", shed ? 1l : 0l) ;
+ 					    currentShed = shed;
+ 					}
+ 
+ 				}
+ 			}
+ }
+
+   </pre>
+
+</div>
+
 <div class="section"><h2 class="title sectiontitle splhead-1">Functions</h2>
   
 </div>
@@ -178,6 +228,23 @@
 
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful boolean registerExpressionShedder(rstring name)
+ {
+ 	createBooleanControlVariable(name, true, false) ;
+ 	return true ;
+ }
+
+   </pre>
+
+</div>
+
 <div class="section" id="spldoc_compilationunit__function__setExpressionShedderMode.rstring.boolean"><h2 class="title sectiontitle splpart">void setExpressionShedderMode(rstring name, boolean shed)</h2>
   
 </div>
@@ -207,6 +274,22 @@
 </div>
 
 <div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful void setExpressionShedderMode(rstring name, boolean shed)
+ {
+ 	setBooleanControlVariable(name, shed) ;
+ }
+
+   </pre>
+
 </div>
 
 <div class="section" id="spldoc_compilationunit__function__getExpressionShedderMode.rstring"><h2 class="title sectiontitle splpart">boolean getExpressionShedderMode(rstring name)</h2>
@@ -239,6 +322,22 @@
 <tt class="ph tt">boolean</tt>
 </li>
 </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public boolean getExpressionShedderMode(rstring name)
+ {
+ 	return getBooleanControlVariable(name) ;
+ }
+
+   </pre>
 
 </div>
 

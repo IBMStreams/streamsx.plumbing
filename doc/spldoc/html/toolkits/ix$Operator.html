@@ -7,28 +7,52 @@
 <meta name="copyright" content="(C) Copyright 2005"/>
 <meta name="DC.rights.owner" content="(C) Copyright 2005"/>
 <meta name="DC.Type" content="reference"/>
-<meta name="DC.Title" content="Operators: streamsx.plumbing"/>
+<meta name="DC.Title" content="Operators: com.ibm.streamsx.plumbing"/>
 <meta name="DC.Format" content="XHTML"/>
 <meta name="DC.Identifier" content="spldoc_index"/>
 <link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
 <link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
-<title>Operators: streamsx.plumbing</title>
+<title>Operators: com.ibm.streamsx.plumbing</title>
 </head>
 <body id="spldoc_index">
 
 
-<h1 class="title topictitle1">Operators: streamsx.plumbing</h1>
+<h1 class="title topictitle1">Operators: com.ibm.streamsx.plumbing</h1>
 
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="toolkits.html">streamsx.plumbing</a> &gt; Operators</p>
+<a class="xref" href="toolkits.html">com.ibm.streamsx.plumbing</a> &gt; Operators</p>
 
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-1">Operators</h2>
   
 <dl class="dl">
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual2.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual2">ActiveReplicasManual2</a></dt>
+
+  <dd class="dd">Execution of two copies of Flow() to provide a single level of redundancy.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasManual3.html#spldoc_compilationunit__composite_operator__ActiveReplicasManual3">ActiveReplicasManual3</a></dt>
+
+  <dd class="dd">Execution of three copies of Flow() to provide two levels of redundancy.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.active$ActiveReplicasUDP.html#spldoc_compilationunit__composite_operator__ActiveReplicasUDP">ActiveReplicasUDP</a></dt>
+
+  <dd class="dd">Execution of redundant copies of Flow() using <tt class="ph tt">@parallel</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Analytics">Analytics</a></dt>
+
+  <dd class="dd">The "analytics" portion of the application including the source.</dd>
+
+
 
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__composite_operator__Changeover">Changeover</a></dt>
 
@@ -84,6 +108,30 @@
 
 
 
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Flow">Flow</a></dt>
+
+  <dd class="dd">Simple flow to be executed multiple times to provide redundant copies.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipChangeover">LeadershipChangeover</a></dt>
+
+  <dd class="dd">Changeover switch that changes state based upon if the PE is marked as the leader of <tt class="ph tt">group</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.html">LeadershipElection</a></dt>
+
+  <dd class="dd">Performs a leadership election between other operator invocations with the same <tt class="ph tt">group</tt>.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay">LeadershipSwitchWithReplay</a></dt>
+
+  <dd class="dd">Switch operator that only generates output when its PE is the leader of the group.</dd>
+
+
+
   <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">RandomLoadShedder</a></dt>
 
   <dd class="dd">Controllable load shedder that sheds (drops) tuples randomly.</dd>
@@ -105,6 +153,30 @@
   <dt class="dt dlterm"><a class="xref" href="../tk$shedders/spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a></dt>
 
   <dd class="dd"/>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.replay$replay.html#spldoc_compilationunit__composite_operator__ReplayBuffer">ReplayBuffer</a></dt>
+
+  <dd class="dd">Replay tuple buffer.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__SendSMS">SendSMS</a></dt>
+
+  <dd class="dd">The sink of the application.</dd>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$redundant/spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Source">Source</a></dt>
+
+  <dd class="dd"/>
+
+
+
+  <dt class="dt dlterm"><a class="xref" href="../tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.html">Synchronize</a></dt>
+
+  <dd class="dd">The Synchronize operator synchronizes the flow of tuples across multiple streams according to timestamps in the tuples.</dd>
 
 
 </dl>

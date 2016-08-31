@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$shedders.html">shedders 1.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sample.shedding.html">com.ibm.streamsx.plumbing.sample.shedding</a> &gt; ExprShedderSample.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$shedders.html">shedders 1.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sample.shedding.html">com.ibm.streamsx.plumbing.sample.shedding</a> &gt; ExprShedderSample.spl</p>
 
 </div>
 
@@ -72,6 +72,44 @@
 
 <div class="section splgraph">
   <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$ExpressionShedderSample.svg" width="118" height="199"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ExpressionShedderSample
+ {
+ 	graph
+ 		() as JCP = JobControlPlane()
+ 		{
+ 		}
+ 
+ 		// DataFlow with controlled load shedding
+ 		@spl_category(name = "data")
+ 		() as DF = EDataFlow()
+ 		{
+ 		}
+ 
+ 		// Flow that controls DataFlow
+ 		// Note they are not connected using streams,
+ 		// only indirectly through the control mechanisms
+ 		// provided by JobControlPlane
+ 		@spl_note(id = "0", text =
+ 			"Flow that controls DataFlow by changing the shedding fraction every 30 seconds.")
+ 		@spl_category(name = "control")
+ 		() as CF = EControlFlow()
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
 </div>
 
 </div>

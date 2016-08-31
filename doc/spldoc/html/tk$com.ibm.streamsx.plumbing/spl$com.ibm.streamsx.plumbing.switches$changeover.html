@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.switches.html">com.ibm.streamsx.plumbing.switches</a> &gt; changeover.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_802c2ff</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.switches.html">com.ibm.streamsx.plumbing.switches</a> &gt; changeover.spl</p>
 
 </div>
 
@@ -114,6 +114,33 @@
   <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.switches$Changeover.svg" width="146" height="109"/>
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite Changeover (input IN, CONTROL; output CLOSE, OPEN) {
+     param expression&lt;boolean&gt; $initialState : false; 
+      expression&lt;boolean&gt; $status;
+    graph
+    (stream&lt;IN&gt; CLOSE; stream&lt;IN&gt; OPEN) as SPDT = Custom(IN ; CONTROL) {
+      logic
+      
+      state: {mutable boolean closed = $initialState;}
+      
+      onTuple IN: if (closed) submit(IN, CLOSE);  else submit(IN, OPEN);
+      onTuple CONTROL: closed = $status;
+      onPunct IN:  if (closed) submit(currentPunct(), CLOSE); else submit(currentPunct(), OPEN);
+    }
+ }
+
+   </pre>
+
+</div>
+
 <div class="section" id="spldoc_compilationunit__composite_operator__ControlledChangeover"><h2 class="title sectiontitle splpart">composite ControlledChangeover(output CLOSE, OPEN; input IN)</h2>
   
 </div>
@@ -185,6 +212,43 @@
 
 <div class="section splgraph">
   <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.switches$ControlledChangeover.svg" width="252" height="116"/>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ControlledChangeover(input IN; output CLOSE, OPEN)
+ {
+    param
+         expression&lt;rstring&gt; $name;
+         expression&lt;boolean&gt; $initialState : false;
+     graph
+ 
+         (stream&lt;IN&gt; CLOSE; stream&lt;IN&gt; OPEN) as CtrlSPDT = Changeover(IN ; SwitchControl)
+         {
+             param
+                 status : getSwitchState($name) ;
+                 initialState: __initChangeover($name, $initialState);
+             config placement: partitionColocation(getThisCompositeInstanceName());
+         }
+         // this issues an attribute change notification which is then
+         // sent to the Changeover's control port. This will then call
+         // getSwitchState() to set the switch to its correct state.
+         stream&lt;MBeanNotificationBase&gt; SwitchControl = ControlVariableChange()
+         {
+             param
+                 name : $name;
+             config placement: partitionColocation(getThisCompositeInstanceName());
+         }
+ }
+
+   </pre>
+
 </div>
 
 </div>

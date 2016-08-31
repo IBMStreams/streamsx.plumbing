@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.2.0.commit_1b1f6a8</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.shedders.html">com.ibm.streamsx.plumbing.shedders</a> &gt; randomshedder.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_802c2ff</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.shedders.html">com.ibm.streamsx.plumbing.shedders</a> &gt; randomshedder.spl</p>
 
 </div>
 
@@ -139,6 +139,56 @@
   <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.shedders$RandomLoadShedder.svg" width="142" height="109"/>
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite RandomLoadShedder(input In ; output Out)
+ {
+ 	param
+ 		expression&lt;rstring&gt; $name ;
+ 	graph
+ 
+ 		(stream&lt;In&gt; Out) as LoadShedder = Custom(In)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 				    rstring _name = $name;
+ 					boolean __unused = __initRandomShedder(_name) ;
+ 					mutable float64 currentShedFraction = -1.0;
+ 				}
+ 
+ 				onTuple In :
+ 				{
+ 				    float64 shedFraction = getRandomShedderFraction(_name);
+ 					if(shedFraction == 0.0)
+ 					{
+ 						submit(In, Out) ;
+ 					}
+ 
+ 					else if(shedFraction != 1.0)
+ 					{
+ 						if(random() &gt;= shedFraction) submit(In, Out) ;
+ 					}
+ 					
+ 					if (shedFraction != currentShedFraction) {
+ 					    setCustomMetricValue("sheddingFraction",(int64)(shedFraction * 1000000.0)) ;
+ 					    currentShedFraction = shedFraction;
+ 					}
+ 
+ 				}
+ 			}
+ }
+
+   </pre>
+
+</div>
+
 <div class="section"><h2 class="title sectiontitle splhead-1">Functions</h2>
   
 </div>
@@ -175,6 +225,23 @@
 
 </div>
 
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful boolean registerRandomShedder(rstring name)
+ {
+ 	createFloat64ControlVariable(name, true, - 1.0) ;
+ 	return true ;
+ }
+
+   </pre>
+
+</div>
+
 <div class="section" id="spldoc_compilationunit__function__setRandomShedderFraction.rstring.float64"><h2 class="title sectiontitle splpart">void setRandomShedderFraction(rstring name, float64 fraction)</h2>
   
 </div>
@@ -204,6 +271,22 @@
 </div>
 
 <div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public stateful void setRandomShedderFraction(rstring name, float64 fraction)
+ {
+ 	setFloat64ControlVariable(name, fraction) ;
+ }
+
+   </pre>
+
 </div>
 
 <div class="section" id="spldoc_compilationunit__function__getRandomShedderFraction.rstring"><h2 class="title sectiontitle splpart">float64 getRandomShedderFraction(rstring name)</h2>
@@ -236,6 +319,25 @@
 <tt class="ph tt">float64</tt>
 </li>
 </ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public float64 getRandomShedderFraction(rstring name)
+ {
+ 	float64 value = getFloat64ControlVariable(name) ;
+ 	if(value &gt; 1.0) return 1.0 ;
+ 	if(value &lt;= 0.0) return 0.0 ;
+ 	return value ;
+ }
+
+   </pre>
 
 </div>
 
