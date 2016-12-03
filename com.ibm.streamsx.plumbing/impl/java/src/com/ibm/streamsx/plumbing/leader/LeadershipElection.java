@@ -46,7 +46,7 @@ import com.ibm.streams.operator.types.Timestamp;
  */
 @PrimitiveOperator(description = LeadershipElection.OP_DESC)
 @OutputPortSet(cardinality=1)
-@Libraries("opt/apache-curator-2.7.1/*")
+@Libraries({"opt/apache-curator-2.4.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
 public class LeadershipElection extends AbstractOperator implements Controllable {
 
     public static final String OP_DESC = "Performs a leadership election between other operator invocations with the same `group`. "
