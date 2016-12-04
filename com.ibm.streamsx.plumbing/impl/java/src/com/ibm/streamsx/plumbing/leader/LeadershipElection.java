@@ -4,6 +4,10 @@
 */
 package com.ibm.streamsx.plumbing.leader;
 
+import static com.ibm.streamsx.plumbing.zookeeper.PeCuratorFramework.closeZkClient;
+import static com.ibm.streamsx.plumbing.zookeeper.PeCuratorFramework.getZkClient;
+import static com.ibm.streamsx.plumbing.zookeeper.PeCuratorFramework.initializeZkClient;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -16,11 +20,9 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatch.CloseMode;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import com.ibm.streams.operator.AbstractOperator;
 import com.ibm.streams.operator.OperatorContext;
@@ -36,6 +38,7 @@ import com.ibm.streams.operator.model.Libraries;
 import com.ibm.streams.operator.model.OutputPortSet;
 import com.ibm.streams.operator.model.Parameter;
 import com.ibm.streams.operator.model.PrimitiveOperator;
+import com.ibm.streams.operator.model.SharedLoader;
 import com.ibm.streams.operator.types.RString;
 import com.ibm.streams.operator.types.Timestamp;
 
@@ -46,7 +49,8 @@ import com.ibm.streams.operator.types.Timestamp;
  */
 @PrimitiveOperator(description = LeadershipElection.OP_DESC)
 @OutputPortSet(cardinality=1)
-@Libraries({"opt/apache-curator-2.4.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
+@Libraries({"opt/apache-curator-2.7.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
+@SharedLoader
 public class LeadershipElection extends AbstractOperator implements Controllable {
 
     public static final String OP_DESC = "Performs a leadership election between other operator invocations with the same `group`. "
@@ -112,14 +116,7 @@ public class LeadershipElection extends AbstractOperator implements Controllable
                 return null;
             }});
 
-        String connString = System.getenv("STREAMS_ZKCONNECT");
-        client = CuratorFrameworkFactory.newClient(connString,
-                new ExponentialBackoffRetry(1000, Integer.MAX_VALUE, 5000));
-
-        client.start();
-        client.getZookeeperClient().blockUntilConnectedOrTimedOut();
-
-        trace.fine("Connected to Zookeeper using Curator");
+        client = initializeZkClient();
 
         // Attach as soon as possible, to avoid any delays during allPortsReady.
         getControlPlaneContext().connect(this);
@@ -142,12 +139,9 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         boolean wasLeader = relinquishLeadership(CloseMode.NOTIFY_LEADER);
         if (wasLeader)
             submitTuple(false);
-
-        if (client != null) {
-            client.close();
-            client = null;
-        }
         
+        closeZkClient(client);
+
         singleThreadExecutor.shutdown();
         if (wasLeader)
             Thread.sleep(200);
@@ -241,7 +235,7 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         trace.fine("Zookeeper path for this job:" + path);
 
         synchronized (this) {
-            leaderLatch = new LeaderLatch(client, path + "/" + getGroup(), id);
+            leaderLatch = new LeaderLatch(getZkClient(), path + "/" + getGroup(), id);
 
             leaderLatch.addListener(new LeaderLatchListener() {
 
