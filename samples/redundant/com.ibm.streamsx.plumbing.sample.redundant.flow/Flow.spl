@@ -25,9 +25,14 @@ type T = uint64 id, float64 v;
 public composite Flow
 {
     graph
+    stream<T> Alerts = SourceAnalyticsFlow() {}
+    () as SMS = SendSMS(Alerts) {}
+}
+
+public composite SourceAnalyticsFlow(output Alerts) {
+  graph
     stream<T> Messages = Source() {}
     stream<T> Alerts = Analytics(Messages) {}
-    () as SMS = SendSMS(Alerts) {}
 }
 
 public composite Source(output Messages)
