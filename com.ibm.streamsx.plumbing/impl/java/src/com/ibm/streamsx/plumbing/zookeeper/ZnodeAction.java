@@ -47,7 +47,7 @@ public class ZnodeAction extends AbstractOperator {
             + "* `Delete` - The znode path will be deleted.\\n"
             + "The data attribute is set to `data` if it exists, otherwise `jsonString`. The data attribute"
             + " must be of type `rstring`."
-            + "\\n\n"
+            + "\\n\\n"
             + "If an output port exists an output tuple is submitted for each input tuple after the"
             + "successful znode action has occurred."
             + " Matching input atttributes are copied to output attributes, if the action is `Get`"
