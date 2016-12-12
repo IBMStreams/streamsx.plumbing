@@ -13,22 +13,24 @@ use com.ibm.streamsx.plumbing.sample.redundant.flow::SourceAnalyticsFlow;
 use com.ibm.streamsx.plumbing.sample.redundant.flow::T;
 
 /**
- * Example application demonstrating use of redundant
+ * Example application demonstrating use of redundant flows and
  * de-duplicators, with leadership election using ZooKeeper.
  * 
  * This is a simple example to demonstrate how duplicate
- * output from redundant flows can be de-duplicated redundantly and
- * an single result set to the output stream. 
+ * output from redundant flows can be de-duplicated redundantly.
  * 
- * Input redundant flows are simulated by exporting a Beacon's output
- * through three Export operators, and having each de-duplicator
- * composite [LeadershipDeDuplicate] import all three streams. 
- * Note that inputs into redundant flows need to use dynamic
- * connections (Import and Export) to ensure that the sender
- * is not blocked when one of the redundant flows fail.
- * 
- * Four redundant LeadershipDeDuplicate composite operators
- * each subscribe to    
+ * Three active replica flows mimic processing data and
+ * sending alerts. In this case there are two redundant
+ * de-duplicators with one active set by leadership election
+ * using `LeadershipSwitchWithReplay`. The de-duplicator
+ * sends a single alert even though there are three active
+ * replicas generating alerts. Upon a failure of the de-duplicator
+ * the inactive one is elected as the leader and starts to send
+ * the alerts out. 
+ *
+ * The concepts used in this sample are described by this Streamsdev
+ * article: [https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/]. Though the article refers
+ * to an earlier Streams 3.2 based toolkit.
  */
 
 public composite ActiveReplicasManual3DeDup
