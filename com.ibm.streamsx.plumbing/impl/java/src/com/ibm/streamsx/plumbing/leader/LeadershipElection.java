@@ -48,24 +48,42 @@ import com.ibm.streams.operator.types.Timestamp;
  * with the same group identifier.
  */
 @PrimitiveOperator(description = LeadershipElection.OP_DESC)
-@OutputPortSet(cardinality=1)
+@OutputPortSet(cardinality=1, description="Contains tuples representing leadership status changes. The stream schema"
+        + " can be [LeaderStatus] or any arbitrary schema. Any attribute matching an attribute in [LeaderStatus] will"
+        + "be set to a valid value otherwise it will be set to its default value.")
 @Libraries({"opt/apache-curator-2.7.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
 @SharedLoader
 public class LeadershipElection extends AbstractOperator implements Controllable {
 
     public static final String OP_DESC = "Performs a leadership election between other operator invocations with the same `group`. "
             + "At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. "
-            + "Invocations must be exlocated into different PEs." + "\\n\\n"
-            + "The operator requires the application include an invocation of the `JobControlPlane` operator."
-            + "\\n\\n"
             + "Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service."
-            + "The Zookeeper root node for the recipe is a sub-node `group` within job's storage node "
-            + "(`com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()`).";
+            + "\\n"
+            + "When the `path` parameter is not set the leadersip election is between operator invocations with the same `group`"
+            + " in a single job. In this case:\\n"
+            + " * the application requires an invocation of the `JobControlPlane` operator.\\n"
+            + " * Invocations of `LeadershipElection` within the same `group` must be exlocated into different PEs.\\n"
+            + "The Zookeeper root znode for the recipe is a sub-node `group` within job's storage node "
+            + "(`com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()`).\\n"
+            + "\\n"            
+            + "When the `path` parameter is set the leadersip election is between operator invocations with the same `path`"
+            + " and `group` in a single domain, typically between operator invocations in different jobs in an instance."
+            + " In this case:\\n"
+            + " * Any invocations of `LeadershipElection` within the same `path` and `group` and job must be exlocated into different PEs.\\n"
+            + "The Zookeeper root znode for the recipe is a `path`/`group`.\\n"
+            + "\\n"
+            + "When the leadership state of the operator changes a tuple is submitted to the output port.";
+
 
     /**
      * Group name for leadership election.
      */
     private String group;
+    
+    /**
+     * Optional path within Zookeeper. 
+     */
+    private String path;
 
     /**
      * Metric indicating if this operator is the leader.
@@ -117,9 +135,15 @@ public class LeadershipElection extends AbstractOperator implements Controllable
             }});
 
         client = initializeZkClient();
-
-        // Attach as soon as possible, to avoid any delays during allPortsReady.
-        getControlPlaneContext().connect(this);
+        
+        if (getPath() == null) {
+            // Leadership is within the job.
+            // Attach as soon as possible, to avoid any delays during allPortsReady.
+            getControlPlaneContext().connect(this);
+        } else {
+            // Leadership is across jobs.
+            createLatch(getPath());
+        }
         
         createAvoidCompletionThread();
     }
@@ -156,9 +180,11 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         notifyAll();
     }
 
-    @Parameter(description = "Leadership group name. All instances of this operator within the same job and having the same `group`"
+    @Parameter(description = "Leadership group name. All instances of this operator within the same `group`"
             + " are participants in a single leadership election. Group name must not start with a slash (`/`).")
     public void setGroup(String group) {
+        if (group.startsWith("/"))
+            throw new IllegalArgumentException(group);
         this.group = group;
     }
 
@@ -168,6 +194,17 @@ public class LeadershipElection extends AbstractOperator implements Controllable
     
     private String getId() {
         return id;
+    }
+    
+    @Parameter(optional=true, description = "Znode path for leaderhip election across multiple jobs. Optional, when not set the path "
+            + "used is specific to the job and leadership election is across operator invocations within a single jobs.")
+    public void setPath(String path) {
+        if (!path.startsWith("/"))
+            throw new IllegalArgumentException(path);
+        this.path = path;
+    }
+    private String getPath() {
+        return path;
     }
 
     protected Metric getIsLeader() {
@@ -231,9 +268,14 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         }
 
         String path = (String) jcp.invoke(ControlPlaneManagement.JOB_NAME, "retrieveZooKeeperStorageNode", null, null);
-
+        
         trace.fine("Zookeeper path for this job:" + path);
-
+        
+        createLatch(path);
+    }
+    
+    private void createLatch(String path) throws Exception {
+       
         synchronized (this) {
             leaderLatch = new LeaderLatch(getZkClient(), path + "/" + getGroup(), id);
 
