@@ -196,14 +196,17 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         return id;
     }
     
-    @Parameter(optional=true, description = "Znode path for leaderhip election across multiple jobs. Optional, when not set the path "
+    @Parameter(optional=true, description = "Znode path for leaderhip election across multiple jobs, must start with a `/` to be used across jobs "
+            + "(or an empty string to default to within a job). Optional, when not set (or set to the empty string) the path "
             + "used is specific to the job and leadership election is across operator invocations within a single jobs.")
     public void setPath(String path) {
-        if (!path.startsWith("/"))
+        if (!path.isEmpty() && !path.startsWith("/"))
             throw new IllegalArgumentException(path);
         this.path = path;
     }
     private String getPath() {
+        if (path.isEmpty())
+            return null;
         return path;
     }
 

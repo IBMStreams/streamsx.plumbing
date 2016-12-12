@@ -30,11 +30,13 @@ public composite LeadershipChangeover(input In ; output WhenLeader, WhenNotLeade
 {
     param
         expression<rstring> $group ;
+        expression<rstring> $path : "" ;
     graph
       stream<LeaderStatus> LeaderControl = LeadershipElection()
       {
         param
           group : $group ;
+          path : $path ;
       }
 
       (stream<In> WhenLeader ; stream<In> WhenNotLeader) as LCS = Changeover(In ; LeaderControl)
@@ -87,6 +89,7 @@ public composite LeadershipSwitchWithReplay(input In ; output Out)
 {
 param
         expression<rstring> $group ;        
+        expression<rstring> $path : "" ;
         expression<float64> $period : 10.0;
 
    graph
@@ -96,6 +99,7 @@ param
 		{
 			param
 				group : $group ;
+				path : $path ;
 		}
 		
 		// Stream that will drive the replay when this PE becomes the leader.
