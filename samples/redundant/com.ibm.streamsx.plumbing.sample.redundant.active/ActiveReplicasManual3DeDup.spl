@@ -1,0 +1,110 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2013, 2016
+*/
+namespace com.ibm.streamsx.plumbing.sample.redundant.active;
+
+use com.ibm.streamsx.plumbing.leader::LeadershipElection ;
+use com.ibm.streamsx.plumbing.leader::LeadershipSwitchWithReplay ;
+use com.ibm.streamsx.topology.topic::*;
+
+use com.ibm.streamsx.plumbing.sample.redundant.flow::SendSMS;
+use com.ibm.streamsx.plumbing.sample.redundant.flow::SourceAnalyticsFlow;
+use com.ibm.streamsx.plumbing.sample.redundant.flow::T;
+
+/**
+ * Example application demonstrating use of redundant flows and
+ * de-duplicators, with leadership election using ZooKeeper.
+ * 
+ * This is a simple example to demonstrate how duplicate
+ * output from redundant flows can be de-duplicated redundantly.
+ * 
+ * Three active replica flows mimic processing data and
+ * sending alerts. In this case there are two redundant
+ * de-duplicators with one active set by leadership election
+ * using `LeadershipSwitchWithReplay`. The de-duplicator
+ * sends a single alert even though there are three active
+ * replicas generating alerts. Upon a failure of the de-duplicator
+ * the inactive one is elected as the leader and starts to send
+ * the alerts out. 
+ *
+ * The concepts used in this sample are described by this Streamsdev
+ * article: [https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/]. Though the article refers
+ * to an earlier Streams 3.2 based toolkit.
+ */
+
+public composite ActiveReplicasManual3DeDup
+{
+    graph
+        // JobControlPlane to support leadership election
+        () as JCP = JobControlPlane() { }
+
+        // Mimic three redundant flows and publish them. 
+        () as RF0 = PublishFlow() {
+           config placement: host(Rack_0);
+        }
+
+        () as RF1 = PublishFlow() {
+           config placement: host(Rack_1);
+        }
+
+        () as RF2 = PublishFlow() {
+           config placement: host(Rack_2);
+        }
+
+        // Subscribe the three redundant flows into
+        // each of the two de-duplicators
+        // Only one will be elected the leader and submit the de-duplicated
+        // tuples to the output.
+        () as LD0 = RedundantDeDuplicator () {
+           config placement: host(Rack_0);
+        }
+
+        () as LD1 = RedundantDeDuplicator() {
+           config placement: host(Rack_1);
+        }
+
+    config
+       // Pools are created shared to allow
+       // other applications to use the same hosts.
+       hostPool:
+            Rack_0 = createPool({tags=["rack_0"]}, Sys.Shared),
+            Rack_1 = createPool({tags=["rack_1"]}, Sys.Shared),
+            Rack_2 = createPool({tags=["rack_2"]}, Sys.Shared);      
+}
+
+composite PublishFlow() {
+  graph
+    stream<T> RF = SourceAnalyticsFlow() {}
+    () as RFP = Publish(RF) {param topic: "alerts";}
+}
+
+composite RedundantDeDuplicator() {
+ graph
+   stream<T> Alerts = Subscribe() 
+   {
+     param
+       topic: "alerts";
+       streamType: T;
+     config placement: partitionColocation(getThisCompositeInstanceName());
+   }
+
+   stream<T> AlertsLeader = LeadershipSwitchWithReplay(Alerts) {
+      param
+        group: "alerts_leader";
+        period: 10.0;
+     config placement: partitionColocation(getThisCompositeInstanceName());
+   }
+
+   stream<T> AlertsDeDup = DeDuplicate(AlertsLeader) {
+     param
+        key: id;
+        timeOut: 10.0;
+     config placement:
+         partitionColocation(getThisCompositeInstanceName());
+   }
+
+   () as SMS = SendSMS(AlertsDeDup) {
+     config placement: partitionColocation(getThisCompositeInstanceName());
+   }
+}

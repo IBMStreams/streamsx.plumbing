@@ -80,11 +80,41 @@
      </exec>
   </target>
 
+  <property name="cisps" value="com.ibm.streamsx.plumbing.sample"/>
+  <target name="test.compile.samples" depends="toolkit">
+     <delete dir="samples/redundant/output" quiet="true"/>
+     <exec executable="${streams.install}/bin/sc" failonerror="true"
+        dir="samples/redundant">
+        <arg value="-M"/>
+        <arg value="${cisps}.redundant.active::ActiveReplicasManual2"/>
+     </exec>
+     <delete dir="samples/redundant/output" quiet="true"/>
+     <exec executable="${streams.install}/bin/sc" failonerror="true"
+        dir="samples/redundant">
+        <arg value="-M"/>
+        <arg value="${cisps}.redundant.active::ActiveReplicasManual3"/>
+     </exec>
+     <delete dir="samples/redundant/output" quiet="true"/>
+     <exec executable="${streams.install}/bin/sc" failonerror="true"
+        dir="samples/redundant">
+        <arg value="-M"/>
+        <arg value="${cisps}.redundant.active::ActiveReplicasUDP"/>
+     </exec>
+     <delete dir="samples/redundant/output" quiet="true"/>
+     <exec executable="${streams.install}/bin/sc" failonerror="true"
+        dir="samples/redundant">
+        <arg value="-M"/>
+        <arg value="${cisps}.redundant.active::ActiveReplicasManual3DeDup"/>
+        <arg value="-t"/>
+        <arg value="${streams.install}/toolkits:${toolkit}"/>
+     </exec>
+  </target>
+
 
   <!-- Targets called on samples -->
   <target name="indextoolkit">
      <echo message="Tookit to index: ${basedir}"/>
-     <exec executable="${streams.install}/bin/spl-make-toolkit">
+     <exec executable="${streams.install}/bin/spl-make-toolkit" failonerror="true">
         <arg value="--directory"/>
         <arg value="${basedir}"/>
         <arg value="-m"/>
@@ -92,7 +122,7 @@
   </target>
   <target name="cleantoolkit">
      <echo message="Tookit to clean: ${basedir}"/>
-     <exec executable="${streams.install}/bin/spl-make-toolkit">
+     <exec executable="${streams.install}/bin/spl-make-toolkit" failonerror="true">
         <arg value="--clean"/>
         <arg value="--directory"/>
         <arg value="${basedir}"/>
