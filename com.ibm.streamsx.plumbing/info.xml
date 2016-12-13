@@ -5,7 +5,7 @@
    <info:name>com.ibm.streamsx.plumbing</info:name>
    <info:description>Plumbing operators manipulate the flow of tuples in a Streams application, but are not part of the logic of the application.
    </info:description>
-   <info:version>0.4.0.__dev__</info:version>
+   <info:version>0.5.0.__dev__</info:version>
    <info:requiredProductVersion>4.0.1.0</info:requiredProductVersion>
  </info:identity>
  <info:dependencies>

@@ -6,8 +6,8 @@ Incubation for projects is covered here: https://github.com/IBMStreams/administr
 
 ## Status
 
-- [ ] :red_circle: Stable release(s)
-  * Status: No releases yet, build does support generating a release.
+- [ ] :large_orange_diamond: Stable release(s)
+  * Status: Single pre-release.
 - [ ] :large_orange_diamond: Project is properly documented
   * Status: SPLDOC exists, missing namespace-info for a number of namespaces. http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/index.html
 - [ ] :large_orange_diamond: Project has samples and instructions to help users get started easily
