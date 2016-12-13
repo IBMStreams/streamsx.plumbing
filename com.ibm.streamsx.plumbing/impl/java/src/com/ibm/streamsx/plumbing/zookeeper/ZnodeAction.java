@@ -91,10 +91,15 @@ public class ZnodeAction extends AbstractOperator {
         initializeZkClient();
 
         byte[] defData = new byte[0];
-        StreamSchema inSchema = getInput(0).getStreamSchema();
-        if (inSchema.getAttribute("data") != null) {
+        final StreamSchema dataSchema;
+        if (getAction() == Type.Get) {
+            dataSchema = getOutput(0).getStreamSchema();
+        } else {
+            dataSchema = getInput(0).getStreamSchema();
+        }
+        if (dataSchema.getAttribute("data") != null) {
             dataName = "data";
-        } else if (inSchema.getAttribute("jsonString") != null) {
+        } else if (dataSchema.getAttribute("jsonString") != null) {
             dataName = "jsonString";
             defData = "{}".getBytes("UTF-8"); // empty JSON object
         }
