@@ -1,0 +1,17 @@
+/*
+*******************************************************************************
+* Copyright (C) 2016, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Enhanced filter functionality.
+ *
+ * TraceLevelFilter allows administrators to dynamically turn streams on and off
+ * by changing the trace level of the PE. 
+ */
+
+namespace com.ibm.streamsx.plumbing.filters;
+
+
