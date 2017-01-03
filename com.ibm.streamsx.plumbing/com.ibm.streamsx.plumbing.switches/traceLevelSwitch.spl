@@ -1,0 +1,28 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2016
+*/
+namespace com.ibm.streamsx.plumbing.switches ;
+
+/**
+ * Dynamic switch that forwards data based on the trace level. 
+ * The trace level at which this operator forwards data is 
+ * controlled by the traceThreshold parameter. 
+ * 
+ * @param forceWrite Optional parameter that allows the developer to for the filter to forward input tuples regardless of trace level.  This parameter is false by default. 
+ * @param traceThreshold The trace level at which data begins to be forwarded. 
+ * 
+ * @input In Stream to be filtered
+ * @output Out Same as input stream, but only forwarded if tracing is at "traceThreshold" or forceWrite is set to true. 
+ */
+public composite TraceLevelSwitch (input In ; output Out)
+{
+	param 
+		expression<boolean> $forceWrite : false;
+		expression<Trace.Level> $traceThreshold : Trace.trace;
+	graph 
+		stream<I> Out = Filter(In as I){
+			param
+				filter : $forceWrite || isTraceable($traceThreshold);
+		}
+}
