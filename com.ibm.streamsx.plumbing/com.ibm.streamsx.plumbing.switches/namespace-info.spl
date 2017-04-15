@@ -19,7 +19,7 @@
  * processing can change an upstream flow through a controlled switch.
  * 
  * [TraceLevelSwitch] is a switch whose state can be changed via the 
- * trace level of the PE it is a part of. 
+ * application trace level of the PE it is a part of. 
  */
 
 namespace com.ibm.streamsx.plumbing.switches;
