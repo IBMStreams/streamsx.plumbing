@@ -70,7 +70,7 @@ public boolean getSwitchState(rstring name)
  *
  * A controlled version of the SPL Standard toolkit `Switch` operator.
  * When the switch is closed (state is `true`) tuples on its
- * input port flow through it its output port unchanged.
+ * input port flow through to its output port unchanged.
  *
  * When the switch is open (state is `false`) tuples on its input
  * port are blocked from flowing. Blocked tuples remain on the
