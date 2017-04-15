@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 2015, International Business Machines Corporation. 
+* Copyright (C) 2015,2017 International Business Machines Corporation. 
 * All Rights Reserved. *
 *******************************************************************************
 */
@@ -16,9 +16,10 @@ use com.ibm.streamsx.plumbing.switches::* ;
  *
  * The [ControlFlow] composite randomly opens and closes the switch
  * with the switch being open (no tuples flowing) about 30% of the time.
+ *
  * The `ControlledSwitch`'s state is changed by execution of the
- * [com.ibm.streamsx.plumbing.switches::setState(rstring,boolean)] function.
- * The `setState` is tied to the instance of `ControlledSwitch` by the
+ * [com.ibm.streamsx.plumbing.switches::setSwitchState(rstring,boolean)] function.
+ * The `setSwitchState` is tied to the instance of `ControlledSwitch` by the
  * switch's name: `sampleSwitch`.
  *
  * When running the sample the tuple flow rate can be visualized using
