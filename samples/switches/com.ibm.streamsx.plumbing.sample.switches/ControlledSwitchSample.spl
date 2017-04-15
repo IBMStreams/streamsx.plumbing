@@ -8,6 +8,28 @@ namespace com.ibm.streamsx.plumbing.sample.switches ;
 
 use com.ibm.streamsx.plumbing.switches::* ;
 
+/**
+ * Sample showing use of [com.ibm.streamsx.plumbing.switches::ControlledSwitch].
+ *
+ * A [DataFlow] containing a `ControlledSwitch` that is controlled
+ * by a separate subgraph using the composite [ControlFlow].
+ *
+ * The [ControlFlow] composite randomly opens and closes the switch
+ * with the switch being open (no tuples flowing) about 30% of the time.
+ * The `ControlledSwitch`'s state is changed by execution of the
+ * [com.ibm.streamsx.plumbing.switches::setState(rstring,boolean)] function.
+ * The `setState` is tied to the instance of `ControlledSwitch` by the
+ * switch's name: `sampleSwitch`.
+ *
+ * When running the sample the tuple flow rate can be visualized using
+ * Streams console or Streams studio.
+ * 
+ * For example here is a view of `ControlledSwitchSample` in Streams
+ * console. The graph shows that the tuple flow in `DataFlow` (light blue)
+ * stops due to the `ControlledSwitch` from time to time.
+ * 
+ * {../images/ControlledSwitchSample.png}
+ */
 public composite ControlledSwitchSample
 {
 	graph
@@ -44,7 +66,7 @@ public composite ControlledSwitchSample
 * based upon the control signals from the separate
 * [ControlFlow] composite.
 */
-composite DataFlow
+public composite DataFlow
 {
 	graph
 		stream<int64 a> Data = Beacon()
@@ -70,9 +92,9 @@ composite DataFlow
 * The flow that controls [DataFlow] in [ControlledSwitchSample].
 * Every twenty seconds a random value between 0.0 and 1.0
 * is submitted by a `Beacon`. If it is less that 0.3 the switch
-* is closed otherwise it is opened.
+* is opened otherwise it is closed to allow tuples to flow.
 */
-composite ControlFlow()
+public composite ControlFlow()
 {
 	graph
 		stream<float64 rv> Control = Beacon()

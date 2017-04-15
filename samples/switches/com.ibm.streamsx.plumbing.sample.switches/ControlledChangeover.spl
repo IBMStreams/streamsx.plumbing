@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 2015, International Business Machines Corporation. 
+* Copyright (C) 2015,2017 International Business Machines Corporation. 
 * All Rights Reserved. *
 *******************************************************************************
 */
@@ -44,7 +44,7 @@ public composite ControlledChangeoverSample
 * based upon the control signals from the separate
 * [ControlFlow] composite.
 */
-composite ChangeoverDataFlow
+public composite ChangeoverDataFlow
 {
 	graph
 		stream<int64 a> Data = Beacon()
