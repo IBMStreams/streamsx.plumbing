@@ -1,6 +1,6 @@
 /*
 *******************************************************************************
-* Copyright (C) 2015, International Business Machines Corporation. 
+* Copyright (C) 2015,2017 International Business Machines Corporation. 
 * All Rights Reserved. *
 *******************************************************************************
 */
@@ -8,6 +8,30 @@ namespace com.ibm.streamsx.plumbing.sample.switches ;
 
 use com.ibm.streamsx.plumbing.switches::* ;
 
+/**
+ * Sample showing use of [com.ibm.streamsx.plumbing.switches::ControlledChangeover].
+ *
+ * A [ChangeoverDataFlow] containing a `ControlledChangeover` that
+ * is controlled by a separate subgraph using the composite [ControlFlow].
+ *
+ * The [ControlFlow] composite randomly changes the state of the switch
+ * with tuples flowing through one output port about 30% of the time
+ * and the remainder the other output port.
+ *
+ * The `ControlledChangeover`'s state is changed by execution of the
+ * [com.ibm.streamsx.plumbing.switches::setSwitchState(rstring,boolean)] function.
+ * The `setSwitchState` is tied to the instance of `ControlledChangeover` by the
+ * switch's name: `sampleSwitch`.
+ *
+ * When running the sample the tuple flow rate can be visualized using
+ * Streams console or Streams studio.
+ * 
+ * For example here is a view of `ControlledChangeoverSample` in Streams
+ * console. When running tuple flow will randomly switch between the
+ * streams in the red circle.
+ * 
+ * {../images/ControlledChangeoverSample.png}
+ */
 public composite ControlledChangeoverSample
 {
 	graph
@@ -44,7 +68,7 @@ public composite ControlledChangeoverSample
 * based upon the control signals from the separate
 * [ControlFlow] composite.
 */
-composite ChangeoverDataFlow
+public composite ChangeoverDataFlow
 {
 	graph
 		stream<int64 a> Data = Beacon()
