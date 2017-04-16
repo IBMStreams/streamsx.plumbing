@@ -10,7 +10,7 @@ use com.ibm.streamsx.plumbing.leader::*;
 use com.ibm.streamsx.plumbing.sample.redundant.flow::*;
 
 /**
- * Active replica flow as a single load with leadership election.
+ * Active replica flow as a single job with leadership election.
  *
  * Demonsrates use of `LeadershipElection` through `LeadershipSwitchWithReplay`
  * with a `path` parameter to have leadership election across jobs.
@@ -24,7 +24,7 @@ public composite ActiveReplicasLeader
        stream<T> AlertsLeader = LeadershipSwitchWithReplay(Alerts) {
          param
             group: "alerts_leader";
-            path: "/across_jobs";
+            path: "/streamsx.plumbing.across_jobs";
             period: 10.0;
        }
 

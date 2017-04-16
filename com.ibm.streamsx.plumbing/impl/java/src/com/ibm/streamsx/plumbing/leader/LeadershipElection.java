@@ -279,8 +279,9 @@ public class LeadershipElection extends AbstractOperator implements Controllable
     
     private void createLatch(String path) throws Exception {
        
+        final String latchPath = path + "/" + getGroup();
         synchronized (this) {
-            leaderLatch = new LeaderLatch(getZkClient(), path + "/" + getGroup(), id);
+            leaderLatch = new LeaderLatch(getZkClient(), latchPath, id);
 
             leaderLatch.addListener(new LeaderLatchListener() {
 
@@ -307,7 +308,7 @@ public class LeadershipElection extends AbstractOperator implements Controllable
             }, singleThreadExecutor);
         }
 
-        trace.fine("Starting leadership latch for id: " + id);
+        trace.info("Starting leadership latch for id: " + id + " path:" + latchPath);
         leaderLatch.start();
         trace.fine("Started leadership latch for id: " + id);
 
