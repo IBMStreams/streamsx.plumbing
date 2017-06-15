@@ -1,0 +1,199 @@
+namespace expiredtupledetector.test;
+
+// We have to use the toolkit mentioned here to showcase the features of the ExpiredTupleDetector operator.
+use com.ibm.streamsx.plumbing.expiredtupledetector::*;
+
+/*
+Code contributions were made by three of the Streams team members.
+
+Possible use cases where the ExpiredTupleDetector operator can be used:
+
+1) Aging out tuples based on application specific criteria.
+2) Response timeout detection and replaying data tuples to an external service.
+3) Event notification to external consuming applications at a later time in the future.
+4) Design patterns requiring storing and forwarding of tuples after a preset delay.
+*/
+
+composite ExpiredTupleDetectorTest {
+	param
+		// Default TTL expiry time is 1 minute represented in milliseconds (1 * 60 * 1000)
+		expression<uint64> $TTL_EXPIRY_TIME : (uint64)getSubmissionTimeValue("TTLExpiryTime", "60000");
+		// User preference to configure the ExipredTupleDetector operator to allow the
+		// overriding of the expire time value or not.
+		expression<boolean> $ALLOW_EXPIRE_TIME_OVERRIDE : (boolean)getSubmissionTimeValue("AllowExpireTimeOverride", "false");
+				
+	type
+		FlightType = rstring flightId, rstring flightModel, rstring origin, rstring destination;
+		// TTL snapshot type must have a single attribute that is a 
+		// list of your event tuple type. 
+		TTLSnapshotType = list<FlightType> ttlSnapshotList;
+		ExpireTimeOverrideType = uint64 expireTime;
+		DeleteTupleType = rstring flightId;
+		
+	graph
+		// Generate periodic timer signals to check for the tuple expiration.
+		stream<boolean signal> TimerSignal = Beacon() {
+			param
+				// Send a tick every 10 seconds.
+				period : 10.0;
+		}
+
+		// Ingest the flight data from a file. (It has 11 rows)
+		stream<FlightType> FlightInfo = FileSource() {
+			param
+				file : "flight-info.txt";
+				hotFile : true;
+		}
+
+		// Comment out the previous FileSource code block and then
+		// uncomment this Beacon code block in order to test it with 100K entries.
+		/*
+		stream<FlightType> FlightInfo = Beacon() {
+			param
+				iterations: 100000;
+				
+			output
+				FlightInfo: flightId = (rstring)(IterationCount()+1ul),
+					flightModel = "Model" + (rstring)(IterationCount()+1ul),
+					origin = "Origin" + (rstring)(IterationCount()+1ul),
+					destination = "Destination" + (rstring)(IterationCount()+1ul);
+		}
+		*/
+		
+		// This operator can generate a query signal for the ExpiredTupleDetector operator below.
+		// That query signal will make that operator to send out the current snapshot of
+		// its internal cache where it is holding all the events for a specific amount of time.
+		// You can use either telnet or nc (netcat) to connect to this operator's IP Address:Port and
+		// then type something (any random character followed by a new line) to generate a query signal.
+		stream<rstring str> TTLSnapshotQuerySignal = TCPSource() {
+			param
+				role: server;
+				port: 22222u;
+		}
+
+		// Display the incoming flight info tuple.
+		(stream<FlightType> FlightIn as FIN;
+		 stream<ExpireTimeOverrideType> ExpireTimeOverride as ETO;
+		 stream<DeleteTupleType> DeleteTuple as DT) = Custom(FlightInfo as FI) {
+			logic
+				state: {
+					mutable int32 _cnt = 0;
+					mutable ExpireTimeOverrideType _oTuple2 = {};
+					mutable uint64 _expireTime = 0ul;
+					list<uint64> _expireTimeList = [90000ul, 120000ul, 60000ul, 180000ul];
+				}
+
+				onTuple FI: {
+					if ($ALLOW_EXPIRE_TIME_OVERRIDE == true) {
+						// We are allowed to override the expire time whenever we want.
+						// Let us play with that feature here by changing the expire time for this tuple.
+						_expireTime = _expireTimeList[_cnt % size(_expireTimeList)];
+						_oTuple2.expireTime = _expireTime;
+						// Let us first change the expireTime for this tuple by submitting the expireTimeOverride tuple.
+						// After the override tuple, we can submit the actual data tuple which will expire after the
+						// newly overridden expireTime value.
+						submit(_oTuple2, ETO);
+					} else {
+						// Expiry time is as specified at the start of the application. No override possible.
+						_expireTime = $TTL_EXPIRY_TIME;
+					}
+					
+					appTrc(Trace.error, "IN: FlightInfo tuple " + (rstring)++_cnt + 
+						" with an expire time of " + (rstring)_expireTime + " msec=" + (rstring) FI);
+					submit(FI, FIN);
+					
+					// We will randomly delete the 12th data tuple we submitted to be expired at a later time.
+					if (_cnt == 12) {
+						mutable DeleteTupleType oTuple = {};
+						oTuple.flightId = FI.flightId;
+						submit(oTuple, DT);
+						
+						// Let us also send an invalid flight id to be deleted (just for testing).
+						oTuple.flightId = "XYZ";
+						submit(oTuple, DT);
+					}
+				}
+		}
+
+		// This operator will hold the incoming tuples for a specified duration and then send them out
+		// after that time expires. If a new tuple arrives with the same key, then an earlier tuple
+		// with the same key being held will be replaced with the newly arrived tuple and the
+		// count down for the expiry time will be started freshly.
+		//
+		// 1) First input stream is the regular data tuple that needs to be held for a
+		//    configured amount of expire time.
+		//
+		// 2) Second input stream is the periodic timer signal that must be sent to this operator
+		//    to perform the expired tuple detection and then send that tuple out of this operator.
+		//
+		// 3) Third input stream is used to override/change the expire time in the middle of the operation.
+		//    This stream will be effective only when the operator parameter allowExpireTimeOverride is
+		//    set to true. If it is set to false, any tuple received via this stream will be ignored.
+		//    When the expire time is changed via this stream, any future data tuples sent into this
+		//    operator will be made to expire after the newly overridden expire time.
+		//    All the existing data tuples being held inside this operator will not be affected by
+		//    the newly overridden expire time and they will expire at the time that was in effect before
+		//    the expire time override happened.
+		// 
+		// 4) Fourth input stream is used in situations where there is a need to delete 
+		//    an existing data tuple that is being held inside this operator. Simply send a 
+		//    tuple via this fourth input stream with that tuple's first attribute 
+		//    carrying a value needed to identify the data tuple to be deleted from 
+		//    this operator's internal in-memory data structure.
+		//
+		// 5) This operator can also be optionally queried to return a snapshot of its
+		// internal cache at a given point in time. This can be done by having an optional
+		// fifth input stream and by having an optional second output stream as shown below.
+		//
+		// Output streams: 
+		// a) First output stream will carry the original data tuples.
+		// b) Second (optional) output stream will carry the TTL snapshot tuples when a query is made.
+		//
+		(stream<FlightType> FlightInfoAfterTTLExpiry; stream<TTLSnapshotType> TTLSnapshot) =
+			ExpiredTupleDetector(FlightIn; TimerSignal; ExpireTimeOverride; DeleteTuple; TTLSnapshotQuerySignal) {
+			param
+				// Attribute in the incoming tuple that will be used as a key.
+				key: FlightIn.flightId;
+				// Duration (in milliseconds) for which tuples should be held inside this operator.
+				// Those tuples will be sent out after that time duration expires.
+				// It takes a uint64 value.
+				expireTime: $TTL_EXPIRY_TIME;
+				// Do we want to allow the user to change the expire time value in the middle of the operation?
+				// It takes a boolean value.
+				// If there is going to be a maximum of 100K entries held inside this operator, it is okay to
+				// allow the user to change the expire time value in between different tuples.
+				// For more than 100K entries, changing the expire time value arbitrarily will 
+				// have a performance impact in iterating over the entire data structure inside this
+				// operator to find the expired entries. This parameter lets the operator execute an
+				// optimized logic if the user wants to use the same expireTime for the full life of this
+				// operator versus user keeps overriding the expireTime arbitrarily via the third input stream.
+				allowExpireTimeOverride: $ALLOW_EXPIRE_TIME_OVERRIDE;
+		}
+		
+		// Display the outgoing flight info tuple.
+		() as FlightOut = Custom(FlightInfoAfterTTLExpiry as FIATE) {
+			logic
+				state: {
+					mutable int32 _cnt = 0;
+				}
+
+				onTuple FIATE: {
+					appTrc(Trace.error, "OUT: FlightInfo tuple " +(rstring) ++ _cnt + "=" +(rstring) FIATE);
+				}
+		}
+		
+		// Display the TTL snapshot information.
+		() as TTLSnapshotResult = Custom(TTLSnapshot as TS) {
+			logic
+				onTuple TS: {
+					printStringLn("========================");
+					printStringLn(ctime(getTimestamp()) + " Current TTL snapshot is as shown below.");
+					mutable int32 cnt = 0;
+					
+					for (FlightType flight in TS.ttlSnapshotList) {
+						printStringLn("FlightInfo " + (rstring)++cnt + ": " + (rstring)flight);
+					}
+					printStringLn("========================");
+				}
+		}
+}

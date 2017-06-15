@@ -1,0 +1,71 @@
+<functionModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/function" 
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/function functionModel.xsd"> 
+  <functionSet>
+    <headerFileName>AgedMapWrapper.h</headerFileName>
+    <cppNamespaceName>com.ibm.streamsx.plumbing.agedmap</cppNamespaceName>
+    <functions> 
+
+      <function>
+        <description>Create an AgedMap and obtain a pointer</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful uint64 agedmapCreate(uint64 expirationTimeMs, T1 dummyKey, T2 dummyValue)]]></prototype>
+      </function>
+      
+      <function>
+        <description>Delete the pointed at AgedMap</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful uint64 agedmapRelease(uint64 handle, T1 dummyKey, T2 dummyValue)]]></prototype>
+      </function>     
+
+      <function>
+        <description>Puts an entry into the AgedMap with the current timestamp</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful void agedmapPut(uint64 handle, T1 key, T2 value, uint16 replayCount)]]></prototype>
+      </function>     
+
+      <function>
+        <description>Gets the value for the specified key from the AgedMap, if present.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful boolean agedmapGet(uint64 handle, T1 key, mutable T2 value)]]></prototype>
+      </function>    
+
+      <function>
+        <description>Erases the value for this key, if present. The value is written if the key was present prior to the operation. A boolean indicates if the key was present before the operation.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful boolean agedmapErase(uint64 handle, T1 key, mutable T2 value)]]></prototype>
+      </function>    
+
+      <function>
+        <description>Erases the value for this key, if present. A boolean indicates if the key was present before the operation.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful boolean agedmapErase(uint64 handle, T1 key, T2 dummyValue)]]></prototype>
+      </function>    
+
+      <function>
+        <description>Clears the AgedMap of all entries.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful void agedmapErase(uint64 handle, T1 dummyKey, T2 dummyValue)]]></prototype>
+      </function>  
+
+      <function>
+        <description>Causes the AgedMap to remove all expired entries from the put/get/erase operations and hold them seperately.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful void agedmapExpire(uint64 handle, T1 dummyKey, T2 dummyValue)]]></prototype>
+      </function> 
+
+      <function>
+        <description>Causes the AgedMap to renew all expired entries from the put/get/erase operations and copy them into an internal list that be iterated by agedmapGetExpiredEntry().</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful void agedmapRenew(uint64 handle, mutable uint64 firstUnexpiredTimestamp, T1 dummyKey, T2 dummyValue)]]></prototype>
+      </function> 
+
+      <function>
+        <description>Gets the first expired entry from the list that was populated by the agedmapExpire call. If there was an entry in the expired list, the function will return true. If a true return value is encountered the key and value for the entry will have been placed in the referenced variables.</description>
+        <prototype><![CDATA[<any T1, any T2> public stateful boolean agedmapGetExpiredEntry(uint64 handle, mutable T1 key, mutable T2 value, mutable uint16 replayCount)]]></prototype>
+      </function> 
+
+    </functions> 
+    <dependencies>
+       <library>
+          <cmn:description/>
+           <cmn:managedLibrary>
+              <cmn:includePath>../../impl/include</cmn:includePath>
+           </cmn:managedLibrary>
+       </library>
+    </dependencies>
+  </functionSet> 
+</functionModel> 

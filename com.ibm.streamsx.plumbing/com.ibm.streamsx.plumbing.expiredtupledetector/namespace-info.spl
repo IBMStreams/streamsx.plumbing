@@ -1,0 +1,12 @@
+/*
+*******************************************************************************
+* Copyright (C) 2017, International Business Machines Corporation. 
+* All Rights Reserved. *
+*******************************************************************************
+*/
+
+/**
+ * Hold the incoming tuples for a specified time before sending them out.
+ */
+
+namespace com.ibm.streamsx.plumbing.expiredtupledetector;

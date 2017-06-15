@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<operatorModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" 
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+    <context>
+      <description>The ExpiredTupleDetector operator can hold tuples for a given expiration time limit, detect their expiry time later and send them out. </description>
+      <libraryDependencies>      
+         <library>
+          <cmn:description/>
+           <cmn:managedLibrary>
+              <cmn:includePath>../impl/include</cmn:includePath>
+           </cmn:managedLibrary>
+         </library>
+      </libraryDependencies>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+    </context>  
+    
+    <parameters>
+      <allowAny>false</allowAny>
+      <parameter>
+      	<name>key</name>
+      	<description>This mandatory parameter must point to an attribute in the incoming tuple that will be used as a key.</description>
+      	<optional>false</optional>
+      	<rewriteAllowed>true</rewriteAllowed>
+      	<expressionMode>Attribute</expressionMode>
+      	<cardinality>1</cardinality>
+      </parameter>
+      
+      <parameter>
+        <name>expireTime</name>
+        <description>This mandatory parameter with type uint64 specifies the expire time limit in number of milli-seconds.</description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>uint64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+      
+      <parameter>
+        <name>allowExpireTimeOverride</name>
+        <description>This mandatory parameter with type boolean specifies whether the user is allowed to override the expire time value in the middle of operation.</description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>boolean</type>
+        <cardinality>1</cardinality>
+      </parameter>
+    </parameters>
+    <inputPorts>
+      <inputPortSet>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>4</cardinality>
+        <optional>false</optional>
+      </inputPortSet> 
+      <inputPortSet>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>true</optional>
+      </inputPortSet> 
+    </inputPorts>
+    <outputPorts>
+      <outputPortSet>
+        <expressionMode>Expression</expressionMode> 
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Free</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </outputPortSet>          
+      <outputPortSet>
+        <expressionMode>Expression</expressionMode> 
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Free</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>true</optional>
+      </outputPortSet>          
+    </outputPorts>
+  </cppOperatorModel>
+</operatorModel>
