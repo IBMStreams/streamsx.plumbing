@@ -1,0 +1,36 @@
+/*
+# Licensed Materials - Property of IBM
+# Copyright IBM Corp. 2017
+*/
+
+#include <AgedMap.h>
+
+<%SPL::CodeGen::headerPrologue($model);%>
+
+class MY_OPERATOR : public MY_BASE_OPERATOR 
+{
+public:
+  // Constructor
+  MY_OPERATOR();
+
+  // Destructor
+  virtual ~MY_OPERATOR(); 
+
+  // Tuple processing for mutating ports
+  void process(const Tuple & tuple, uint32_t port);
+
+private:
+  // AgedMap for infight messages
+  typedef com::ibm::streamsx::plumbing::agedmap::AgedMap<SPL::rstring, IPort0Type> InflightTupleMap;
+  InflightTupleMap _inflightTupleMap;
+  // The earliest timestamp among unexpired messages
+  uint64_t _firstUnexpiredTimestamp;
+  // Expiration time limit in milli-seconds
+  uint64_t _expirationTimeLimit;
+  // Expiration time override allowed or not.
+  const bool _allowExpireTimeOverride;
+  // mutex lock
+  SPL::Mutex _mutex;
+}; 
+
+<%SPL::CodeGen::headerEpilogue($model);%>

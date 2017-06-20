@@ -1,0 +1,13 @@
+# FlightType = rstring flightId, rstring flightModel, rstring origin, rstring destination
+1,747,JFK,DFW
+2,757,LGA,AUS
+3,777,SFO,ATL
+4,701,CHI,MIA
+4,735,MIA,CHI
+5,111,EWR,MAA
+6,222,DEL,DET
+7,333,SEA,BOS
+2,757,LGA,AUS
+4,701,CHI,MIA
+7,333,SEA,BOS
+8,555,HPN,CLT
