@@ -25,6 +25,18 @@ Possible use cases where this operator can be used:
 3) Event notification to external consuming applications at a later time in the future.
 4) Design patterns requiring storing and forwarding of tuples after a preset delay.
       </description>
+      <metrics>
+        <metric>
+          <name>nWaitingForExpiration</name>
+          <description>The number of tuples currently being held in the memory of the `ExpiredTupleDetector` operator.</description>
+          <kind>Counter</kind>
+        </metric>
+        <metric>
+          <name>nCurrentExpireTime</name>
+          <description>Current expireTime setting being used by the `ExpiredTupleDetector` operator.</description>
+          <kind>Gauge</kind>
+        </metric>
+      </metrics>
       <libraryDependencies>      
          <library>
           <cmn:description/>

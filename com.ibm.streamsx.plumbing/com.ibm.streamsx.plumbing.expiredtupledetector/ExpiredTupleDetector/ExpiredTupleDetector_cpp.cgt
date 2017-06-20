@@ -89,6 +89,10 @@ MY_OPERATOR::MY_OPERATOR()
   : _inflightTupleMap((uint64_t)(<%=$expireTime%> * 1000.00)), _firstUnexpiredTimestamp(0), 
 	_expirationTimeLimit((uint64_t)(<%=$expireTime%> * 1000.00)), _allowExpireTimeOverride(<%=$allowExpireTimeOverride%>)
 {
+   // Get the custom metrics for this operator. They are already defined in the operator model XML file.
+   OperatorMetrics  & opm = getContext().getMetrics();
+   _numWaitingForExpiration = & opm.getCustomMetricByName("nWaitingForExpiration");
+   _currentExpireTime = & opm.getCustomMetricByName("nCurrentExpireTime");
 }
 
 // Destructor
@@ -120,6 +124,12 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
     else if (port == 1) {
         // Periodic timer tuple that will make us check for any tuples
         // that just got expired with their time to live within our inflight tuple map.
+
+        // We will first update the operator metrics during this timer cycle.
+        _numWaitingForExpiration->setValue(_inflightTupleMap.getNumberOfItemsBeingHeld());
+        // Current expiration time is maintained in milliseconds. Convert it to seconds for this metric update.
+        _currentExpireTime->setValue(_expirationTimeLimit/1000);
+        
         if (_allowExpireTimeOverride == true) {
             // Lock at the minimum scope
             SPL::AutoMutex autoMutex(_mutex);
