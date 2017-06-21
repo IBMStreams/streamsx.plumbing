@@ -312,6 +312,11 @@ namespace agedmap {
     	expirationTimeMs_ = expireTime;
     }
 
+    /// Get the number of items being held in our time ordered list.
+    size_t getNumberOfItemsBeingHeld() {
+       return(timeOrderedList_.size());
+    }
+
   private:
 
     uint64_t expirationTimeMs_;

@@ -6,7 +6,37 @@
   xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
   <cppOperatorModel>
     <context>
-      <description>The ExpiredTupleDetector operator can hold tuples for a given expiration time limit, detect their expiry time later and send them out. </description>
+      <description>
+Primary task of the ExpiredTupleDetector operator is to hold the tuples arriving on 
+port 0 in memory for a configured amount of seconds and then evict them when that
+configured time expires. Additionally, this operator will also allow the user to 
+arbitrarily change the expire time on the basis of per tuple or per group of tuples.
+It also provides a way for the user to delete an existing tuple being held in memory
+before its expiry time arrives. If the user wants to get a snapshot of all the tuples
+currently being held in memory, this operator provides a mechanism to do that as well.
+If a new tuple arrives with the same key on port0, then an earlier tuple with the same key 
+being held will be replaced with the newly arrived tuple and the count down for the
+expiry time will be started freshly.
+
+Possible use cases where this operator can be used:
+
+1) Aging out tuples based on application specific criteria.
+2) Response timeout detection and replaying data tuples to an external service.
+3) Event notification to external consuming applications at a later time in the future.
+4) Design patterns requiring storing and forwarding of tuples after a preset delay.
+      </description>
+      <metrics>
+        <metric>
+          <name>nWaitingForExpiration</name>
+          <description>The number of tuples currently being held in the memory of the `ExpiredTupleDetector` operator.</description>
+          <kind>Counter</kind>
+        </metric>
+        <metric>
+          <name>nCurrentExpireTime</name>
+          <description>Current expireTime setting being used by the `ExpiredTupleDetector` operator.</description>
+          <kind>Gauge</kind>
+        </metric>
+      </metrics>
       <libraryDependencies>      
          <library>
           <cmn:description/>
@@ -16,6 +46,17 @@
          </library>
       </libraryDependencies>
       <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <codeTemplates>
+        <codeTemplate name="ExpiredTupleDetector">
+          <description>Basic ExpiredTupleDetector template</description>
+          <template>(stream&lt;${eventStreamType}&gt; ${outputStream1};stream&lt;${ttlSnapshotType}&gt; ${outputStream2}) = ExpiredTupleDetector(${eventStream}; ${timerStream}; ${expireTimeOverrideStream}; ${deleteEventStream}; ${ttlSnapshotQueryStream}) {
+            param
+                key: ${keyAttribute};
+                expireTime: ${timeInSeconds};
+                allowExpireTimeOverride: ${overrideFlag};
+        }</template>
+        </codeTemplate>
+      </codeTemplates>      
     </context>  
     
     <parameters>
@@ -31,11 +72,11 @@
       
       <parameter>
         <name>expireTime</name>
-        <description>This mandatory parameter with type uint64 specifies the expire time limit in number of milli-seconds.</description>
+        <description>This mandatory parameter with type float64 specifies the expire time limit in number of seconds.</description>
         <optional>false</optional>
         <rewriteAllowed>true</rewriteAllowed>
         <expressionMode>AttributeFree</expressionMode>
-        <type>uint64</type>
+        <type>float64</type>
         <cardinality>1</cardinality>
       </parameter>
       
@@ -51,6 +92,27 @@
     </parameters>
     <inputPorts>
       <inputPortSet>
+        <description>
+First input port is where the regular data tuples arrive that need to be held in memory for a configured amount of time.
+
+Second input port is where the periodic timer signal that must be sent to this operator in order to perform the expired tuple detection and then send that tuple for downstream consumption.
+
+Third input port is used to override/change the expire time in the middle of the operation.
+Simply send a tuple to this port with a float64 attribute set to a new expireTime value.
+This input stream will be effective only when the operator parameter allowExpireTimeOverride is
+set to true. If it is set to false, any tuple received via this stream will be ignored.
+When the expire time is changed via this stream, any future data tuples sent into this
+operator will be made to expire after the newly overridden expire time.
+All the existing data tuples being held inside this operator will not be affected by
+the newly overridden expire time and they will expire at the time that was in effect before
+the expire time override happened.
+
+Fourth input port is used in situations where there is a need to delete 
+an existing data tuple that is being held inside this operator. Simply send a 
+tuple via this input stream with that tuple's first attribute 
+carrying a value needed to identify the data tuple to be deleted from 
+this operator's internal in-memory data structure.
+        </description>
         <tupleMutationAllowed>false</tupleMutationAllowed>
         <windowingMode>NonWindowed</windowingMode>
         <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
@@ -58,6 +120,13 @@
         <optional>false</optional>
       </inputPortSet> 
       <inputPortSet>
+        <description>
+Optional fifth input port lets this operator to be queried optionally to return a snapshot of its
+internal in-memory cache where the tuples are being held at a given point in time.
+Simply send any dummy tuple into this port as a snapshot query signal.
+This optional input port works in conjunction with the second optional output port of this operator as
+explained below.
+        </description>
         <tupleMutationAllowed>false</tupleMutationAllowed>
         <windowingMode>NonWindowed</windowingMode>
         <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
@@ -67,6 +136,9 @@
     </inputPorts>
     <outputPorts>
       <outputPortSet>
+        <description>
+First output port will carry the original data tuples that were previously held inside this operator and then got evicted after a preset time expiry.
+        </description>
         <expressionMode>Expression</expressionMode> 
         <autoAssignment>false</autoAssignment>
         <completeAssignment>false</completeAssignment>
@@ -77,6 +149,13 @@
         <optional>false</optional>
       </outputPortSet>          
       <outputPortSet>
+        <description>
+Second (optional) output port will carry the TTL snapshot tuples when a query is made via 
+the optional fifth input port as explained above. The second output port should have a
+single attribute as shown here:
+
+list&lt;YOUR_EVENT_TUPLE_TYPE&gt; ttlSnapshotList (e-g): TTLSnapshotType = list&lt;FlightType&gt; ttlSnapshotList;
+        </description>
         <expressionMode>Expression</expressionMode> 
         <autoAssignment>false</autoAssignment>
         <completeAssignment>false</completeAssignment>

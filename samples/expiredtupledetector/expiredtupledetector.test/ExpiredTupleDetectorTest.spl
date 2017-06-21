@@ -6,6 +6,17 @@ use com.ibm.streamsx.plumbing.expiredtupledetector::*;
 /*
 Code contributions were made by three of the Streams team members.
 
+Primary task of the ExpiredTupleDetector operator is to hold the tuples arriving on 
+port 0 in memory for a configured amount of seconds and then evict them when that
+configured time expires. Additionally, this operator will also allow the user to 
+arbitrarily change the expire time on the basis of per tuple or per group of tuples.
+It also provides a way for the user to delete an existing tuple being held in memory
+before its expiry time arrives. If the user wants to get a snapshot of all the tuples
+currently being held in memory, this operator provides a mechanism to do that as well.
+If a new tuple arrives with the same key, then an earlier tuple with the same key 
+being held will be replaced with the newly arrived tuple and the count down for the
+expiry time will be started freshly.
+
 Possible use cases where the ExpiredTupleDetector operator can be used:
 
 1) Aging out tuples based on application specific criteria.
@@ -16,8 +27,8 @@ Possible use cases where the ExpiredTupleDetector operator can be used:
 
 composite ExpiredTupleDetectorTest {
 	param
-		// Default TTL expiry time is 1 minute represented in milliseconds (1 * 60 * 1000)
-		expression<uint64> $TTL_EXPIRY_TIME : (uint64)getSubmissionTimeValue("TTLExpiryTime", "60000");
+		// Default TTL expiry time is 1 minute represented in seconds (1 * 60)
+		expression<float64> $TTL_EXPIRY_TIME : (float64)getSubmissionTimeValue("TTLExpiryTime", "60.00");
 		// User preference to configure the ExipredTupleDetector operator to allow the
 		// overriding of the expire time value or not.
 		expression<boolean> $ALLOW_EXPIRE_TIME_OVERRIDE : (boolean)getSubmissionTimeValue("AllowExpireTimeOverride", "false");
@@ -27,7 +38,7 @@ composite ExpiredTupleDetectorTest {
 		// TTL snapshot type must have a single attribute that is a 
 		// list of your event tuple type. 
 		TTLSnapshotType = list<FlightType> ttlSnapshotList;
-		ExpireTimeOverrideType = uint64 expireTime;
+		ExpireTimeOverrideType = float64 expireTime;
 		DeleteTupleType = rstring flightId;
 		
 	graph
@@ -79,8 +90,8 @@ composite ExpiredTupleDetectorTest {
 				state: {
 					mutable int32 _cnt = 0;
 					mutable ExpireTimeOverrideType _oTuple2 = {};
-					mutable uint64 _expireTime = 0ul;
-					list<uint64> _expireTimeList = [90000ul, 120000ul, 60000ul, 180000ul];
+					mutable float64 _expireTime = 0.0;
+					list<float64> _expireTimeList = [90.00, 120.00, 60.00, 180.00];
 				}
 
 				onTuple FI: {
@@ -99,7 +110,7 @@ composite ExpiredTupleDetectorTest {
 					}
 					
 					appTrc(Trace.error, "IN: FlightInfo tuple " + (rstring)++_cnt + 
-						" with an expire time of " + (rstring)_expireTime + " msec=" + (rstring) FI);
+						" with an expire time of " + (rstring)_expireTime + " second(s)=" + (rstring) FI);
 					submit(FI, FIN);
 					
 					// We will randomly delete the 12th data tuple we submitted to be expired at a later time.
@@ -127,6 +138,7 @@ composite ExpiredTupleDetectorTest {
 		//    to perform the expired tuple detection and then send that tuple out of this operator.
 		//
 		// 3) Third input stream is used to override/change the expire time in the middle of the operation.
+                //    Simply send a tuple to this port with a float64 attribute set to a new expireTime value in seconds.
 		//    This stream will be effective only when the operator parameter allowExpireTimeOverride is
 		//    set to true. If it is set to false, any tuple received via this stream will be ignored.
 		//    When the expire time is changed via this stream, any future data tuples sent into this
@@ -144,6 +156,7 @@ composite ExpiredTupleDetectorTest {
 		// 5) This operator can also be optionally queried to return a snapshot of its
 		// internal cache at a given point in time. This can be done by having an optional
 		// fifth input stream and by having an optional second output stream as shown below.
+                // Simply send any dummy tuple into this port as a snapshot query signal.
 		//
 		// Output streams: 
 		// a) First output stream will carry the original data tuples.

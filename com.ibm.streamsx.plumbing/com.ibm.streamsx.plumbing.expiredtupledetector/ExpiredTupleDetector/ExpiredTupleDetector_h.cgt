@@ -31,6 +31,9 @@ private:
   const bool _allowExpireTimeOverride;
   // mutex lock
   SPL::Mutex _mutex;
+  // Two metrics for this operator.
+  Metric *_numWaitingForExpiration;
+  Metric *_currentExpireTime;
 }; 
 
 <%SPL::CodeGen::headerEpilogue($model);%>
