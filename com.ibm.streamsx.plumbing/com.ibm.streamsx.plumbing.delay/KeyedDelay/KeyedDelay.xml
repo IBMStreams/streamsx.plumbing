@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<operatorModel
+  xmlns="http://www.ibm.com/xmlns/prod/streams/spl/operator" 
+  xmlns:cmn="http://www.ibm.com/xmlns/prod/streams/spl/common" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
+  <cppOperatorModel>
+    <context>
+      <description>
+The KeyedDelay operator is used to delay the incoming tuples for a configured 
+amount of seconds before sending them out for downstream processing.
+
+Such incoming tuples requiring a delayed send must arrive on the first input port of
+this operator. Those tuples are stored inside this operator's memory based on a specified
+key that is present in one of the tuple attributes. Additionally, this operator will also 
+allow the user to arbitrarily change the delay time on the basis of either per tuple or 
+per group of tuples. It also provides a way for the user to delete an existing tuple being 
+held in memory before its full delay time is realized. If the user wants to get a snapshot of all the tuples
+currently being delayed, this operator provides a mechanism to do that as well.
+When a new data tuple arrives on the first input port, then an earlier tuple with the same key 
+already being held/delayed in memory will be replaced with the newly arrived tuple and the count down for the
+delay time will be started freshly. When the delay time is set to 0, then the incoming data tuples will
+be sent out immediately without incurring any delay.
+
+Possible use cases where this operator can be used:
+
+1) Aging out tuples based on application specific criteria.
+
+2) Response timeout detection and replaying data tuples to an external service.
+
+3) Event notification to external consuming applications at a later time.
+
+4) Design patterns requiring storing and forwarding of tuples after a preset delay.
+      </description>
+      <metrics>
+        <metric>
+          <name>nTuplesDelayed</name>
+          <description>The number of data tuples currently getting delayed by being held in the memory of the `KeyedDelay` operator.</description>
+          <kind>Counter</kind>
+        </metric>
+        <metric>
+          <name>nCurrentDelay</name>
+          <description>Current delay time setting being used for delaying the incoming data tuples inside the `KeyedDelay` operator.</description>
+          <kind>Gauge</kind>
+        </metric>
+      </metrics>
+      <libraryDependencies>      
+         <library>
+          <cmn:description/>
+           <cmn:managedLibrary>
+              <cmn:includePath>../impl/include</cmn:includePath>
+           </cmn:managedLibrary>
+         </library>
+      </libraryDependencies>
+      <providesSingleThreadedContext>Never</providesSingleThreadedContext>
+      <codeTemplates>
+        <codeTemplate name="KeyedDelay">
+          <description>Basic KeyedDelay template</description>
+          <template>(stream&lt;${eventStreamType}&gt; ${outputStream1};stream&lt;${eventStreamType}&gt; ${outputStream2}) = KeyedDelay(${eventStream}; ${timerStream}; ${delayOverrideStream}; ${deleteEventStream}; ${delayedTuplesSnapshotQueryStream}) {
+            param
+                key: ${keyAttribute};
+                delay: ${timeInSeconds};
+                allowDelayTimeOverride: ${overrideFlag};
+        }</template>
+        </codeTemplate>
+      </codeTemplates>      
+    </context>  
+    
+    <parameters>
+      <allowAny>false</allowAny>
+      <parameter>
+      	<name>key</name>
+      	<description>This mandatory parameter must point to an attribute in the incoming data tuples that will be used as a key for holding and delaying the tuples inside this operator's memory.</description>
+      	<optional>false</optional>
+      	<rewriteAllowed>true</rewriteAllowed>
+      	<expressionMode>Attribute</expressionMode>
+      	<cardinality>1</cardinality>
+      </parameter>
+      
+      <parameter>
+        <name>delay</name>
+        <description>This mandatory parameter with type float64 specifies the delay time in number of seconds.</description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>float64</type>
+        <cardinality>1</cardinality>
+      </parameter>
+      
+      <parameter>
+        <name>allowDelayOverride</name>
+        <description>This mandatory parameter with type boolean specifies whether the user is allowed to override the delay time value in the middle of operation.</description>
+        <optional>false</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>boolean</type>
+        <cardinality>1</cardinality>
+      </parameter>
+    </parameters>
+    <inputPorts>
+      <inputPortSet>
+        <description>
+First input port is where the regular data tuples arrive that need to be delayed for a configured amount of time.
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet> 
+      <inputPortSet>
+        <description>
+Second input port is where the periodic timer signal that must be sent to this operator in order to check for the delay completion time and then send the fully delayed tuples for downstream consumption.
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet> 
+      <inputPortSet>
+        <description>
+Third input port is used to override/change the delay time in the middle of the operation.
+Simply send a tuple to this port with a float64 attribute named `delay` set to a new delay time value.
+This input stream will be effective only when the operator parameter allowDelayOverride is
+set to true. If it is set to false, any tuple received via this stream will be ignored.
+When the delay time is changed via this stream, any future data tuples sent into this
+operator will be delayed for the duration of the newly overridden delay time.
+All the existing data tuples being held inside this operator will not be affected by
+the newly overridden delay time and they will be delayed for the duration that was in effect before
+the override happened.
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet> 
+      <inputPortSet>
+        <description>
+Fourth input port is used in situations where there is a need to delete 
+an existing data tuple that is being held/delayed inside this operator's memory. Simply send a 
+tuple via this input stream with an attribute (named as the value of this operator's key parameter) 
+carrying an identifier required to locate the data tuple to be deleted from 
+this operator's internal in-memory data structure.
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </inputPortSet> 
+      <inputPortSet>
+        <description>
+Fifth input port is optional and it lets this operator to be queried to return a snapshot of its
+internal in-memory cache where the tuples are being held and delayed at a given point in time.
+Simply send any dummy tuple into this port as a snapshot query signal.
+This optional input port works in conjunction with the second optional output port of this operator as
+explained below.
+        </description>
+        <tupleMutationAllowed>false</tupleMutationAllowed>
+        <windowingMode>NonWindowed</windowingMode>
+        <windowPunctuationInputMode>Oblivious</windowPunctuationInputMode>
+        <cardinality>1</cardinality>
+        <optional>true</optional>
+      </inputPortSet> 
+    </inputPorts>
+    <outputPorts>
+      <outputPortSet>
+        <description>
+First output port will carry the original data tuples that were held inside this operator and then got evicted after a preset time delay.
+        </description>
+        <expressionMode>Expression</expressionMode> 
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Free</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>false</optional>
+      </outputPortSet>          
+      <outputPortSet>
+        <description>
+Second (optional) output port will carry the snapshot of the tuples that are being held/delayed inside
+this operator when a query is made via the optional fifth input port as explained above. 
+This output port should use the same stream schema as the first output port.
+        </description>
+        <expressionMode>Expression</expressionMode> 
+        <autoAssignment>false</autoAssignment>
+        <completeAssignment>false</completeAssignment>
+        <rewriteAllowed>true</rewriteAllowed>
+        <windowPunctuationOutputMode>Free</windowPunctuationOutputMode>
+        <tupleMutationAllowed>true</tupleMutationAllowed>
+        <cardinality>1</cardinality>
+        <optional>true</optional>
+      </outputPortSet>          
+    </outputPorts>
+  </cppOperatorModel>
+</operatorModel>
