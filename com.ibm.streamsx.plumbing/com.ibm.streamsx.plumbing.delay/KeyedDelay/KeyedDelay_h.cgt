@@ -23,17 +23,17 @@ private:
   // AgedMap for infight messages
   typedef com::ibm::streamsx::plumbing::agedmap::AgedMap<SPL::rstring, IPort0Type> InflightTupleMap;
   InflightTupleMap _inflightTupleMap;
-  // The earliest timestamp among unexpired messages
-  uint64_t _firstUnexpiredTimestamp;
-  // Expiration time limit in milli-seconds
-  uint64_t _expirationTimeLimit;
-  // Expiration time override allowed or not.
-  const bool _allowExpireTimeOverride;
+  // The earliest timestamp among messages that are being delayed
+  uint64_t _earliestTimestampOfDelayedMessages;
+  // Delay time limit in milli-seconds
+  uint64_t _delay;
+  // Delay time override allowed or not.
+  const bool _allowDelayOverride;
   // mutex lock
   SPL::Mutex _mutex;
   // Two metrics for this operator.
-  Metric *_numWaitingForExpiration;
-  Metric *_currentExpireTime;
+  Metric *_numTuplesDelayed;
+  Metric *_currentDelay;
 }; 
 
 <%SPL::CodeGen::headerEpilogue($model);%>

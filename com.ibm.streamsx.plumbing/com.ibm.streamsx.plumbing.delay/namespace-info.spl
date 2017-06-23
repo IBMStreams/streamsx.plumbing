@@ -9,4 +9,4 @@
  * Hold the incoming tuples for a specified time before sending them out.
  */
 
-namespace com.ibm.streamsx.plumbing.expiredtupledetector;
+namespace com.ibm.streamsx.plumbing.delay;
