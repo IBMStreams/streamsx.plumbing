@@ -111,19 +111,26 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
         // This data tuple is sent by the upstream operator.
         const IPort0Type & ituple = static_cast<const IPort0Type&>(tuple);
     	if (_delay == 0) {
-        	// If the current delay time is set to 0, then there is no need to insert this
-        	// tuple into our in-flight tuple map. Let us send out this tuple right away.
-    		IPort0Type & otuple = const_cast<IPort0Type&>(ituple);
-    		submit(otuple, 0);
+           // If the current delay time is set to 0, then there is no need to insert this
+           // tuple into our in-flight tuple map. Let us send out this tuple right away.
+           {
+              // If it is already present in our in-memory map, remove it now.
+              // Lock at the minimum scope
+              SPL::AutoMutex autoMutex(_mutex);                   
+              _inflightTupleMap.eraseIfExists(ituple.get_<%=$key%>());
+           }
+
+           IPort0Type & otuple = const_cast<IPort0Type&>(ituple);
+           submit(otuple, 0);
     	} else {
-            // We will simply insert it into the in-flight tuple map that is periodically
-            // scanned for detecting any time-out/delay-completion conditions of this tuple.
-            // Lock at the minimum scope
-            SPL::AutoMutex autoMutex(_mutex);
-            // Before adding this tuple to the map, ensure it is not already there with the same key.
-            // If it is already present, remove it before adding the new one.
-            _inflightTupleMap.eraseIfExists(ituple.get_<%=$key%>());
-            _inflightTupleMap.put(ituple.get_<%=$key%>(), ituple, 0);
+           // We will simply insert it into the in-flight tuple map that is periodically
+           // scanned for detecting any time-out/delay-completion conditions of this tuple.
+           // Lock at the minimum scope
+           SPL::AutoMutex autoMutex(_mutex);
+           // Before adding this tuple to the map, ensure it is not already there with the same key.
+           // If it is already present, remove it before adding the new one.
+           _inflightTupleMap.eraseIfExists(ituple.get_<%=$key%>());
+           _inflightTupleMap.put(ituple.get_<%=$key%>(), ituple, 0);
         }
     }
     else if (port == 1) {
