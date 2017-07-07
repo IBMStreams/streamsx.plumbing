@@ -5,6 +5,39 @@
 
 #include <AgedMap.h>
 
+<%
+    my $keyAttribute = $model->getParameterByName("key");
+    $keyAttribute = $keyAttribute->getValueAt(0)->getSPLExpression();
+    # The $keyAttribute may have the InputStreamName.attribute (e-g: FlightIn.flightId)
+    # We will need only the attribute name without the input stream name.
+    my @keyFields = split /\./, $keyAttribute;
+
+    # Check the field array size.
+    if ($#keyFields > 0) { 
+       $keyAttribute = $keyFields[1];
+    } else {
+       $keyAttribute = $keyFields[0];
+    }
+    
+    # Find out the SPL type of the key attribute in the very first input stream coming into this operator.
+    my $firstInputPort = $model->getInputPortAt(0);
+    my $attributeCntForFirstInputPort = $firstInputPort->getNumberOfAttributes();
+
+    # Let us loop through the attributes and get the SPL type of the key attribute.
+    my $keyAttributeSplType = "";
+
+    for (my $i=0; $i<$attributeCntForFirstInputPort; $i++) {
+        if ($firstInputPort->getAttributeAt($i)->getName() eq $keyAttribute) {
+           $keyAttributeSplType = $firstInputPort->getAttributeAt($i)->getSPLType();
+           last;
+        }
+    }
+
+    if ($keyAttributeSplType eq "") {
+       SPL::CodeGen::exitln("Unable to get the SPL type of the key attribute named " . $keyAttribute . ".\n");
+    }
+%>
+
 <%SPL::CodeGen::headerPrologue($model);%>
 
 class MY_OPERATOR : public MY_BASE_OPERATOR 
@@ -21,7 +54,7 @@ public:
 
 private:
   // AgedMap for infight messages
-  typedef com::ibm::streamsx::plumbing::agedmap::AgedMap<SPL::rstring, IPort0Type> InflightTupleMap;
+  typedef com::ibm::streamsx::plumbing::agedmap::AgedMap<<%=$keyAttributeSplType%>, IPort0Type> InflightTupleMap;
   InflightTupleMap _inflightTupleMap;
   // The earliest timestamp among messages that are being delayed
   uint64_t _earliestTimestampOfDelayedMessages;

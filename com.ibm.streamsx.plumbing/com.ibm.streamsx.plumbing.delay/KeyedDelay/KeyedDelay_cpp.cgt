@@ -35,7 +35,32 @@ Possible use cases where this operator can be used:
     # The $key may have the InputStreamName.attribute (e-g: FlightIn.flightId)
     # We will need only the attribute name without the input stream name.
     my @fields = split /\./, $key;
-    $key = $fields[1];
+
+    # Check the field array size.
+    if ($#fields > 0) { 
+       $key = $fields[1];
+    } else {
+       $key = $fields[0];
+    }
+
+    # Find out the SPL type of the key attribute in the very first input stream coming into this operator.
+    my $firstInputPort = $model->getInputPortAt(0);
+    my $attributeCntForFirstInputPort = $firstInputPort->getNumberOfAttributes();
+
+    # Let us loop through the attributes and get the SPL type of the key attribute.
+    my $keyAttributeSplType = "";
+
+    for (my $i=0; $i<$attributeCntForFirstInputPort; $i++) {
+        if ($firstInputPort->getAttributeAt($i)->getName() eq $key) {
+           $keyAttributeSplType = $firstInputPort->getAttributeAt($i)->getSPLType();
+           last;
+        }
+    }
+
+    if ($keyAttributeSplType eq "") {
+       SPL::CodeGen::exitln("Unable to get the SPL type of the key attribute named " . $key . ".\n");
+    }
+
     my $delay = $model->getParameterByName("delay");
     $delay = $delay->getValueAt(0)->getCppExpression();
     my $allowDelayOverride = $model->getParameterByName("allowDelayOverride");
@@ -181,7 +206,7 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
         // one thread doing this iteration, this is thread-safe.
         // Ignore the third argument below (replayCount). That is something carried over from
         // the legacy code of the customer project where this logic was originally implemented.
-        SPL::rstring key = "";
+        <%=$keyAttributeSplType%> key;
         IPort0Type otuple;
         SPL::uint16 replayCount = 0;
         while (_inflightTupleMap.getExpiredEntry(key, otuple, replayCount)) {
