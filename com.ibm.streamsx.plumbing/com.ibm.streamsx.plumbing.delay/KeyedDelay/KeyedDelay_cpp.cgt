@@ -65,6 +65,15 @@ Possible use cases where this operator can be used:
     $delay = $delay->getValueAt(0)->getCppExpression();
     my $allowDelayOverride = $model->getParameterByName("allowDelayOverride");
     $allowDelayOverride = $allowDelayOverride->getValueAt(0)->getCppExpression();
+    my $shutdownSnapshotFileName = $model->getParameterByName("shutdownSnapshotFileName");
+   
+    if ($shutdownSnapshotFileName) {
+       $shutdownSnapshotFileName = $shutdownSnapshotFileName->getValueAt(0)->getCppExpression();
+    } else {
+       # This is an optional parameter. User may not have specified it in the SPL operator invocation code.
+       $shutdownSnapshotFileName = "";
+    }
+
     my $numberOfOutputPorts = $model->getNumberOfOutputPorts();
     
     # Third input stream is used to change/override the dealy time value.
@@ -116,7 +125,8 @@ Possible use cases where this operator can be used:
 // Convert the delay time which is in float64 seconds to uint64 milliseconds as expected by the AgedMap class.
 MY_OPERATOR::MY_OPERATOR()
   : _inflightTupleMap((uint64_t)(<%=$delay%> * 1000.00)), _earliestTimestampOfDelayedMessages(0), 
-	_delay((uint64_t)(<%=$delay%> * 1000.00)), _allowDelayOverride(<%=$allowDelayOverride%>)
+	_delay((uint64_t)(<%=$delay%> * 1000.00)), _allowDelayOverride(<%=$allowDelayOverride%>),
+        _shutdownSnapshotFileName(<%=$shutdownSnapshotFileName%>)
 {
    // They are already defined in the operator model XML file. Hence, there is no need to explicitly create them here.
    // Simply get the custom metrics already defined for this operator. 
@@ -283,5 +293,67 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
         <%}%>
     }
 }
+
+// Notify pending shutdown
+void MY_OPERATOR::prepareToShutdown() 
+{
+    // This is an asynchronous call
+    // This operator is going to be shudown shortly.
+    // If the user of this operator wants us to write the data tuples held in memory to a
+    // user specified file, let us do that now. Such data tuples written to that file
+    // can be reprocessed later either when the user application is started next time or
+    // by a completely different application.
+    // User application code can have the required logic to read the contents of the file
+    // we will write here and reprocess the data tuples according to the needs of the application.
+    // Let us fIrst check if the user has specified a file name.
+    if (_shutdownSnapshotFileName == "") {
+       // User didn't provide a file name. Hence, he/she has no interest in
+       // writing the data tuples held in memory at the time of the operator shutdown.
+       return;
+    }
+
+    bool result = true;
+    SPL::list<IPort0Type> timeOrderedListOfItems;
+
+    {
+       // Lock at the minimum scope.
+       SPL::AutoMutex autoMutex(_mutex);
+       // It is assumed that the second output stream has the same schema as the
+       // first input stream as well as the first output stream i.e. schema of the data tuple being delayed.
+       result = _inflightTupleMap.getTimeOrderedListOfItems(timeOrderedListOfItems);
+       // Release the lock by closing the scope here.
+    }
+
+    if (result == false) {
+       return;
+    }
+
+    // Create the file.
+    ofstream outFile;
+    outFile.open(_shutdownSnapshotFileName.c_str(), ios::out | ios::trunc);
+    
+    if (outFile.is_open() == false) {
+       // File creation error. Nothing much can be done at this point.
+       return;
+    }
+
+    outFile << "# This file was created by the IBM Streams com.streamsx.plumbing.delay.KeyedDelay operator.\n";
+    outFile << "# It contains the snapshot of the data tuples that were held in this operator's memory at the time when this operator was shutdown.\n";
+    outFile << "# This file can be used to reprocess such data tuples during the next application run.\n";
+
+    // If we have a snapshot of the active tuples that are getting delayed, write all of them to
+    // a file specified by the user..
+    std::vector<IPort0Type>::iterator iter = timeOrderedListOfItems.begin();
+    while(iter != timeOrderedListOfItems.end()) {
+       outFile << *iter;
+       outFile << "\n";
+       // std::cout << *iter << std::endl;
+       ++iter;
+    }
+
+    // Close the file.
+    outFile.close();
+}
+
 
 <%SPL::CodeGen::implementationEpilogue($model);%>
