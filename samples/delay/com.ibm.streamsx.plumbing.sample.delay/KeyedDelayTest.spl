@@ -186,6 +186,11 @@ composite KeyedDelayTest {
 				// optimized logic if the user wants to use the same delay time for the full life of this
 				// operator versus letting the user override the delay time arbitrarily via the third input stream.
 				allowDelayOverride: $ALLOW_DELAY_OVERRIDE;
+                                // An optional parameter below can be used to specify a file name into which
+                                // this operator will write any data tuples held in its memory at the time of
+                                // operator shutdown. That file can be read later by the application code
+                                // to reprocess those data tuples during the next application run.
+                                shutdownSnapshotFileName: "/tmp/keyed-delay-data-tuples.text_file";
 		}
 		
 		// Display the outgoing flight info tuple.

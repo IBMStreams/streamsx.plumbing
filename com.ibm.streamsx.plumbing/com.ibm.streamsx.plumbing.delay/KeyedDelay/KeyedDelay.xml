@@ -96,6 +96,16 @@ Possible use cases where this operator can be used:
         <type>boolean</type>
         <cardinality>1</cardinality>
       </parameter>
+
+      <parameter>
+        <name>shutdownSnapshotFileName</name>
+        <description>This optional parameter specifies a filename to which the data tuples held in memory should be written when this operator is being shutdown. That file can be read later to reprocess the data tuples during the subsequent runs of this operator.</description>
+        <optional>true</optional>
+        <rewriteAllowed>true</rewriteAllowed>
+        <expressionMode>AttributeFree</expressionMode>
+        <type>rstring</type>
+        <cardinality>1</cardinality>
+      </parameter>
     </parameters>
     <inputPorts>
       <inputPortSet>
