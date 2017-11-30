@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -59,14 +60,14 @@ public class LeadershipElection extends AbstractOperator implements Controllable
             + "At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. "
             + "Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service."
             + "\\n"
-            + "When the `path` parameter is not set the leadersip election is between operator invocations with the same `group`"
+            + "When the `path` parameter is not set the leadership election is between operator invocations with the same `group`"
             + " in a single job. In this case:\\n"
             + " * the application requires an invocation of the `JobControlPlane` operator.\\n"
             + " * Invocations of `LeadershipElection` within the same `group` must be exlocated into different PEs.\\n"
             + "The Zookeeper root znode for the recipe is a sub-node `group` within job's storage node "
             + "(`com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()`).\\n"
             + "\\n"            
-            + "When the `path` parameter is set the leadersip election is between operator invocations with the same `path`"
+            + "When the `path` parameter is set the leadership election is between operator invocations with the same `path`"
             + " and `group` in a single domain, typically between operator invocations in different jobs in an instance."
             + " In this case:\\n"
             + " * Any invocations of `LeadershipElection` within the same `path` and `group` and job must be exlocated into different PEs.\\n"
@@ -196,7 +197,7 @@ public class LeadershipElection extends AbstractOperator implements Controllable
         return id;
     }
     
-    @Parameter(optional=true, description = "Znode path for leaderhip election across multiple jobs, must start with a `/` to be used across jobs "
+    @Parameter(optional=true, description = "Znode path for leadership election across multiple jobs, must start with a `/` to be used across jobs "
             + "(or an empty string to default to within a job). Optional, when not set (or set to the empty string) the path "
             + "used is specific to the job and leadership election is across operator invocations within a single jobs.")
     public void setPath(String path) {
@@ -231,6 +232,9 @@ public class LeadershipElection extends AbstractOperator implements Controllable
      * @param leader True if this operator is the leader, false otherwise.
      */
     private void submitTuple(boolean leader) {
+
+        if (trace.isLoggable(Level.FINE))
+            trace.fine("About to submit tuple: leader=" + leader);
         
         StreamingOutput<OutputTuple> out = getOutput(0);
         Map<String,Object> attributes = new HashMap<>(groupId);
@@ -239,6 +243,8 @@ public class LeadershipElection extends AbstractOperator implements Controllable
 
         try {
             out.submitMapAsTuple(attributes);
+            if (trace.isLoggable(Level.FINE))
+                trace.fine("Submitted tuple: leader=" + leader);
         } catch (Exception e) {
             try {
                 relinquishLeadership(CloseMode.SILENT);
