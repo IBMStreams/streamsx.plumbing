@@ -51,7 +51,7 @@ import com.ibm.streams.operator.types.Timestamp;
 @OutputPortSet(cardinality=1, description="Contains tuples representing leadership status changes. The stream schema"
         + " can be [LeaderStatus] or any arbitrary schema. Any attribute matching an attribute in [LeaderStatus] will"
         + "be set to a valid value otherwise it will be set to its default value.")
-@Libraries({"opt/apache-curator-2.7.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
+@Libraries({"opt/apache-curator/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
 @SharedLoader
 public class LeadershipElection extends AbstractOperator implements Controllable {
 
