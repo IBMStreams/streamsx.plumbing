@@ -1,6 +1,6 @@
 /*
 # Licensed Materials - Property of IBM
-# Copyright IBM Corp. 2017
+# Copyright IBM Corp. 2017, 2019
 */
 
 /*
@@ -19,7 +19,15 @@ currently being delayed, this operator provides a mechanism to do that as well.
 When a new data tuple arrives on the first input port, then an earlier tuple with the same key 
 already being held/delayed in memory will be replaced with the newly arrived tuple and the count down for the
 delay time will be started freshly. When the delay time is set to 0, then the incoming data tuples will
-be sent out immediately without incurring any delay.
+be sent out immediately without incurring any delay. When the operator parameter allowDelayOverride is 
+set to true, then the delay override can be done using one of the two ways as explained below.
+First way is to send a separate delay override tuple into the third input port of this operator with a new delay value. 
+Second way is to have an attribute in the regular data tuple going into the first input port of this operator to 
+carry the delay value required for that particular tuple. If the user wants to use the second way, it is necessary to 
+specify the delay attribute name via the delayOverrideAttribute parameter. It is recommended to use one of these two 
+delay override ways during the life of an application to follow a consistent approach instead of using both ways.
+First way is ideal if the delay override is needed periodically after a batch of incoming data tuples.
+Second way is ideal if the delay override is needed for every incoming data tuple.
 
 Possible use cases where this operator can be used:
 
@@ -58,13 +66,48 @@ Possible use cases where this operator can be used:
     }
 
     if ($keyAttributeSplType eq "") {
-       SPL::CodeGen::exitln("Unable to get the SPL type of the key attribute named " . $key . ".\n");
+       SPL::CodeGen::exitln("KeyedDelay_cpp.cgt: [key parameter error] Unable to get the SPL type of the key attribute named " . $key . ".\n");
     }
 
     my $delay = $model->getParameterByName("delay");
     $delay = $delay->getValueAt(0)->getCppExpression();
     my $allowDelayOverride = $model->getParameterByName("allowDelayOverride");
     $allowDelayOverride = $allowDelayOverride->getValueAt(0)->getCppExpression();
+
+    # This is an optional parameter.
+    my $delayOverrideAttribute = $model->getParameterByName("delayOverrideAttribute");
+    $delayOverrideAttribute = $delayOverrideAttribute ? $delayOverrideAttribute->getValueAt(0)->getSPLExpression() : "";
+
+    if ($delayOverrideAttribute ne "") {
+       # The $delayOverrideAttribute may have the InputStreamName.attribute (e-g: FlightIn.delay)
+       # We will need only the attribute name without the input stream name.
+       my @fields2 = split /\./, $delayOverrideAttribute;
+
+       # Check the field array size.
+       if ($#fields2 > 0) { 
+          $delayOverrideAttribute = $fields2[1];
+       } else {
+          $delayOverrideAttribute = $fields2[0];
+       }
+
+       my $delayOverrideAttributeSplType = "";
+
+       for (my $i=0; $i<$attributeCntForFirstInputPort; $i++) {
+          if ($firstInputPort->getAttributeAt($i)->getName() eq $delayOverrideAttribute) {
+             $delayOverrideAttributeSplType = $firstInputPort->getAttributeAt($i)->getSPLType();
+             last;
+          }
+       }
+
+       if ($delayOverrideAttributeSplType eq "") {
+          SPL::CodeGen::exitln("KeyedDelay_cpp.cgt: Input tuple attribute " . $delayOverrideAttribute . " specified for the delayOverrideAttribute parameter is not present in the first input stream.");
+       }
+
+       if ($delayOverrideAttributeSplType ne "float64") {
+          SPL::CodeGen::exitln("KeyedDelay_cpp.cgt: Input tuple attribute " . $delayOverrideAttribute . " specified for the delayOverrideAttribute parameter is of not SPL type float64.");
+       }
+    }
+
     my $shutdownSnapshotFileName = $model->getParameterByName("shutdownSnapshotFileName");
    
     if ($shutdownSnapshotFileName) {
@@ -76,7 +119,7 @@ Possible use cases where this operator can be used:
 
     my $numberOfOutputPorts = $model->getNumberOfOutputPorts();
     
-    # Third input stream is used to change/override the dealy time value.
+    # Third input stream is used to change/override the delay time value.
     # We must ensure that it has an attribute named delay in the schema.
     # That attribute will carry the new delay time that user will send.
     my $thirdInputPort = $model->getInputPortAt(2);
@@ -126,7 +169,7 @@ Possible use cases where this operator can be used:
 MY_OPERATOR::MY_OPERATOR()
   : _inflightTupleMap((uint64_t)(<%=$delay%> * 1000.00)), _earliestTimestampOfDelayedMessages(0), 
 	_delay((uint64_t)(<%=$delay%> * 1000.00)), _allowDelayOverride(<%=$allowDelayOverride%>),
-        _shutdownSnapshotFileName(<%=$shutdownSnapshotFileName%>)
+        _delayOverrideAttribute("<%=$delayOverrideAttribute%>"), _shutdownSnapshotFileName(<%=$shutdownSnapshotFileName%>)
 {
    // They are already defined in the operator model XML file. Hence, there is no need to explicitly create them here.
    // Simply get the custom metrics already defined for this operator. 
@@ -145,7 +188,9 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
     if (port == 0) { 
         // This data tuple is sent by the upstream operator.
         const IPort0Type & ituple = static_cast<const IPort0Type&>(tuple);
-    	if (_delay == 0) {
+
+    	if ((_allowDelayOverride == true && _delayOverrideAttribute == "" && _delay == 0) ||
+            (_allowDelayOverride == false && _delay == 0)) {
            // If the current delay time is set to 0, then there is no need to insert this
            // tuple into our in-flight tuple map. Let us send out this tuple right away.
            {
@@ -158,6 +203,33 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
            IPort0Type & otuple = const_cast<IPort0Type&>(ituple);
            submit(otuple, 0);
     	} else {
+           // If the incoming data tuple has a delay override attribute, then we will first
+           // set the new delay value for this data tuple.
+           if (_allowDelayOverride == true && _delayOverrideAttribute != "") {
+              // Set the new delay for this data tuple.
+              // Convert the delay time which is in float64 seconds to uint64 milliseconds as expected by the AgedMap class.
+              uint64_t newDelay = 0;
+              std::string attributeName = "<%=$delayOverrideAttribute%>";
+
+              if (attributeName == "") {
+                 attributeName = "dummy";
+              }
+
+              ConstValueHandle handle1 = ituple.getAttributeValue(attributeName);
+              SPL::float64 const & newDelay_float64 = handle1;
+              newDelay = (uint64_t) (newDelay_float64 * 1000.00);
+
+              // Log this event in the PE log.
+              SPLAPPTRC(L_DEBUG, "User is overriding the delay time value via the incoming data tuple delay override attribue. Before override=" <<
+              _delay << " msec, After override=" << newDelay << " msec.", "KeyedDelay");
+              // Lock at the minimum scope
+              SPL::AutoMutex autoMutex(_mutex);
+              // Change the delay time.
+              _delay = newDelay;
+              // Set this new delay time value in the AgedMap layer.
+              _inflightTupleMap.setExpireTime(newDelay);
+           }
+
            // We will simply insert it into the in-flight tuple map that is periodically
            // scanned for detecting any time-out/delay-completion conditions of this tuple.
            // Lock at the minimum scope
