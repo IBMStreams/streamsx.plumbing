@@ -31,7 +31,7 @@ import com.ibm.streams.operator.types.RString;
 @PrimitiveOperator(description=ZnodeAction.DESC)
 @InputPortSet(cardinality = 1)
 @OutputPortSet(cardinality = 1, optional = true, windowPunctuationOutputMode = WindowPunctuationOutputMode.Preserving)
-@Libraries({ "opt/apache-curator-2.7.1/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar" })
+@Libraries({"opt/apache-curator/*", "opt/slf4j-1.7.5/*", "opt/zookeeper-3.4.8.jar", "opt/guava-14.0.1.jar"})
 @SharedLoader
 public class ZnodeAction extends AbstractOperator {
     
