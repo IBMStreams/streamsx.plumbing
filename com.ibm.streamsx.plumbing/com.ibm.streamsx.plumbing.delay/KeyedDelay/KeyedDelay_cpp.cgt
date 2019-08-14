@@ -203,6 +203,9 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
            IPort0Type & otuple = const_cast<IPort0Type&>(ituple);
            submit(otuple, 0);
     	} else {
+           // Lock at the minimum scope
+           SPL::AutoMutex autoMutex(_mutex);
+
            // If the incoming data tuple has a delay override attribute, then we will first
            // set the new delay value for this data tuple.
            if (_allowDelayOverride == true && _delayOverrideAttribute != "") {
@@ -221,9 +224,7 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
 
               // Log this event in the PE log.
               SPLAPPTRC(L_DEBUG, "User is overriding the delay time value via the incoming data tuple delay override attribue. Before override=" <<
-              _delay << " msec, After override=" << newDelay << " msec.", "KeyedDelay");
-              // Lock at the minimum scope
-              SPL::AutoMutex autoMutex(_mutex);
+              _delay << " msec, After override=" << newDelay << " msec." << ", tuple=" << ituple, "KeyedDelay");
               // Change the delay time.
               _delay = newDelay;
               // Set this new delay time value in the AgedMap layer.
@@ -232,8 +233,6 @@ void MY_OPERATOR::process(const Tuple & tuple, uint32_t port)
 
            // We will simply insert it into the in-flight tuple map that is periodically
            // scanned for detecting any time-out/delay-completion conditions of this tuple.
-           // Lock at the minimum scope
-           SPL::AutoMutex autoMutex(_mutex);
            // Before adding this tuple to the map, ensure it is not already there with the same key.
            // If it is already present, remove it before adding the new one.
            _inflightTupleMap.eraseIfExists(ituple.get_<%=$key%>());
