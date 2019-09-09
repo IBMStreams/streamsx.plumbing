@@ -69,6 +69,8 @@ private:
   uint64_t _delay;
   // Delay time override allowed or not.
   const bool _allowDelayOverride;
+  // Delay time override attribute name.
+  const std::string _delayOverrideAttribute;
   // Name of the file where the data tuples held in memory will be written when this operator is shutdown.
   const std::string _shutdownSnapshotFileName;
   // mutex lock

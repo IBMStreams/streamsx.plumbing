@@ -20,7 +20,15 @@ currently being delayed, this operator provides a mechanism to do that as well.
 When a new data tuple arrives on the first input port, then an earlier tuple with the same key 
 already being held/delayed in memory will be replaced with the newly arrived tuple and the count down for the
 delay time will be started freshly. When the delay time is set to 0, then the incoming data tuples will
-be sent out immediately without incurring any delay.
+be sent out immediately without incurring any delay. When the operator parameter allowDelayOverride is 
+set to true, then the delay override can be done using one of the two ways as explained below.
+First way is to send a separate delay override tuple into the third input port of this operator with a new delay value. 
+Second way is to have an attribute in the regular data tuple going into the first input port of this operator to 
+carry the delay value required for that particular tuple. If the user wants to use the second way, it is necessary to 
+specify the delay attribute name via the delayOverrideAttribute parameter. It is recommended to use one of these two 
+delay override ways during the life of an application to follow a consistent approach instead of using both ways.
+First way is ideal if the delay override is needed periodically after a batch of incoming data tuples.
+Second way is ideal if the delay override is needed for every incoming data tuple.
 
 Possible use cases where this operator can be used:
 
@@ -89,12 +97,21 @@ Possible use cases where this operator can be used:
       
       <parameter>
         <name>allowDelayOverride</name>
-        <description>This mandatory parameter with type boolean specifies whether the user is allowed to override the delay time value in the middle of operation.</description>
+        <description>This mandatory parameter with type boolean specifies whether the user is allowed to override the delay time value in the middle of operation using one of the two ways as explained in the operator description.</description>
         <optional>false</optional>
         <rewriteAllowed>true</rewriteAllowed>
         <expressionMode>AttributeFree</expressionMode>
         <type>boolean</type>
         <cardinality>1</cardinality>
+      </parameter>
+
+      <parameter>
+        <name>delayOverrideAttribute</name>
+        <description>This optional parameter must point to a float64 attribute in the regular data tuples that will carry the delay time in number of seconds for a given data tuple.</description>
+        <optional>true</optional>
+      	<rewriteAllowed>true</rewriteAllowed>
+      	<expressionMode>Attribute</expressionMode>
+      	<cardinality>1</cardinality>
       </parameter>
 
       <parameter>
@@ -131,7 +148,7 @@ Second input port is where the periodic timer signal that must be sent to this o
       <inputPortSet>
         <description>
 Third input port is used to override/change the delay time in the middle of the operation.
-Simply send a tuple to this port with a float64 attribute named `delay` set to a new delay time value.
+This is the first of two possible ways available to do a delay override (Both ways of doing it is explained in the operator description). Simply send a tuple to this port with a float64 attribute named `delay` set to a new delay time value.
 This input stream will be effective only when the operator parameter allowDelayOverride is
 set to true. If it is set to false, any tuple received via this stream will be ignored.
 When the delay time is changed via this stream, any future data tuples sent into this

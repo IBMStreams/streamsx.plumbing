@@ -19,7 +19,15 @@ currently being delayed, this operator provides a mechanism to do that as well.
 When a new data tuple arrives on the first input port, then an earlier tuple with the same key 
 already being held/delayed in memory will be replaced with the newly arrived tuple and the count down for the
 delay time will be started freshly. When the delay time is set to 0, then the incoming data tuples will
-be sent out immediately without incurring any delay.
+be sent out immediately without incurring any delay. When the operator parameter allowDelayOverride is 
+set to true, then the delay override can be done using one of the two ways as explained below.
+First way is to send a separate delay override tuple into the third input port of this operator with a new delay value. 
+Second way is to have an attribute in the regular data tuple going into the first input port of this operator to 
+carry the delay value required for that particular tuple. If the user wants to use the second way, it is necessary to 
+specify the delay attribute name via the delayOverrideAttribute parameter. It is recommended to use one of these two 
+delay override ways during the life of an application to follow a consistent approach instead of using both ways.
+First way is ideal if the delay override is needed periodically after a batch of incoming data tuples.
+Second way is ideal if the delay override is needed for every incoming data tuple.
 
 Possible use cases where this operator can be used:
 
@@ -41,6 +49,7 @@ composite KeyedDelayTest {
 		FlightType = rstring flightId, rstring flightModel, rstring origin, rstring destination;
 		DelayOverrideType = float64 delay;
 		DeleteTupleType = rstring flightId;
+                FlightWithDelayOverrideType = FlightType, DelayOverrideType;
 		
 	graph
 		// Generate periodic timer signals to check for the full delay completion of the data tuples.
@@ -71,7 +80,7 @@ composite KeyedDelayTest {
 					destination = "Destination" + (rstring)(IterationCount()+1ul);
 		}
 		*/
-		
+
 		// This operator can generate a query signal for the KeyedDelay operator below.
 		// That query signal will make that operator to send out the current snapshot of
 		// its internal cache where it is holding all the events for a specific amount of time.
@@ -231,4 +240,63 @@ composite KeyedDelayTest {
                                         }
                                 }
 		}
+
+                // ===============================================================================
+                // Following block of code demonstrates how to overide the delay for every tuple via
+                // a delay override attribute present in the regaular data tuple.
+                //
+		// Display the incoming flight info tuple.
+		(stream<FlightWithDelayOverrideType> FlightIn2 as FIN2;
+		 stream<DelayOverrideType> DelayOverride2 as DO2;
+		 stream<DeleteTupleType> DeleteTuple2 as DT2;
+                 stream<rstring str> SnapshotQuerySignal2) = Custom(FlightInfo as FI) {
+			logic
+				state: {
+					mutable int32 _cnt = 0;
+					mutable FlightWithDelayOverrideType _oTuple1 = {};
+					mutable float64 _delay = 0.0;
+					list<float64> _delayList = [90.00, 120.00, 60.00, 180.00];
+				}
+
+				onTuple FI: {
+					// We are allowed to override the delay time whenever we want.
+					// Let us play with that feature here by changing the delay time for this tuple.
+					_delay = _delayList[_cnt % size(_delayList)];
+                                        assignFrom(_oTuple1, FI); 
+					_oTuple1.delay = _delay;
+                                        // We are overriding the delay value via an attribute in our data tuple.
+                                        // This is a different way overriding the delay value when compared to 
+                                        // what is being done in the previous block of the code snippet.
+                                        // [Read the commentary at the top of this file to learn about the two ways of overriding a delay value.]
+					submit(_oTuple1, FIN2);
+					
+					appTrc(Trace.error, "IN2: FlightInfo tuple " + (rstring)++_cnt + 
+						"=" + (rstring)_oTuple1);
+				}
+		}
+
+                // See the previous invocation of this same operator above for detailed parameter documentation.
+		(stream<FlightWithDelayOverrideType> FlightInfoAfterDelayCompletion2; 
+                 stream<FlightWithDelayOverrideType> FlightInfoBeingDelayed2) =
+			KeyedDelay(FlightIn2; TimerSignal; DelayOverride2; DeleteTuple2; SnapshotQuerySignal2) {
+			param
+				key: FlightIn2.flightId;
+				delay: $DELAY;
+				allowDelayOverride: true;
+                                delayOverrideAttribute: FlightIn2.delay;
+		}
+		
+		// Display the outgoing flight info tuple.
+		() as FlightOut2 = Custom(FlightInfoAfterDelayCompletion2 as FIADC) {
+			logic
+				state: {
+					mutable int32 _cnt = 0;
+				}
+
+				onTuple FIADC: {
+					appTrc(Trace.error, "OUT2: FlightInfo tuple " +(rstring) ++ _cnt + "=" +(rstring) FIADC);
+				}
+		}
+                // ===============================================================================
+
 }
