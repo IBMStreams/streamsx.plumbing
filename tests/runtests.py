@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (C) 2015 International Business Machines Corporation. 
 # All Rights Reserved.
@@ -23,7 +23,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if not options.test and not options.file:
-        print 'Error: Must specify either a test or a file of test names.'
+        print ('Error: Must specify either a test or a file of test names.')
         parser.print_help()
         sys.exit(1)
 

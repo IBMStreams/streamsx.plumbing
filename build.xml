@@ -73,7 +73,7 @@
   
   <!-- Test targets -->
   <target name="tests" depends="toolkit">
-     <exec executable="python" dir="tests">
+     <exec executable="python3" dir="tests">
         <arg value="runtests.py"/>
         <arg value="-f"/>
         <arg value="tests.tl"/>
