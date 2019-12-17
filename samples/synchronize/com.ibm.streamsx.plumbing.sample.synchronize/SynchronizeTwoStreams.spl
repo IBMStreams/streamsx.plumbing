@@ -21,15 +21,15 @@ public composite SynchronizeTwoStreams {
 	
 	graph 
 	
-    // produce a stream of tuples from the lines in a file
+	// produce a stream of tuples from the lines in a file
 
-	stream<SampleType> EvenStream = FileSource() { param file: "sync2.even.in"; format: csv; }
+	stream<SampleType> EvenStream = FileSource() { param file: getThisToolkitDir()+"/opt/"+"sync2.even.in"; format: csv; }
 	
-    // produce another stream of tuples from the lines in a different file
+	// produce another stream of tuples from the lines in a different file
 
-	stream<SampleType> OddStream = FileSource() { param file: "sync2.odd.in"; format: csv; }
+	stream<SampleType> OddStream = FileSource() { param file: getThisToolkitDir()+"/opt/"+"sync2.odd.in"; format: csv; }
 	
-    // synchronize the two streams of tuples
+	// synchronize the two streams of tuples
 
 	( stream<SampleType> SynchronizedEvenStream ;
 	  stream<SampleType> SynchronizedOddStream ) = com.ibm.streamsx.plumbing.synchronize::Synchronize(
@@ -42,7 +42,17 @@ public composite SynchronizeTwoStreams {
 		queue(In1, Sys.DropFirst, 100),
 		queue(In2, Sys.DropFirst, 100); }	
 
-    // merge the two streams of synchronized tuples and write them to a file
+	// merge the two streams of synchronized tuples and dump to console
+	() as OutputPrinter= Custom(SynchronizedEvenStream, SynchronizedOddStream as I){
+		logic state: {
+			mutable int32 tuplesReceived = 0;
+		}
+		onTuple I : {
+			printStringLn((rstring)I);
+			tuplesReceived++;
+		}		
+	}
 
-	() as SynchronizedSink = FileSink(SynchronizedEvenStream, SynchronizedOddStream) { param file: "SynchronizeTwoStreams.SynchronizedStreams.out"; format: txt; flush: 1u; writePunctuations: true; }
+	// merge the two streams of synchronized tuples and write them to a file
+	//() as SynchronizedSink = FileSink(SynchronizedEvenStream, SynchronizedOddStream) { param file: "SynchronizeTwoStreams.SynchronizedStreams.out"; format: txt; flush: 1u; writePunctuations: true; }
 }
