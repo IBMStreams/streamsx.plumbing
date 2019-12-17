@@ -41,3 +41,5 @@ com.ibm.streamsx.plumbing/com.ibm.streamsx.plumbing/ElasticLoadBalance/ElasticLo
 com.ibm.streamsx.plumbing/com.ibm.streamsx.plumbing/ElasticLoadBalance/ElasticLoadBalance_h.pm
 com.ibm.streamsx.plumbing/toolkit.xml
 tests/testharness.pyc
+
+*__pycache__/
