@@ -51,13 +51,16 @@ endif
 
 SPLC = $(STREAMS_INSTALL)/bin/sc
 SPL_CMD_ARGS ?= --data-directory=./data 
-SPL_MAIN_COMPOSITE = com.ibm.streamsx.plumbing.sample.delay::KeyedDelayTest
+SPL_MAIN_COMPOSITE1 = com.ibm.streamsx.plumbing.sample.switches::ControlledChangeoverSample
+SPL_MAIN_COMPOSITE2 = com.ibm.streamsx.plumbing.sample.switches::ControlledSwitchSample
 
 all: distributed
 
 distributed:
-	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --output-directory=./output/com.ibm.streamsx.plumbing.sample.delay.KeyedDelayTest/Distributed
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE1) $(SPL_CMD_ARGS) --output-directory=./output/com.ibm.streamsx.plumbing.sample.switches.ControlledChangeoverSample/Distributed
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE2) $(SPL_CMD_ARGS) --output-directory=./output/com.ibm.streamsx.plumbing.sample.switches.ControlledSwitchSample/Distributed
 
 clean: 
-	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
+	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE1)
+	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE2)
 	rm -rf output
