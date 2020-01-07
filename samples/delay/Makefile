@@ -18,7 +18,7 @@
 # PROFITS, BUSINESS INTERRUPTION, LOSS OF PROGRAMS OR OTHER DATA   
 # ON YOUR INFORMATION HANDLING SYSTEM OR OTHERWISE.                
 #                                                                  
-# (C) Copyright IBM Corp. 2019  All Rights reserved.         
+# (C) Copyright IBM Corp. 2017, 2019  All Rights reserved.         
 #                                                                  
 # end_generated_IBM_copyright_prolog                               
 
