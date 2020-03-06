@@ -22,12 +22,12 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_8d7883d</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.balancers.html">com.ibm.streamsx.plumbing.balancers</a> &gt; ElasticLoadBalance</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.balancers.html">com.ibm.streamsx.plumbing.balancers</a> &gt; ElasticLoadBalance</p>
 
 </div>
 
 <div class="section splprimop">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.svg" width="672" height="112"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.balancers$ElasticLoadBalance.svg" width="872" height="112"/>
 </div>
 
 <div class="section">
@@ -43,7 +43,7 @@
  
   <dt class="dt dlterm">Ports</dt>
 
-  <dd class="dd">This operator has 1 input port and 2 or more output ports.</dd>
+  <dd class="dd">This operator has 1 input port and 1 or more output ports.</dd>
 
  
  
@@ -62,7 +62,7 @@
 </p>
 
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__congestionTolerance">congestionTolerance</a>, <a class="xref" href="#spldoc_operator__parameter__throughputTolerance">throughputTolerance</a>, <a class="xref" href="#spldoc_operator__parameter__measurePeriod">measurePeriod</a>, <a class="xref" href="#spldoc_operator__parameter__rapidScaling">rapidScaling</a>, <a class="xref" href="#spldoc_operator__parameter__elastic">elastic</a>, <a class="xref" href="#spldoc_operator__parameter__initialActivePorts">initialActivePorts</a>
+<a class="xref" href="#spldoc_operator__parameter__congestionTolerance">congestionTolerance</a>, <a class="xref" href="#spldoc_operator__parameter__elastic">elastic</a>, <a class="xref" href="#spldoc_operator__parameter__initialActivePorts">initialActivePorts</a>, <a class="xref" href="#spldoc_operator__parameter__measurePeriod">measurePeriod</a>, <a class="xref" href="#spldoc_operator__parameter__rapidScaling">rapidScaling</a>, <a class="xref" href="#spldoc_operator__parameter__throughputTolerance">throughputTolerance</a>
 
 </p>
 </dd>
@@ -233,7 +233,17 @@
 
 <div class="section">
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
-This operator supports 7 parameters.<dl class="dl">
+This operator supports 7 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__bufferSize">bufferSize</a>
+
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__congestionTolerance">congestionTolerance</a>, <a class="xref" href="#spldoc_operator__parameter__elastic">elastic</a>, <a class="xref" href="#spldoc_operator__parameter__initialActivePorts">initialActivePorts</a>, <a class="xref" href="#spldoc_operator__parameter__measurePeriod">measurePeriod</a>, <a class="xref" href="#spldoc_operator__parameter__rapidScaling">rapidScaling</a>, <a class="xref" href="#spldoc_operator__parameter__throughputTolerance">throughputTolerance</a>
+
+</p>
+<dl class="dl">
   
      <dt class="dt dlterm"><a name="spldoc_operator__parameter__bufferSize"><!-- --></a><tt class="ph tt">bufferSize</tt></dt>
 
@@ -305,10 +315,10 @@ This operator supports 7 parameters.<dl class="dl">
 
   
   
-     <dt class="dt dlterm"><a name="spldoc_operator__parameter__throughputTolerance"><!-- --></a><tt class="ph tt">throughputTolerance</tt></dt>
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__elastic"><!-- --></a><tt class="ph tt">elastic</tt></dt>
 
      <dd class="dd">
-<p class="p">Value between 0 and 1 which determines when we consider throughput to have improved. The default is 0.05. Values near 0 will respond to smaller changes in throughput more; values near 1 will require larger changes in throughput to respond.
+<p class="p">Controls whether or not elasticity is enabled. The default is true, which turns elasticity on. If set to false, elasticity is turned off, and all output ports will be active, unless an initial thread level was provided.
 </p>
 
   <dl class="dl">
@@ -316,7 +326,42 @@ This operator supports 7 parameters.<dl class="dl">
      <dt class="dt dlterm">Properties</dt>
 
      <dd class="dd">   <ul class="sl simple">
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Constant
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__initialActivePorts"><!-- --></a><tt class="ph tt">initialActivePorts</tt></dt>
+
+     <dd class="dd">
+<p class="p">Number of active ports (which is the same as number of threads) to start with. The default is 1 with elasticity turned on; the default is the number of output ports if elasticity is turned off. If elasticity is turned off, this parameter's value will control the thread level for the lifetime of the operator.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: uint32
      </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
@@ -410,10 +455,10 @@ This operator supports 7 parameters.<dl class="dl">
 
   
   
-     <dt class="dt dlterm"><a name="spldoc_operator__parameter__elastic"><!-- --></a><tt class="ph tt">elastic</tt></dt>
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__throughputTolerance"><!-- --></a><tt class="ph tt">throughputTolerance</tt></dt>
 
      <dd class="dd">
-<p class="p">Controls whether or not elasticity is enabled. The default is true, which turns elasticity on. If set to false, elasticity is turned off, and all output ports will be active, unless an initial thread level was provided.
+<p class="p">Value between 0 and 1 which determines when we consider throughput to have improved. The default is 0.05. Values near 0 will respond to smaller changes in throughput more; values near 1 will require larger changes in throughput to respond.
 </p>
 
   <dl class="dl">
@@ -421,42 +466,7 @@ This operator supports 7 parameters.<dl class="dl">
      <dt class="dt dlterm">Properties</dt>
 
      <dd class="dd">   <ul class="sl simple">
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Constant
-     </li>
-
-   </ul>
-
-     <p class="p"/>
-     </dd>
-
-    
-  </dl>
-
-     </dd>
-
-  
-  
-     <dt class="dt dlterm"><a name="spldoc_operator__parameter__initialActivePorts"><!-- --></a><tt class="ph tt">initialActivePorts</tt></dt>
-
-     <dd class="dd">
-<p class="p">Number of active ports (which is the same as number of threads) to start with. The default is 1 with elasticity turned on; the default is the number of output ports if elasticity is turned off. If elasticity is turned off, this parameter's value will control the thread level for the lifetime of the operator.
-</p>
-
-  <dl class="dl">
-    
-     <dt class="dt dlterm">Properties</dt>
-
-     <dd class="dd">   <ul class="sl simple">
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: uint32
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
      </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1

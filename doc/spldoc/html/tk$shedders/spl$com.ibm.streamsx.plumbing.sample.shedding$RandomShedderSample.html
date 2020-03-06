@@ -37,7 +37,7 @@
 
       <dd class="dd">
 <ul class="sl simple">
-<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderFailureSample">RandomShedderFailureSample</a></strong>: Sample application that can be used to demonstrate recovery from failure for <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. A single change is made to shed tuples in the data flow after 30 seconds to some random fraction &gt;= 0.2. The failure modes that can be manually tested are:  Killing or restarting the PE containing <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. Killing or restarting the PE containing <tt class="ph tt">JobControlPlane</tt> and <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. Stopping the PE containing <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a> before the shedding fraction is changedand then restarting it.
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderFailureSample">RandomShedderFailureSample</a></strong>: Sample application that can be used to demonstrate recovery from failure for <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>. 
 </li>
 
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.html#spldoc_compilationunit__composite_operator__RandomShedderSample">RandomShedderSample</a></strong>
@@ -60,21 +60,17 @@
   
 </div>
 
-<div class="section">
-</div>
-
-<div class="section">
-</div>
-
-<div class="section">
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
 <div class="section splgraph">
   <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderSample.svg" width="118" height="199"/>
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
@@ -119,6 +115,10 @@
   
 </div>
 
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderFailureSample.svg" width="232" height="199"/>
+</div>
+
 <div class="section">
 
 <p class="p">Sample application that can be used to demonstrate recovery from failure for <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.shedders$randomshedder.html#spldoc_compilationunit__composite_operator__RandomLoadShedder">com.ibm.streamsx.plumbing.shedders::RandomLoadShedder</a>.
@@ -154,14 +154,6 @@ and then restarting it.
 </div>
 
 <div class="section">
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$shedders/op$com.ibm.streamsx.plumbing.sample.shedding$RandomShedderFailureSample.svg" width="232" height="199"/>
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>

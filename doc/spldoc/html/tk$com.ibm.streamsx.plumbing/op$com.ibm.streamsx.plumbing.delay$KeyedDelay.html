@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Operator KeyedDelay"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="spldoc_operator"/>
+<link rel="stylesheet" type="text/css" href="../../html/commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="../../html/spldoc.css"/>
+<title>Operator KeyedDelay</title>
+</head>
+<body id="spldoc_operator">
+
+
+<h1 class="title topictitle1">Operator <tt class="ph tt">KeyedDelay</tt></h1>
+
+<div class="body refbody">
+<div class="section">
+<p class="p">
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.delay.html">com.ibm.streamsx.plumbing.delay</a> &gt; KeyedDelay</p>
+
+</div>
+
+<div class="section splprimop">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.delay$KeyedDelay.svg" width="872" height="192"/>
+</div>
+
+<div class="section">
+
+<p class="p">The KeyedDelay operator is used to delay the incoming tuples for a configured  amount of seconds before sending them out for downstream processing.
+</p>
+
+<p class="p">Such incoming tuples requiring a delayed send must arrive on the first input port of this operator. Those tuples are stored inside this operator's memory based on a specified key that is present in one of the tuple attributes. Additionally, this operator will also  allow the user to arbitrarily change the delay time on the basis of either per tuple or  per group of tuples. It also provides a way for the user to delete an existing tuple being  held in memory before its full delay time is realized. If the user wants to get a snapshot of all the tuples currently being delayed, this operator provides a mechanism to do that as well. When a new data tuple arrives on the first input port, then an earlier tuple with the same key  already being held/delayed in memory will be replaced with the newly arrived tuple and the count down for the delay time will be started freshly. When the delay time is set to 0, then the incoming data tuples will be sent out immediately without incurring any delay. When the operator parameter allowDelayOverride is  set to true, then the delay override can be done using one of the two ways as explained below. First way is to send a separate delay override tuple into the third input port of this operator with a new delay value.  Second way is to have an attribute in the regular data tuple going into the first input port of this operator to  carry the delay value required for that particular tuple. If the user wants to use the second way, it is necessary to  specify the delay attribute name via the delayOverrideAttribute parameter. It is recommended to use one of these two  delay override ways during the life of an application to follow a consistent approach instead of using both ways. First way is ideal if the delay override is needed periodically after a batch of incoming data tuples. Second way is ideal if the delay override is needed for every incoming data tuple.
+</p>
+
+<p class="p">Possible use cases where this operator can be used:
+</p>
+
+<p class="p">1) Aging out tuples based on application specific criteria.
+</p>
+
+<p class="p">2) Response timeout detection and replaying data tuples to an external service.
+</p>
+
+<p class="p">3) Event notification to external consuming applications at a later time.
+</p>
+
+<p class="p">4) Design patterns requiring storing and forwarding of tuples after a preset delay.
+</p>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Summary</h2>
+
+<dl class="dl" compact="compact">
+ 
+  <dt class="dt dlterm">Ports</dt>
+
+  <dd class="dd">This operator has 5 input ports and 2 output ports.</dd>
+
+ 
+ 
+  <dt class="dt dlterm">Windowing</dt>
+
+  <dd class="dd">This operator does not accept any windowing configurations.</dd>
+
+ 
+ 
+  <dt class="dt dlterm">Parameters</dt>
+
+  <dd class="dd">This operator supports 5 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__allowDelayOverride">allowDelayOverride</a>, <a class="xref" href="#spldoc_operator__parameter__delay">delay</a>, <a class="xref" href="#spldoc_operator__parameter__key">key</a>
+
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__delayOverrideAttribute">delayOverrideAttribute</a>, <a class="xref" href="#spldoc_operator__parameter__shutdownSnapshotFileName">shutdownSnapshotFileName</a>
+
+</p>
+</dd>
+
+ 
+ 
+  <dt class="dt dlterm">Metrics</dt>
+
+  <dd class="dd">This operator reports 2 metrics.</dd>
+
+ 
+</dl>
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-1">Properties</h2>
+
+<dl class="dl" compact="compact">
+ 
+  <dt class="dt dlterm">Implementation</dt>
+
+  <dd class="dd">C++</dd>
+
+ 
+ 
+  <dt class="dt dlterm"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__providessinglethreadedexecutioncontext">Threading</a></dt>
+
+  <dd class="dd"><tt class="ph tt">Never</tt> - Operator never provides a single threaded execution context.</dd>
+
+ 
+</dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set">Input Ports</a></strong></p>
+<dl class="dl">
+  
+   <dt class="dt dlterm">Ports (0)</dt>
+
+   <dd class="dd">
+<p class="p">First input port is where the regular data tuples arrive that need to be delayed for a configured amount of time.
+</p>
+
+   <dl class="dl">
+    
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__optional">Optional</a>: false
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__controlport">ControlPort</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__tuplemutationallowed">TupleMutationAllowed</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowingmode">WindowingMode</a>: NonWindowed
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</a>: Oblivious
+     </li>
+
+   </ul>
+
+      </dd>
+    
+   </dl>
+
+   <p class="p"/>
+   </dd>
+
+  
+  
+   <dt class="dt dlterm">Ports (1)</dt>
+
+   <dd class="dd">
+<p class="p">Second input port is where the periodic timer signal that must be sent to this operator in order to check for the delay completion time and then send the fully delayed tuples for downstream consumption.
+</p>
+
+   <dl class="dl">
+    
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__optional">Optional</a>: false
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__controlport">ControlPort</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__tuplemutationallowed">TupleMutationAllowed</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowingmode">WindowingMode</a>: NonWindowed
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</a>: Oblivious
+     </li>
+
+   </ul>
+
+      </dd>
+    
+   </dl>
+
+   <p class="p"/>
+   </dd>
+
+  
+  
+   <dt class="dt dlterm">Ports (2)</dt>
+
+   <dd class="dd">
+<p class="p">Third input port is used to override/change the delay time in the middle of the operation. This is the first of two possible ways available to do a delay override (Both ways of doing it is explained in the operator description). Simply send a tuple to this port with a float64 attribute named <tt class="ph tt">delay</tt> set to a new delay time value. This input stream will be effective only when the operator parameter allowDelayOverride is set to true. If it is set to false, any tuple received via this stream will be ignored. When the delay time is changed via this stream, any future data tuples sent into this operator will be delayed for the duration of the newly overridden delay time. All the existing data tuples being held inside this operator will not be affected by the newly overridden delay time and they will be delayed for the duration that was in effect before the override happened.
+</p>
+
+   <dl class="dl">
+    
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__optional">Optional</a>: false
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__controlport">ControlPort</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__tuplemutationallowed">TupleMutationAllowed</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowingmode">WindowingMode</a>: NonWindowed
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</a>: Oblivious
+     </li>
+
+   </ul>
+
+      </dd>
+    
+   </dl>
+
+   <p class="p"/>
+   </dd>
+
+  
+  
+   <dt class="dt dlterm">Ports (3)</dt>
+
+   <dd class="dd">
+<p class="p">Fourth input port is used in situations where there is a need to delete  an existing data tuple that is being held/delayed inside this operator's memory. Simply send a  tuple via this input stream with an attribute (named as the value of this operator's key parameter)  carrying an identifier required to locate the data tuple to be deleted from  this operator's internal in-memory data structure.
+</p>
+
+   <dl class="dl">
+    
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__optional">Optional</a>: false
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__controlport">ControlPort</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__tuplemutationallowed">TupleMutationAllowed</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowingmode">WindowingMode</a>: NonWindowed
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</a>: Oblivious
+     </li>
+
+   </ul>
+
+      </dd>
+    
+   </dl>
+
+   <p class="p"/>
+   </dd>
+
+  
+  
+   <dt class="dt dlterm">Ports (4)</dt>
+
+   <dd class="dd">
+<p class="p">Fifth input port is optional and it lets this operator to be queried to return a snapshot of its internal in-memory cache where the tuples are being held and delayed at a given point in time. Simply send any dummy tuple into this port as a snapshot query signal. This optional input port works in conjunction with the second optional output port of this operator as explained below.
+</p>
+
+   <dl class="dl">
+    
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__optional">Optional</a>: true
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__controlport">ControlPort</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__tuplemutationallowed">TupleMutationAllowed</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowingmode">WindowingMode</a>: NonWindowed
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__input_port_set__windowpunctuationinputmode">WindowPunctuationInputMode</a>: Oblivious
+     </li>
+
+   </ul>
+
+      </dd>
+    
+   </dl>
+
+   <p class="p"/>
+   </dd>
+
+  
+</dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set">Output Ports</a></strong></p>
+<dl class="dl">
+  
+     <dt class="dt dlterm">Assignments</dt>
+
+     <dd class="dd">This operator allows any SPL expression of the correct type to be assigned to output attributes.</dd>
+
+  
+</dl>
+
+ <dl class="dl">
+  
+   <dt class="dt dlterm">Ports (0)</dt>
+
+   <dd class="dd">
+
+<p class="p">First output port will carry the original data tuples that were held inside this operator and then got evicted after a preset time delay.
+</p>
+
+    <p class="p"/>
+
+    <dl class="dl">
+     
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__optional">Optional</a>: false
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__tuplemutationallowed">TupleMutationAllowed</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</a>: Free
+     </li>
+
+   </ul>
+
+</dd>
+     
+    </dl>
+
+    <p class="p"/>
+
+   </dd>
+
+  
+  
+   <dt class="dt dlterm">Ports (1)</dt>
+
+   <dd class="dd">
+
+<p class="p">Second (optional) output port will carry the snapshot of the tuples that are being held/delayed inside this operator when a query is made via the optional fifth input port as explained above.  This output port should use the same stream schema as the first output port.
+</p>
+
+    <p class="p"/>
+
+    <dl class="dl">
+     
+      <dt class="dt dlterm">Properties</dt>
+
+      <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__optional">Optional</a>: true
+     </li>
+
+   </ul>
+
+   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__tuplemutationallowed">TupleMutationAllowed</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__output_port_set__windowpunctuationoutputmode">WindowPunctuationOutputMode</a>: Free
+     </li>
+
+   </ul>
+
+</dd>
+     
+    </dl>
+
+    <p class="p"/>
+
+   </dd>
+
+  
+</dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
+This operator supports 5 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__allowDelayOverride">allowDelayOverride</a>, <a class="xref" href="#spldoc_operator__parameter__delay">delay</a>, <a class="xref" href="#spldoc_operator__parameter__key">key</a>
+
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__delayOverrideAttribute">delayOverrideAttribute</a>, <a class="xref" href="#spldoc_operator__parameter__shutdownSnapshotFileName">shutdownSnapshotFileName</a>
+
+</p>
+<dl class="dl">
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__allowDelayOverride"><!-- --></a><tt class="ph tt">allowDelayOverride</tt></dt>
+
+     <dd class="dd">
+<p class="p">This mandatory parameter with type boolean specifies whether the user is allowed to override the delay time value in the middle of operation using one of the two ways as explained in the operator description.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: AttributeFree
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__delay"><!-- --></a><tt class="ph tt">delay</tt></dt>
+
+     <dd class="dd">
+<p class="p">This mandatory parameter with type float64 specifies the delay time in number of seconds.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: AttributeFree
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__delayOverrideAttribute"><!-- --></a><tt class="ph tt">delayOverrideAttribute</tt></dt>
+
+     <dd class="dd">
+<p class="p">This optional parameter must point to a float64 attribute in the regular data tuples that will carry the delay time in number of seconds for a given data tuple.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Attribute
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__key"><!-- --></a><tt class="ph tt">key</tt></dt>
+
+     <dd class="dd">
+<p class="p">This mandatory parameter must point to an attribute in the incoming data tuples that will be used as a key for holding and delaying the tuples inside this operator's memory.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: false
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Attribute
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__shutdownSnapshotFileName"><!-- --></a><tt class="ph tt">shutdownSnapshotFileName</tt></dt>
+
+     <dd class="dd">
+<p class="p">This optional parameter specifies a filename to which the data tuples held in memory should be written when this operator is being shutdown. That file can be read later to reprocess the data tuples during the subsequent runs of this operator.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: AttributeFree
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
+</dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__codetemplate">Code Templates</a></strong></p>
+  <dl class="dl">
+    
+     <dt class="dt dlterm">KeyedDelay</dt>
+
+     <dd class="dd">
+       <pre class="pre codeblock">
+(stream&lt;${eventStreamType}&gt; ${outputStream1};stream&lt;${eventStreamType}&gt; ${outputStream2}) = KeyedDelay(${eventStream}; ${timerStream}; ${delayOverrideStream}; ${deleteEventStream}; ${delayedTuplesSnapshotQueryStream}) {
+            param
+                key: ${keyAttribute};
+                delay: ${timeInSeconds};
+                allowDelayTimeOverride: ${overrideFlag};
+        }
+      </pre>
+
+     <p class="p"/>
+
+     </dd>
+
+    
+  </dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__metrics">Metrics</a></strong></p>
+<dl class="dl">
+  
+    <dt class="dt dlterm"><tt class="ph tt">nCurrentDelay</tt> - <a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__metrics_kind_gauge">Gauge</a></dt>
+
+    <dd class="dd">
+
+<p class="p">Current delay time setting being used for delaying the incoming data tuples inside the <tt class="ph tt">KeyedDelay</tt> operator.
+</p>
+
+     <p class="p"/>
+
+     </dd>
+
+  
+  
+    <dt class="dt dlterm"><tt class="ph tt">nTuplesDelayed</tt> - <a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__metrics_kind_counter">Counter</a></dt>
+
+    <dd class="dd">
+
+<p class="p">The number of data tuples currently getting delayed by being held in the memory of the <tt class="ph tt">KeyedDelay</tt> operator.
+</p>
+
+     <p class="p"/>
+
+     </dd>
+
+  
+</dl>
+
+</div>
+
+<div class="section">
+<p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies">Libraries</a></strong></p>
+<dl class="dl">
+ 
+  <dt class="dt dlterm">No description for library.
+  </dt>
+
+<dd class="dd"/>
+  <dd class="dd"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies__managedlibrary__includepath">Include Path</a>: <tt class="ph tt">../impl/include</tt></dd>
+
+ 
+</dl>
+
+</div>
+
+</div>
+
+
+</body>
+</html>

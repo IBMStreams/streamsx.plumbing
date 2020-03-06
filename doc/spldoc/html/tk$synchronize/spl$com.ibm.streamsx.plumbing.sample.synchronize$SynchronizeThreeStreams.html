@@ -57,6 +57,10 @@
   
 </div>
 
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$synchronize/op$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.svg" width="552" height="200"/>
+</div>
+
 <div class="section">
 
 <p class="p">This sample application for the Synchronize operator reads three pre-recorded streams from three files. Two files contain phrases of text from the audio tracks of several short videos, as transcribed by two speech recognition engines. The third file contains phrases of text from the subtitle track of one of the videos. Each tuple created from each line of each file includes the starting time of each phrase, relative to the beginning of its video, and duration of the phrase in the video. Punctuation is manually inserted into the streams at the end of each video's phrases.
@@ -74,14 +78,6 @@
 </div>
 
 <div class="section">
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$synchronize/op$com.ibm.streamsx.plumbing.sample.synchronize$SynchronizeThreeStreams.svg" width="552" height="200"/>
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
@@ -104,9 +100,9 @@
  	
  	graph 
  
-     // read stream of phrases from first speech recognition engine and insert punctuation between videos
+ 	// read stream of phrases from first speech recognition engine and insert punctuation between videos
  	
- 	stream&lt;PhraseType&gt; Speech1Stream = FileSource() { param file: "sync4.Speech1PhraseStream.in"; format: csv; }
+ 	stream&lt;PhraseType&gt; Speech1Stream = FileSource() { param file: getThisToolkitDir()+"/opt/"+"sync4.Speech1PhraseStream.in"; format: csv; }
  	
  	stream&lt;PhraseType&gt; PunctuatedSpeech1Stream = Punctor(Speech1Stream) {
  	param punctuate: outputDirectory=="WindowMarker"; position: after; }
@@ -116,9 +112,9 @@
  	output Out1: indention = ""; }
  
  
-     // read stream of phrases from second speech recognition engine, add indention, and insert punctuation between videos
+ 	// read stream of phrases from second speech recognition engine, add indention, and insert punctuation between videos
  	
- 	stream&lt;PhraseType&gt; Speech2Stream = FileSource() { param file: "sync4.Speech2PhraseStream.in"; format: csv; }
+ 	stream&lt;PhraseType&gt; Speech2Stream = FileSource() { param file: getThisToolkitDir()+"/opt/"+"sync4.Speech2PhraseStream.in"; format: csv; }
  	
  	stream&lt;PhraseType&gt; PunctuatedSpeech2Stream = Punctor(Speech2Stream) {
  	param punctuate: outputDirectory=="WindowMarker"; position: after; }
@@ -128,9 +124,9 @@
  	output Out2: indention = "\t\t\t\t"; }
  	
  
-     // read stream of phrases from subtitle track of one video, add more indention, and insert punctuation between videos
+ 	// read stream of phrases from subtitle track of one video, add more indention, and insert punctuation between videos
  
- 	stream&lt;PhraseType&gt; SubtitleStream = FileSource() { param file: "sync4.SubtitleStream.in"; format: csv; }
+ 	stream&lt;PhraseType&gt; SubtitleStream = FileSource() { param file: getThisToolkitDir()+"/opt/"+"sync4.SubtitleStream.in"; format: csv; }
  	
  	stream&lt;PhraseType&gt; PunctuatedSubtitleStream = Punctor(SubtitleStream) {
  	param punctuate: outputDirectory=="WindowMarker"; position: after; }
@@ -139,7 +135,7 @@
  	param filter: outputDirectory!="WindowMarker"; 
  	output OutT: indention = "\t\t\t\t\t\t\t\t"; }
  	
-     // synchronize all three streams
+ 	// synchronize all three streams
  	
  	( stream&lt;PhraseType&gt; SynchronizedSpeech1Stream ;
  	  stream&lt;PhraseType&gt; SynchronizedSpeech2Stream ;
@@ -155,11 +151,23 @@
  		queue(In2, Sys.DropFirst, 1000),
  		queue(InT, Sys.DropFirst, 1000); }	
  
-     // merge synchronized streams into a single transcript
  
+ 	// merge synchronized streams and dump to console
+ 	() as OutputPrinter= Custom(SynchronizedSpeech1Stream, SynchronizedSpeech2Stream, SynchronizedSubtitleStream as I){
+ 		logic state: {
+ 			mutable int32 tuplesReceived = 0;
+ 		}
+ 		onTuple I : {
+ 			printStringLn((rstring)I);
+ 			tuplesReceived++;
+ 		}		
+ 	}
+ 
+ /*
+     	// merge synchronized streams into a single transcript
  	() as Transcript = Custom(SynchronizedSpeech1Stream, SynchronizedSpeech2Stream, SynchronizedSubtitleStream as In) {
  	logic state: {
- 		rstring filename = dataDirectory() + "/SynchronizeThreeStreams.transcript.out";
+ 		rstring filename = "SynchronizeThreeStreams.transcript.out";
  		mutable uint64 file = 0; }
  	onTuple In: {	
  		mutable int32 error = 0;	
@@ -177,7 +185,7 @@
  		fwriteString("------------------------\t------------------------\t------------------------\n", file, error);
  		if (currentPunct()==Sys.FinalMarker) { fclose(file, error); } } }
  	} 
- 
+ */
  
      // log intermediate streams when debugging
  

@@ -49,6 +49,9 @@
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__Source">Source</a></strong>
 </li>
 
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.html#spldoc_compilationunit__composite_operator__SourceAnalyticsFlow">SourceAnalyticsFlow</a></strong>
+</li>
+
 </ul>
 
       </dd>
@@ -79,6 +82,10 @@
   
 </div>
 
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.svg" width="232" height="109"/>
+</div>
+
 <div class="section">
 
 <p class="p">Simple flow to be executed multiple times to provide redundant copies. The actual functionality of the flow is basically nothing, it is just to demonstrate the execution of redundant copies.
@@ -98,14 +105,6 @@
 <div class="section">
 </div>
 
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Flow.svg" width="337" height="109"/>
-</div>
-
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
   
 </div>
@@ -117,9 +116,50 @@
  public composite Flow
  {
      graph
+     stream&lt;T&gt; Alerts = SourceAnalyticsFlow() {}
+     () as SMS = SendSMS(Alerts) {}
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__SourceAnalyticsFlow"><h2 class="title sectiontitle splpart">composite SourceAnalyticsFlow(output Alerts)</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$SourceAnalyticsFlow.svg" width="248" height="109"/>
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle">Output Ports</h2>
+
+<ul class="sl simple">
+<li class="sli"><strong class="ph b">Alerts</strong>
+</li>
+
+</ul>
+
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite SourceAnalyticsFlow(output Alerts) {
+   graph
      stream&lt;T&gt; Messages = Source() {}
      stream&lt;T&gt; Alerts = Analytics(Messages) {}
-     () as SMS = SendSMS(Alerts) {}
  }
 
    </pre>
@@ -128,6 +168,10 @@
 
 <div class="section" id="spldoc_compilationunit__composite_operator__Source"><h2 class="title sectiontitle splpart">composite Source(output Messages)</h2>
   
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Source.svg" width="248" height="109"/>
 </div>
 
 <div class="section">
@@ -144,14 +188,6 @@
 
 </ul>
 
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Source.svg" width="248" height="109"/>
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
@@ -196,6 +232,10 @@
   
 </div>
 
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Analytics.svg" width="362" height="154"/>
+</div>
+
 <div class="section">
 
 <p class="p">The "analytics" portion of the application including the source. 
@@ -224,14 +264,6 @@
 
 </ul>
 
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$Analytics.svg" width="362" height="154"/>
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
@@ -266,6 +298,10 @@
   
 </div>
 
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$SendSMS.svg" width="142" height="109"/>
+</div>
+
 <div class="section">
 
 <p class="p">The sink of the application. This does nothing but consume the tuples. It it representing a hypothetical operator that sends a SMS (text message) alert for each tuple received. 
@@ -287,14 +323,6 @@
 </div>
 
 <div class="section">
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$redundant/op$com.ibm.streamsx.plumbing.sample.redundant.flow$SendSMS.svg" width="142" height="109"/>
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>

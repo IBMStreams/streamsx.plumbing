@@ -22,12 +22,12 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_8d7883d</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.synchronize.html">com.ibm.streamsx.plumbing.synchronize</a> &gt; Synchronize</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.synchronize.html">com.ibm.streamsx.plumbing.synchronize</a> &gt; Synchronize</p>
 
 </div>
 
 <div class="section splprimop">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.svg" width="672" height="112"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.synchronize$Synchronize.svg" width="872" height="112"/>
 </div>
 
 <div class="section">
@@ -77,7 +77,7 @@
  
   <dt class="dt dlterm">Ports</dt>
 
-  <dd class="dd">This operator has 1 or more input ports and 1 or more output ports.</dd>
+  <dd class="dd">This operator has 0 or more input ports and 0 or more output ports.</dd>
 
  
  
@@ -96,7 +96,7 @@
 </p>
 
 <p class="p"> Optional: 
-<a class="xref" href="#spldoc_operator__parameter__timeFactor">timeFactor</a>, <a class="xref" href="#spldoc_operator__parameter__ignorePunctuation">ignorePunctuation</a>
+<a class="xref" href="#spldoc_operator__parameter__ignorePunctuation">ignorePunctuation</a>, <a class="xref" href="#spldoc_operator__parameter__timeFactor">timeFactor</a>
 
 </p>
 </dd>
@@ -228,7 +228,58 @@
 
 <div class="section">
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
-This operator supports 3 parameters.<dl class="dl">
+This operator supports 3 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__timeAttributes">timeAttributes</a>
+
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__ignorePunctuation">ignorePunctuation</a>, <a class="xref" href="#spldoc_operator__parameter__timeFactor">timeFactor</a>
+
+</p>
+<dl class="dl">
+  
+     <dt class="dt dlterm"><a name="spldoc_operator__parameter__ignorePunctuation"><!-- --></a><tt class="ph tt">ignorePunctuation</tt></dt>
+
+     <dd class="dd">
+<p class="p">This optional parameter specifies how the operator should handle punctuation received from input streams.
+</p>
+
+<p class="p">If this parameter is specified with a value of <tt class="ph tt">true</tt>, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
+</p>
+
+<p class="p">If this parameter is not specified, or a value of <tt class="ph tt">false</tt> is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
+</p>
+
+  <dl class="dl">
+    
+     <dt class="dt dlterm">Properties</dt>
+
+     <dd class="dd">   <ul class="sl simple">
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Expression
+     </li>
+
+   </ul>
+
+     <p class="p"/>
+     </dd>
+
+    
+  </dl>
+
+     </dd>
+
+  
   
      <dt class="dt dlterm"><a name="spldoc_operator__parameter__timeAttributes"><!-- --></a><tt class="ph tt">timeAttributes</tt></dt>
 
@@ -280,47 +331,6 @@ This operator supports 3 parameters.<dl class="dl">
 
      <dd class="dd">   <ul class="sl simple">
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: float64
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
-     </li>
-
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__expressionmode">ExpressionMode</a>: Expression
-     </li>
-
-   </ul>
-
-     <p class="p"/>
-     </dd>
-
-    
-  </dl>
-
-     </dd>
-
-  
-  
-     <dt class="dt dlterm"><a name="spldoc_operator__parameter__ignorePunctuation"><!-- --></a><tt class="ph tt">ignorePunctuation</tt></dt>
-
-     <dd class="dd">
-<p class="p">This optional parameter specifies how the operator should handle punctuation received from input streams.
-</p>
-
-<p class="p">If this parameter is specified with a value of <tt class="ph tt">true</tt>, then punctuation received from input streams is ignored. The streams are not synchronized on punctuation, and punctuation is not forwarded to output streams.
-</p>
-
-<p class="p">If this parameter is not specified, or a value of <tt class="ph tt">false</tt> is specified, then the operator will block each input stream when punctuation is recieved. Then, when punctuation has been received on all input streams, the operator will forward punctuation to all output streams simultaneously and resume synchronizing tuples.
-</p>
-
-  <dl class="dl">
-    
-     <dt class="dt dlterm">Properties</dt>
-
-     <dd class="dd">   <ul class="sl simple">
-     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: boolean
      </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1

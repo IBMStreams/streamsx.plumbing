@@ -37,7 +37,13 @@
 
       <dd class="dd">
 <ul class="sl simple">
-<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a></strong>
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a></strong>: The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a>.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a></strong>: Sample showing use of <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</a>. 
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a></strong>: The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>.
 </li>
 
 </ul>
@@ -57,21 +63,42 @@
   
 </div>
 
-<div class="section">
-</div>
-
-<div class="section">
-</div>
-
-<div class="section">
-</div>
-
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
 <div class="section splgraph">
   <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.svg" width="118" height="199"/>
+</div>
+
+<div class="section">
+
+<p class="p">Sample showing use of <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</a>.
+</p>
+
+<p class="p">A <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> containing a <tt class="ph tt">ControlledSwitch</tt> that is controlled by a separate subgraph using the composite <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a>.
+</p>
+
+<p class="p">The <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a> composite randomly opens and closes the switch with the switch being open (no tuples flowing) about 30% of the time.
+</p>
+
+<p class="p">The <tt class="ph tt">ControlledSwitch</tt>'s state is changed by execution of the <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__function__setSwitchState.rstring.boolean">com.ibm.streamsx.plumbing.switches::setSwitchState(rstring,boolean)</a> function. The <tt class="ph tt">setSwitchState</tt> is tied to the instance of <tt class="ph tt">ControlledSwitch</tt> by the switch's name: <tt class="ph tt">sampleSwitch</tt>.
+</p>
+
+<p class="p">When running the sample the tuple flow rate can be visualized using Streams console or Streams studio.
+</p>
+
+<p class="p">For example here is a view of <tt class="ph tt">ControlledSwitchSample</tt> in Streams console. The graph shows that the tuple flow in <tt class="ph tt">DataFlow</tt> (light blue) stops due to the <tt class="ph tt">ControlledSwitch</tt> from time to time.
+</p>
+
+<p class="p"><br/><img class="image" src="file:///home/streamsadmin/hostdir/git-public/streamsx.plumbing/samples/switches/com.ibm.streamsx.plumbing.sample.switches/../images/ControlledSwitchSample.png" alt=""/><br/> 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
 </div>
 
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
@@ -105,6 +132,128 @@
  		() as CF = ControlFlow()
  		{
  		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__DataFlow"><h2 class="title sectiontitle splpart">composite DataFlow</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$DataFlow.svg" width="337" height="109"/>
+</div>
+
+<div class="section">
+
+<p class="p">The data flow that will demonstrate use of <tt class="ph tt">ControlledSwitch</tt>. A Beacon operator submits tuples around 100 per second through a <a class="xref" href="../tk$com.ibm.streamsx.plumbing/spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">com.ibm.streamsx.plumbing.switches::ControlledSwitch</a> and out to a sink operator. Using Streams Studio or the Streams Console you can watch the rate of tuples into the sink operator change based upon the control signals from the separate <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlFlow">ControlFlow</a> composite. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite DataFlow
+ {
+ 	graph
+ 		stream&lt;int64 a&gt; Data = Beacon()
+ 		{
+ 			param
+ 				period : 0.01 ;
+ 		}
+ 
+ 		stream&lt;Data&gt; ManagedData = ControlledSwitch(Data)
+ 		{
+ 			param
+ 				name : "sampleSwitch" ;
+                                 initialState : true;
+ 		}
+ 
+ 		() as Sink = Custom(ManagedData)
+ 		{
+ 		}
+ 
+ }
+
+   </pre>
+
+</div>
+
+<div class="section" id="spldoc_compilationunit__composite_operator__ControlFlow"><h2 class="title sectiontitle splpart">composite ControlFlow</h2>
+  
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$switches/op$com.ibm.streamsx.plumbing.sample.switches$ControlFlow.svg" width="232" height="109"/>
+</div>
+
+<div class="section">
+
+<p class="p">The flow that controls <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__DataFlow">DataFlow</a> in <a class="xref" href="spl$com.ibm.streamsx.plumbing.sample.switches$ControlledSwitchSample.html#spldoc_compilationunit__composite_operator__ControlledSwitchSample">ControlledSwitchSample</a>. Every twenty seconds a random value between 0.0 and 1.0 is submitted by a <tt class="ph tt">Beacon</tt>. If it is less that 0.3 the switch is opened otherwise it is closed to allow tuples to flow. 
+</p>
+
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section">
+</div>
+
+<div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
+  
+</div>
+
+
+<div class="section">
+   <pre class="pre codeblock">
+
+ public composite ControlFlow()
+ {
+ 	graph
+ 		stream&lt;float64 rv&gt; Control = Beacon()
+ 		{
+ 			param
+ 				initDelay : 10.0 ;
+ 				period : 20.0 ;
+ 			output
+ 				Control : rv = random() ;
+ 		}
+ 
+ 		() as ChangeShedding = Custom(Control)
+ 		{
+ 			logic
+ 				state :
+ 				{
+ 					boolean __unused = registerSwitch("sampleSwitch", true ) ;
+ 				}
+ 
+ 				onTuple Control :
+ 				{
+ 					setSwitchState("sampleSwitch", rv &gt;= 0.3) ;
+ 				}
+ 			}
  
  }
 

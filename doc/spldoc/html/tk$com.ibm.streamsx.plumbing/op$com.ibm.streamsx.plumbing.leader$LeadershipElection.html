@@ -22,23 +22,35 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_8d7883d</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a> &gt; LeadershipElection</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a> &gt; LeadershipElection</p>
 
 </div>
 
 <div class="section splprimop">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.svg" width="672" height="112"/>
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipElection.svg" width="872" height="112"/>
 </div>
 
 <div class="section">
 
-<p class="p">Performs a leadership election between other operator invocations with the same <tt class="ph tt">group</tt>. At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. Invocations must be exlocated into different PEs.
-</p>
+<div class="p">Performs a leadership election between other operator invocations with the same <tt class="ph tt">group</tt>. At any time only one invocation is the leader, should a leader have a failure a new leader will be elected. Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service. When the <tt class="ph tt">path</tt> parameter is not set the leadership election is between operator invocations with the same <tt class="ph tt">group</tt> in a single job. In this case:
+<ul class="ul">
+<li class="li"> the application requires an invocation of the <tt class="ph tt">JobControlPlane</tt> operator.</li>
 
-<p class="p">The operator requires the application include an invocation of the <tt class="ph tt">JobControlPlane</tt> operator.
-</p>
+<li class="li"> Invocations of <tt class="ph tt">LeadershipElection</tt> within the same <tt class="ph tt">group</tt> must be exlocated into different PEs.</li>
 
-<p class="p">Leadership election uses Apache Curator's leadership latch recipe against the Streams instance Zookeeper service.The Zookeeper root node for the recipe is a sub-node <tt class="ph tt">group</tt> within job's storage node (<tt class="ph tt">com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()</tt>).
+</ul>
+The Zookeeper root znode for the recipe is a sub-node <tt class="ph tt">group</tt> within job's storage node (<tt class="ph tt">com.ibm.streams.management.job.JobMXBean.retrieveZooKeeperStorageNode()</tt>).
+</div>
+
+<div class="p">When the <tt class="ph tt">path</tt> parameter is set the leadership election is between operator invocations with the same <tt class="ph tt">path</tt> and <tt class="ph tt">group</tt> in a single domain, typically between operator invocations in different jobs in an instance. In this case:
+<ul class="ul">
+<li class="li"> Any invocations of <tt class="ph tt">LeadershipElection</tt> within the same <tt class="ph tt">path</tt> and <tt class="ph tt">group</tt> and job must be exlocated into different PEs.</li>
+
+</ul>
+The Zookeeper root znode for the recipe is a <tt class="ph tt">path</tt>/<tt class="ph tt">group</tt>.
+</div>
+
+<p class="p">When the leadership state of the operator changes a tuple is submitted to the output port.
 </p>
 
 </div>
@@ -49,7 +61,7 @@
  
   <dt class="dt dlterm">Ports</dt>
 
-  <dd class="dd">This operator has 0 input port and 1 output port.</dd>
+  <dd class="dd">This operator has 0 input ports and 1 output port.</dd>
 
  
  
@@ -61,14 +73,23 @@
  
   <dt class="dt dlterm">Parameters</dt>
 
-  <dd class="dd">This operator supports 1 parameter. (<tt class="ph tt">group</tt>)
+  <dd class="dd">This operator supports 2 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__group">group</a>
+
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__path">path</a>
+
+</p>
 </dd>
 
  
  
   <dt class="dt dlterm">Metrics</dt>
 
-  <dd class="dd">This operator reports 1 metrics.</dd>
+  <dd class="dd">This operator reports 1 metric.</dd>
 
  
 </dl>
@@ -105,6 +126,9 @@
 
    <dd class="dd">
 
+<p class="p">Contains tuples representing leadership status changes. The stream schema can be <a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__type__LeaderStatus">LeaderStatus</a> or any arbitrary schema. Any attribute matching an attribute in <a class="xref" href="spl$com.ibm.streamsx.plumbing.leader$leader.html#spldoc_compilationunit__type__LeaderStatus">LeaderStatus</a> willbe set to a valid value otherwise it will be set to its default value.
+</p>
+
 <p class="p"/>
 
    <dl class="dl">
@@ -140,12 +164,22 @@
 
 <div class="section">
 <p class="p splhead-1"><strong class="ph b"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters">Parameters</a></strong></p>
-This operator supports 1 parameter.<dl class="dl">
+This operator supports 2 parameters.
+<p class="p"> Required: 
+<a class="xref" href="#spldoc_operator__parameter__group">group</a>
 
-<dt class="dt dlterm" id="spldoc_operator__parameter_group"><tt class="ph tt">group</tt></dt>
+</p>
+
+<p class="p"> Optional: 
+<a class="xref" href="#spldoc_operator__parameter__path">path</a>
+
+</p>
+<dl class="dl">
+
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__group"><!-- --></a><tt class="ph tt">group</tt></dt>
 
 <dd class="dd">
-<p class="p">Leadership group name. All instances of this operator within the same job and having the same <tt class="ph tt">group</tt> are participants in a single leadership election. Group name must not start with a slash (<tt class="ph tt">/</tt>).
+<p class="p">Leadership group name. All instances of this operator within the same <tt class="ph tt">group</tt> are participants in a single leadership election. Group name must not start with a slash (<tt class="ph tt">/</tt>).
 </p>
 <dl class="dl">
 
@@ -160,6 +194,37 @@ This operator supports 1 parameter.<dl class="dl">
      </li>
 
      <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: false
+     </li>
+
+  </ul>
+
+ </dd>
+
+
+</dl>
+
+</dd>
+
+
+
+<dt class="dt dlterm"><a name="spldoc_operator__parameter__path"><!-- --></a><tt class="ph tt">path</tt></dt>
+
+<dd class="dd">
+<p class="p">Znode path for leadership election across multiple jobs, must start with a <tt class="ph tt">/</tt> to be used across jobs (or an empty string to default to within a job). Optional, when not set (or set to the empty string) the path used is specific to the job and leadership election is across operator invocations within a single jobs.
+</p>
+<dl class="dl">
+
+ <dt class="dt dlterm">Properties </dt>
+
+ <dd class="dd">
+  <ul class="sl simple">
+  <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__type">Type</a>: rstring
+  </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__cardinality">Cardinality</a>: 1
+     </li>
+
+     <li class="sli"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__parameters__parameter__optional">Optional</a>: true
      </li>
 
   </ul>
@@ -206,7 +271,7 @@ This operator supports 1 parameter.<dl class="dl">
 
   <dd class="dd"/>
 
-  <dd class="dd"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies__managedlibrary__libpath">Library Path</a>: <tt class="ph tt">../../impl/lib/com.ibm.streamsx.plumbing.jar, ../../opt/apache-curator-2.7.1/*</tt></dd>
+  <dd class="dd"><a class="xref" href="../references/OperatorModel.html#spldoc_reference_operator_model__context__dependencies__managedlibrary__libpath">Library Path</a>: <tt class="ph tt">../../impl/lib/com.ibm.streamsx.plumbing.jar, ../../opt/apache-curator/*, ../../opt/slf4j-1.7.5/*, ../../opt/zookeeper-3.4.8.jar, ../../opt/guava-14.0.1.jar</tt></dd>
 
  
  </dl>

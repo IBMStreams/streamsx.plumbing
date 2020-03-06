@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_8d7883d</a> &gt; com.ibm.streamsx.plumbing.switches</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; com.ibm.streamsx.plumbing.switches</p>
 
 </div>
 
@@ -31,7 +31,10 @@
 <p class="p">Switch operators. Operators that provide switches for streams including a <a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__composite_operator__Changeover">Changeover</a> that submits tuples to one of two output ports depending if the switch is on or off.
 </p>
 
-<p class="p"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">ControlledSwitch</a> and <a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__composite_operator__ControlledChangeover">ControlledChangeover</a> are switches whose state can be changed through control variables. This allows disconnected operators within the same application to control the state of switches. For example downstream processing can change an upstream flow through a controlled switch. 
+<p class="p"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">ControlledSwitch</a> and <a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$changeover.html#spldoc_compilationunit__composite_operator__ControlledChangeover">ControlledChangeover</a> are switches whose state can be changed through control variables. This allows disconnected operators within the same application to control the state of switches. For example downstream processing can change an upstream flow through a controlled switch.
+</p>
+
+<p class="p"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$traceLevelSwitch.html#spldoc_compilationunit__composite_operator__TraceLevelSwitch">TraceLevelSwitch</a> is a switch whose state can be changed via the  application trace level of the PE it is a part of.  
 </p>
 
 </div>
@@ -46,6 +49,9 @@
 </li>
 
 <li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$controlledswitch.html#spldoc_compilationunit__composite_operator__ControlledSwitch">ControlledSwitch</a></strong>: Controlled switch.
+</li>
+
+<li class="sli"><strong class="ph b"><a class="xref" href="spl$com.ibm.streamsx.plumbing.switches$traceLevelSwitch.html#spldoc_compilationunit__composite_operator__TraceLevelSwitch">TraceLevelSwitch</a></strong>: Non-blocking switch set by application trace level.
 </li>
 
 </ul>

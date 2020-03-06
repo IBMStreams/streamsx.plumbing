@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.4.0.commit_8d7883d</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a> &gt; leader.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$com.ibm.streamsx.plumbing.html">com.ibm.streamsx.plumbing 0.5.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.leader.html">com.ibm.streamsx.plumbing.leader</a> &gt; leader.spl</p>
 
 </div>
 
@@ -69,8 +69,12 @@
   
 </div>
 
-<div class="section" id="spldoc_compilationunit__composite_operator__LeadershipChangeover"><h2 class="title sectiontitle splpart">composite LeadershipChangeover(output WhenLeader, WhenNotLeader, LeaderControl; input In)</h2>
+<div class="section" id="spldoc_compilationunit__composite_operator__LeadershipChangeover"><h2 class="title sectiontitle splpart">composite LeadershipChangeover(output WhenLeader, WhenNotLeader, stream&lt;LeaderStatus&gt; LeaderControl; input In)</h2>
   
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipChangeover.svg" width="252" height="116"/>
 </div>
 
 <div class="section">
@@ -84,6 +88,9 @@
 
 <ul class="sl simple">
 <li class="sli"><strong class="ph b">group</strong>: Group identifier for the leadership election. 
+</li>
+
+<li class="sli"><strong class="ph b">path</strong>
 </li>
 
 </ul>
@@ -116,14 +123,6 @@
 
 </div>
 
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipChangeover.svg" width="252" height="116"/>
-</div>
-
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
   
 </div>
@@ -136,11 +135,13 @@
  {
      param
          expression&lt;rstring&gt; $group ;
+         expression&lt;rstring&gt; $path : "" ;
      graph
        stream&lt;LeaderStatus&gt; LeaderControl = LeadershipElection()
        {
          param
            group : $group ;
+           path : $path ;
        }
  
        (stream&lt;In&gt; WhenLeader ; stream&lt;In&gt; WhenNotLeader) as LCS = Changeover(In ; LeaderControl)
@@ -157,6 +158,10 @@
 
 <div class="section" id="spldoc_compilationunit__composite_operator__LeadershipSwitchWithReplay"><h2 class="title sectiontitle splpart">composite LeadershipSwitchWithReplay(output Out; input In)</h2>
   
+</div>
+
+<div class="section splgraph">
+  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipSwitchWithReplay.svg" width="477" height="150"/>
 </div>
 
 <div class="section">
@@ -203,6 +208,9 @@ stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
 <li class="sli"><strong class="ph b">group</strong>: Group identifier for the leadership election.
 </li>
 
+<li class="sli"><strong class="ph b">path</strong>
+</li>
+
 <li class="sli"><strong class="ph b">period</strong>: Time window for replay buffer in seconds, defaults to 10.0. 
 </li>
 
@@ -230,14 +238,6 @@ stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
 
 </div>
 
-<div class="section"><h2 class="title sectiontitle splhead-2">Composite Operator Graph</h2>
-  
-</div>
-
-<div class="section splgraph">
-  <embed class="image" src="../../image/tk$com.ibm.streamsx.plumbing/op$com.ibm.streamsx.plumbing.leader$LeadershipSwitchWithReplay.svg" width="477" height="150"/>
-</div>
-
 <div class="section"><h2 class="title sectiontitle splhead-2">SPL Source Code</h2>
   
 </div>
@@ -250,6 +250,7 @@ stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
  {
  param
          expression&lt;rstring&gt; $group ;        
+         expression&lt;rstring&gt; $path : "" ;
          expression&lt;float64&gt; $period : 10.0;
  
     graph
@@ -259,6 +260,7 @@ stream&lt;B1&gt; L1 = LeadershipSwitchWithReplay(B1) {
  		{
  			param
  				group : $group ;
+ 				path : $path ;
  		}
  		
  		// Stream that will drive the replay when this PE becomes the leader.
