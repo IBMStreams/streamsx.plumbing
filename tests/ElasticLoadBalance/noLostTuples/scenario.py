@@ -6,7 +6,7 @@ def test():
 
     stdout, stderr, err = th.run_standalone(args=['tuples=300000000'])
     th.assert_pass(err == 0 and 
-                   stdout.rstrip() == 'pass', 
+                   stdout.find('pass') != -1, 
                    stdout, stderr)
 
     stdout, stderr, err = th.make_standalone(args=['elastic=true', 'initialActivePorts=3'])
@@ -14,7 +14,7 @@ def test():
 
     stdout, stderr, err = th.run_standalone(args=['tuples=300000000'])
     th.assert_pass(err == 0 and 
-                   stdout.rstrip() == 'pass', 
+                   stdout.find('pass') != -1,  
                    stdout, stderr)
 
     stdout, stderr, err = th.make_standalone(args=['elastic=false', 'initialActivePorts=1'])
@@ -22,7 +22,7 @@ def test():
 
     stdout, stderr, err = th.run_standalone(args=['tuples=10000000'])
     th.assert_pass(err == 0 and 
-                   stdout.rstrip() == 'pass', 
+                   stdout.find('pass') != -1,  
                    stdout, stderr)
 
     stdout, stderr, err = th.make_standalone(args=['elastic=false', 'initialActivePorts=4'])
@@ -30,6 +30,6 @@ def test():
 
     stdout, stderr, err = th.run_standalone(args=['tuples=10000000'])
     th.assert_pass(err == 0 and 
-                   stdout.rstrip() == 'pass', 
+                   stdout.find('pass') != -1,  
                    stdout, stderr)
 

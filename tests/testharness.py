@@ -10,14 +10,12 @@ class TestFailure(Exception):
         self.stderr = err
 
     def say(self, test_name):
-        print test_name + ' fail:\n' + \
-              '\tstdout: ' + self.stdout + '\n' + \
-              '\tstderr: ' + self.stderr + '\n'
+        print (test_name + ' fail:\n' + '\tstdout: ' + self.stdout + '\n' + '\tstderr: ' + self.stderr + '\n')
 
 def exec_noexit(seq):
     p = Popen(seq, stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
-    return stdout, stderr, p.returncode
+    return str(stdout), str(stderr), p.returncode
 
 def assert_pass(condition, stdout, stderr):
     if not condition:
@@ -47,14 +45,13 @@ def testharness(test_name):
         del tester
         del sys.modules['scenario']
         sys.path.remove(os.getcwd())
-        os.remove('scenario.pyc')
+        #os.remove('scenario.pyc')
 
-        print test_name + ' pass'
+        print (test_name + ' pass')
     except TestFailure as tf:
         tf.say(test_name)
     except ImportError as ie:
-        print test_name + ' fail:\n' + \
-              '\tunable to import ' + test_name + '/scenario.py' 
+        print (test_name + ' fail:\n' + '\tunable to import ' + test_name + '/scenario.py')
     finally:
         os.chdir(topdir)
 
