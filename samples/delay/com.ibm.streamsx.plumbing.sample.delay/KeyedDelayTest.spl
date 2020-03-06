@@ -37,7 +37,7 @@ Possible use cases where this operator can be used:
 4) Design patterns requiring storing and forwarding of tuples after a preset delay.
 */
 
-composite KeyedDelayTest {
+public composite KeyedDelayTest {
 	param
 		// Default delay time is 1 minute represented in seconds (1 * 60)
 		expression<float64> $DELAY : (float64)getSubmissionTimeValue("Delay", "60.00");
@@ -60,15 +60,15 @@ composite KeyedDelayTest {
 		}
 
 		// Ingest the flight data from a file. (It has 11 rows)
+/*
 		stream<FlightType> FlightInfo = FileSource() {
 			param
 				file : "flight-info.txt";
 				hotFile : true;
 		}
-
+*/
 		// Comment out the previous FileSource code block and then
 		// uncomment this Beacon code block in order to test it with 100K entries.
-		/*
 		stream<FlightType> FlightInfo = Beacon() {
 			param
 				iterations: 100000;
@@ -79,7 +79,7 @@ composite KeyedDelayTest {
 					origin = "Origin" + (rstring)(IterationCount()+1ul),
 					destination = "Destination" + (rstring)(IterationCount()+1ul);
 		}
-		*/
+		
 
 		// This operator can generate a query signal for the KeyedDelay operator below.
 		// That query signal will make that operator to send out the current snapshot of

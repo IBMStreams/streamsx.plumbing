@@ -18,7 +18,7 @@
 # PROFITS, BUSINESS INTERRUPTION, LOSS OF PROGRAMS OR OTHER DATA   
 # ON YOUR INFORMATION HANDLING SYSTEM OR OTHERWISE.                
 #                                                                  
-# (C) Copyright IBM Corp. 2017, 2019  All Rights reserved.         
+# (C) Copyright IBM Corp. 2019  All Rights reserved.         
 #                                                                  
 # end_generated_IBM_copyright_prolog                               
 
@@ -51,13 +51,13 @@ endif
 
 SPLC = $(STREAMS_INSTALL)/bin/sc
 SPL_CMD_ARGS ?= --data-directory=./data 
-SPL_MAIN_COMPOSITE = com.ibm.streamsx.plumbing.sample.delay::KeyedDelayTest
+SPL_MAIN_COMPOSITE1 = com.ibm.streamsx.plumbing.sample.redundant.flow::Flow
 
 all: distributed
 
 distributed:
-	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS) --output-directory=./output/com.ibm.streamsx.plumbing.sample.delay.KeyedDelayTest/Distributed
+	$(SPLC) $(SPLC_FLAGS) -M $(SPL_MAIN_COMPOSITE1) $(SPL_CMD_ARGS) --output-directory=./output/com.ibm.streamsx.plumbing.sample.redundant.Flow/Distributed
 
 clean: 
-	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
+	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE1)
 	rm -rf output
