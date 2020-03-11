@@ -43,3 +43,5 @@ com.ibm.streamsx.plumbing/toolkit.xml
 tests/testharness.pyc
 
 *__pycache__/
+/.DS_Store
+release*/
