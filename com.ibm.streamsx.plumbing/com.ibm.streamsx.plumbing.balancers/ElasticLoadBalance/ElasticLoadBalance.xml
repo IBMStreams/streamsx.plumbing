@@ -10,7 +10,7 @@
   xsi:schemaLocation="http://www.ibm.com/xmlns/prod/streams/spl/operator operatorModel.xsd">
   <cppOperatorModel>
     <context> 
-      <description>This operator distributes tuples to the output ports that have the capacity to receive them. In addition, it will dynamically determine the number of output ports that should be active in order to maximize throughput.</description>
+      <description>This operator distributes tuples to the output ports that have the capacity to receive them. In addition, it will dynamically determine the number of output ports that should be active in order to maximize throughput. Window punctuation markers are forwarded to each output port.</description>
       <libraryDependencies>
         <library>
           <cmn:description>spl-std-tk-lib</cmn:description>
