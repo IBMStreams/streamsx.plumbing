@@ -9,11 +9,11 @@ SPL_MAIN_COMPOSITE = $(main)
 all: standalone
 
 standalone:
-	$(SPLC) $(SPLC_FLAGS) -z -T -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS)
+	$(SPLC) $(SPLC_FLAGS) -z -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS)
 
 distributed:
 	$(SPLC) $(SPLC_FLAGS) -z -M $(SPL_MAIN_COMPOSITE) $(SPL_CMD_ARGS)
 
 clean: 
-	$(SPLC) $(SPLC_FLAGS) -C -M $(SPL_MAIN_COMPOSITE)
-
+	rm -f toolkit.xml
+	rm -rf *Output/
