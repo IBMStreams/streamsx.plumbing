@@ -22,7 +22,7 @@
 <div class="body refbody">
 <div class="section">
 <p class="p">
-<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$redundant.html">redundant 1.0.0</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sample.redundant.active.html">com.ibm.streamsx.plumbing.sample.redundant.active</a> &gt; ActiveReplicasManual3DeDup.spl</p>
+<a class="xref" href="../toolkits/toolkits.html">com.ibm.streamsx.plumbing</a> &gt; <a class="xref" href="tk$redundant.html">redundant 1.0.1</a> &gt; <a class="xref" href="ns$com.ibm.streamsx.plumbing.sample.redundant.active.html">com.ibm.streamsx.plumbing.sample.redundant.active</a> &gt; ActiveReplicasManual3DeDup.spl</p>
 
 </div>
 
@@ -70,9 +70,6 @@
 </p>
 
 <p class="p">Three active replica flows mimic processing data and sending alerts. In this case there are two redundant de-duplicators with one active set by leadership election using <tt class="ph tt">LeadershipSwitchWithReplay</tt>. The de-duplicator sends a single alert even though there are three active replicas generating alerts. Upon a failure of the de-duplicator the inactive one is elected as the leader and starts to send the alerts out. 
-</p>
-
-<p class="p">The concepts used in this sample are described by this Streamsdev article: <a class="xref" href="https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/">https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/</a>. Though the article refers to an earlier Streams 3.2 based toolkit. 
 </p>
 
 </div>
