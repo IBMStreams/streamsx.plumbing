@@ -4,14 +4,8 @@
  <info:identity>
    <info:name>redundant</info:name>
    <info:description>Sample applications demonstrating redundant stream processing.
-
-The concepts of redundant processing in IBM Streams are covered in two
-Streamsdev articles *Application High Availability in IBM® InfoSphere® Streams with Active Replicas* :
-* [https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-1/ | Part 1 - Active Replicas] 
-* [https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/ | Part 2 - Redundant De-Duplication with Leadership ]
-The articles were written against Streams 3.2 and an experiment control toolkit. For Streams 4.0 and later the `JobControlPlane` operator and the `com.ibm.streamsx.plumbing` toolkit contain the evolutions of the older control toolkit.
    </info:description>
-   <info:version>1.0.0</info:version>
+   <info:version>1.0.1</info:version>
    <info:requiredProductVersion>4.0.0.0</info:requiredProductVersion>
  </info:identity>
  <info:dependencies>

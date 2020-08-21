@@ -28,9 +28,6 @@ use com.ibm.streamsx.plumbing.sample.redundant.flow::T;
  * the inactive one is elected as the leader and starts to send
  * the alerts out. 
  *
- * The concepts used in this sample are described by this Streamsdev
- * article: [https://developer.ibm.com/streamsdev/docs/application-high-availability-ibm-infosphere-streams-active-replicas-part-2/]. Though the article refers
- * to an earlier Streams 3.2 based toolkit.
  */
 
 public composite ActiveReplicasManual3DeDup
