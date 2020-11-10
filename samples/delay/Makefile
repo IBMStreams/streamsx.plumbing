@@ -49,6 +49,10 @@ else
    SPLC_FLAGS ?= -a -z 
 endif
 
+ifdef STREAMS_BUILDSERVICE
+    SPLC_FLAGS = -a -z -t ../toolkits:$(STREAMS_INSTALL)/toolkits
+endif
+
 SPLC = $(STREAMS_INSTALL)/bin/sc
 SPL_CMD_ARGS ?= --data-directory=./data 
 SPL_MAIN_COMPOSITE = com.ibm.streamsx.plumbing.sample.delay::KeyedDelayTest
