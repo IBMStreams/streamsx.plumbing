@@ -10,6 +10,6 @@ Functionality to control the flow of tuples in a Streams application.
  * [**com.ibm.streamsx.plumbing.shedders**](http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.shedders.html) - Load shedding operators.
  * [**com.ibm.streamsx.plumbing.switches**](http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.switches.html) - Switch operators.
  * [**com.ibm.streamsx.plumbing.synchronize**](http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.synchronize.html) - Synchronization across streams.
- * [**com.ibm.streamsx.plumbing.delay**](https://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.delay.html) - Fine-grained user defined delaying of tuples. Created by: senthil@moonraytech.com
+ * [**com.ibm.streamsx.plumbing.delay**](https://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/tk$com.ibm.streamsx.plumbing/ns$com.ibm.streamsx.plumbing.delay.html) - Fine-grained user defined delaying of tuples. Created with own initiative and intellectual ideas by: senthil@moonraytech.com
   
 SPLDOC for the toolkit and its samples is at: http://ibmstreams.github.io/streamsx.plumbing/doc/spldoc/html/index.html
